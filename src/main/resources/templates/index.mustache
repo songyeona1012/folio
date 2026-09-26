@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>폴리오 - 관리</title>
+    <link rel="stylesheet" href="/css/manage.css">
+    <link rel="stylesheet" href="/css/calendar.css">
+</head>
+<body>
+<div class="appShell">
+    {{! 컨트롤러에서 pageTitle="관리", navIndex=true 를 내려주세요 }}
+    {{> layout/sidebar}}
+    <main class="mainArea">
+        <div class="topBar"></div>
+        <section class="notebook">
+            {{! 컨트롤러에서 bookmarks = BookmarkLayout.of(2) 을 내려주세요 (관리 = 왼쪽 2개, 오른쪽 2개) }}
+            {{> layout/bookLayout}}
+            <section class="leftPage">
+                <header class="managementIntro">
+                    <h1>관리 :</h1>
+                    <p>주기적으로 돌아오는 일정을 놓치지 않도록 관리합니다.</p>
+                    <p>주기별 관리와 이력이 있어야 하는 일정에 목록 확인부터 등록 관리 등의 정보가 가능합니다.</p>
+                    <p class="tip">이번 주의 일정 중 완료도 높은 <em>“건강”</em>이 있습니다. 기록해봐요.</p>
+                </header>
+                <div class="categoryGrid">
+                    <article class="categoryCard">
+                        <img class="memoImage" src="/img/memo-health.png">
+                        <img class="categoryTape" src="/img/tape-blue.png"><span class="categoryName">건강</span><img class="detailIcon" src="/img/detail-icon.png">
+                    </article>
+                    <article class="categoryCard">
+                        <img class="memoImage" src="/img/memo-subscription.png">
+                        <img class="categoryTape tapeBlue" src="/img/tape-small-blue.png"><span class="categoryName">구독</span><img class="detailIcon" src="/img/detail-icon.png">
+                    </article>
+                    <article class="categoryCard">
+                        <img class="memoImage" src="/img/memo-relationship.png">
+                        <img class="categoryTape tapePurple" src="/img/tape-purple.png"><span class="categoryName">교제</span><img class="detailIcon" src="/img/detail-icon.png">
+                    </article>
+                    <article class="categoryCard">
+                        <img class="memoImage" src="/img/memo-daily.png">
+                        <img class="categoryTape tapeOlive" src="/img/tape-green.png"><span class="categoryName">일상</span><img class="detailIcon" src="/img/detail-icon.png">
+                    </article>
+                </div>
+            </section>
+            <section class="rightPage">
+                <div class="chartHeader"><span>기본 그래프</span><div class="periodSelector"><span>주간</span><span>월간</span><span class="active">연간</span></div></div>
+                <div class="chart">
+                    <div class="bar" style="--height:58%"></div><div class="bar" style="--height:43%"></div>
+                    <div class="bar" style="--height:30%"></div><div class="bar" style="--height:24%"></div>
+                    <div class="bar" style="--height:28%"></div><div class="bar" style="--height:15%"></div>
+                    <div class="bar" style="--height:72%"></div><div class="bar" style="--height:52%"></div>
+                </div>
+                <div class="chartLabels"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span></div>
+                <div class="monthlyNotice"><span class="smile">⌣</span><p>8월 월간 기록지가 도착했습니다. 확인하시겠습니까?</p></div>
+            </section>
+        </section>
+    </main>
+</div>
+</body>
+</html>

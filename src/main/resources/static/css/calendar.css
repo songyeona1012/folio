@@ -1,0 +1,1682 @@
+
+/* =========================================================
+   calendar.css
+   manage.css 위에 불러오는 달력 전용 스타일
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap');
+
+
+/* =========================================================
+   기본 변수
+   ========================================================= */
+
+:root {
+    --orange: #e9692c;
+    --orange-line: #e79e7b;
+    --gold: #624325;
+    --line: #e6ddda;
+    --sun: #923a3a;
+    --sat: #5c68b9;
+
+    --tag-health-bg: rgba(114,131,151,0.20);
+    --tag-health-fg: #4c5c6b;
+
+    --tag-important-bg: rgba(215,105,80,0.20);
+    --tag-important-fg: #ad4b31;
+
+    --tag-todo-bg: rgba(140,190,110,0.24);
+    --tag-todo-fg: #4f7a3c;
+
+    --shadow: rgba(60, 50, 40, 0.16);
+}
+
+
+/* =========================================================
+   오른쪽 페이지 기본
+   ========================================================= */
+
+.rightPage {
+    display: flex;
+    flex-direction: column;
+    padding-top: 3.2%;
+    overflow: visible;
+}
+
+
+/* =========================================================
+   🔖 책갈피
+   ========================================================= */
+
+.bookmark {
+    position: absolute;
+    z-index: 4;
+
+    display: block;
+
+    width: 8%;
+    height: 4.8%;
+
+    overflow: visible;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    transition: transform 0.15s ease;
+}
+
+.bookmark img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    max-width: none;
+    max-height: none;
+
+    object-fit: fill;
+
+    opacity: 1;
+    filter: none;
+    mix-blend-mode: normal;
+}
+
+
+/* 왼쪽 */
+
+.pos-l1 {
+    left: 10%;
+    top: 0.8%;
+}
+
+.pos-l2 {
+    left: 19%;
+    top: 0.8%;
+}
+
+.pos-l3 {
+    left: 28%;
+    top: 0.8%;
+}
+
+.pos-l4 {
+    left: 37%;
+    top: 0.8%;
+}
+
+
+/* 오른쪽 */
+
+.pos-r1 {
+    right: 37%;
+    top: 0.8%;
+}
+
+.pos-r2 {
+    right: 28%;
+    top: 0.8%;
+}
+
+.pos-r3 {
+    right: 19%;
+    top: 0.8%;
+}
+
+.pos-r4 {
+    right: 10%;
+    top: 0.8%;
+}
+
+.bookmark:hover {
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   왼쪽 페이지
+   ========================================================= */
+
+.leftPage {
+    padding-top: 3.2%;
+    padding-bottom: 1.5%;
+}
+
+
+/* =========================================================
+   Folio 제목
+   ========================================================= */
+
+.brand-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--line);
+
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+
+    flex-shrink: 0;
+}
+
+.brand-row h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+
+    color: var(--orange);
+
+    font-size: 26px;
+
+    margin: 0;
+}
+
+.brand-row .rate {
+    font-size: 11px;
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   혼잡도 / 가까운 일정
+   ========================================================= */
+
+.briefing {
+    font-size: 11.5px;
+
+    line-height: 1.6;
+
+    color: var(--gold);
+
+    opacity: 0.9;
+
+    margin-bottom: 8px;
+
+    flex-shrink: 0;
+}
+
+.briefing strong {
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   📌 달력 포스트잇
+   ========================================================= */
+
+.postit {
+    position: relative;
+
+    overflow: hidden;
+
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 112%;
+
+    margin-left: -6%;
+    margin-right: -6%;
+
+    margin-top: -8px;
+    margin-bottom: -18px;
+
+    /*
+     * 포스트잇 이미지
+     */
+    background-image: url('../img/postit.png');
+
+    background-position: center;
+    background-repeat: no-repeat;
+
+    background-size: 100% 100%;
+
+    border: none;
+    border-radius: 0;
+
+    box-shadow: none;
+
+    /*
+     * 달력 내부 여백
+     */
+    padding-top: 25px;
+    padding-left: 7%;
+    padding-right: 7%;
+    padding-bottom: 25px;
+}
+
+
+/* =========================================================
+   달력 상단
+   ========================================================= */
+
+.cal-head {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 8px;
+
+    padding: 10px 8px 8px;
+
+    flex-shrink: 0;
+}
+
+.cal-head .year {
+    font-size: 13px;
+
+    border-bottom: 1px solid #342f2d;
+
+    padding-bottom: 2px;
+
+    font-weight: 400;
+}
+
+.cal-head .month {
+    font-size: 16px;
+
+    font-weight: 700;
+
+    color: #342f2d;
+}
+
+.cal-nav {
+    margin-left: auto;
+
+    display: flex;
+
+    gap: 4px;
+}
+
+.cal-nav button {
+    width: 21px;
+    height: 21px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--gold);
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.cal-nav button:hover {
+    color: var(--orange);
+}
+
+
+/* =========================================================
+   요일
+   ========================================================= */
+
+.weekdays {
+    display: grid;
+
+    grid-template-columns: repeat(7, 1fr);
+
+    padding: 4px 8px 7px;
+
+    border-bottom: 1px solid var(--line);
+
+    flex-shrink: 0;
+}
+
+.weekdays span {
+    text-align: center;
+
+    font-size: 10.5px;
+
+    font-weight: 700;
+
+    padding: 2px 0;
+
+    color: #342f2d;
+}
+
+.weekdays span:first-child {
+    color: var(--sun);
+}
+
+.weekdays span:last-child {
+    color: var(--sat);
+}
+
+
+/* =========================================================
+   날짜 그리드
+   ========================================================= */
+
+.grid {
+    display: grid;
+
+    grid-template-columns: repeat(7, 1fr);
+
+    padding: 10px 8px 12px;
+
+    flex: 1;
+
+    min-height: 0;
+}
+
+.day {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding-top: 5px;
+
+    cursor: pointer;
+
+    border-radius: 5px;
+
+    user-select: none;
+}
+
+.day:hover:not(.other) {
+    background: rgba(233,105,44,0.07);
+}
+
+.day .num {
+    font-size: 11.5px;
+
+    font-weight: 400;
+
+    width: 19px;
+    height: 19px;
+
+    margin-bottom: 2px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #342f2d;
+}
+
+.day.other .num {
+    color: #d7c9c0;
+}
+
+.day.sun .num {
+    color: var(--sun);
+}
+
+.day.sat .num {
+    color: var(--sat);
+}
+
+.day.today .num {
+    background: var(--orange);
+
+    color: #fff;
+
+    font-weight: 700;
+}
+
+.day.selected {
+    outline: 1px solid var(--orange-line);
+}
+
+.day .tag {
+    margin-top: 3px;
+
+    font-size: 7px;
+
+    line-height: 1.2;
+
+    text-align: center;
+
+    padding: 2px 4px;
+
+    border-radius: 3px;
+
+    max-width: 48px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+.tag.health {
+    background: var(--tag-health-bg);
+    color: var(--tag-health-fg);
+}
+
+.tag.important {
+    background: var(--tag-important-bg);
+    color: var(--tag-important-fg);
+}
+
+.tag.todo {
+    background: var(--tag-todo-bg);
+    color: var(--tag-todo-fg);
+}
+
+
+/* =========================================================
+   오른쪽 대시보드
+   ========================================================= */
+
+.rightDashboard {
+    display: flex;
+
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 0;
+}
+
+
+/* =========================================================
+   일정 등록 버튼
+   ========================================================= */
+
+.add-pill {
+    width: 100%;
+
+    min-height: 46px;
+
+    background: rgba(250,250,250,0.3);
+
+    border: 2.5px solid var(--orange-line);
+
+    border-radius: 24px;
+
+    padding: 12px 17px;
+
+    font-size: 11px;
+
+    font-weight: 300;
+
+    color: #a39b96;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    font-family: 'Noto Sans KR', sans-serif;
+
+    margin-top: 0;
+
+    margin-bottom: 24px;
+
+    flex-shrink: 0;
+}
+
+.add-pill b {
+    color: var(--orange);
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   우측 섹션
+   ========================================================= */
+
+.section {
+    margin-bottom: 18px;
+
+    flex-shrink: 0;
+}
+
+.section.grow {
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    margin-top: 5px;
+}
+
+.section h4 {
+    font-size: 11.5px;
+
+    font-weight: 700;
+
+    color: var(--gold);
+
+    margin: 0 0 6px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-shrink: 0;
+}
+
+.section h4 .reorder {
+    font-size: 10px;
+
+    color: #a39b96;
+
+    font-weight: 400;
+
+    cursor: pointer;
+}
+
+.rightDashboard > .section:first-of-type {
+    margin-top: 8px;
+}
+
+.rightDashboard > .section:first-of-type h4 {
+    margin-bottom: 9px;
+}
+
+.rightDashboard > .section:nth-of-type(2) {
+    margin-top: 4px;
+}
+
+
+/* =========================================================
+   일상 체크리스트
+   ========================================================= */
+
+.check-list {
+    list-style: none;
+
+    margin: 0;
+
+    padding: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.check-list li {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    font-size: 10.5px;
+
+    color: var(--gold);
+
+    cursor: pointer;
+}
+
+.check-list .chk {
+    width: 10px;
+    height: 10px;
+
+    border: 0.7px solid rgba(98,67,37,0.8);
+
+    border-radius: 2px;
+
+    flex-shrink: 0;
+}
+
+.check-list li.done .chk {
+    background: var(--orange);
+
+    border-color: var(--orange);
+}
+
+.check-list li.done {
+    opacity: 0.5;
+
+    text-decoration: line-through;
+}
+
+
+/* =========================================================
+   건강
+   ========================================================= */
+
+.health-row {
+    font-size: 10.5px;
+
+    color: var(--gold);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    border-top: 1px solid var(--line);
+
+    padding-top: 10px;
+}
+
+.health-row .muted {
+    color: #a39b96;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   금일 일정
+   ========================================================= */
+
+.today-list {
+    list-style: none;
+
+    margin: 0;
+
+    padding: 0;
+
+    overflow-y: auto;
+
+    border-top: 1px solid var(--line);
+
+    flex: 1;
+
+    min-height: 0;
+}
+
+.today-list li {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 0;
+
+    border-bottom: 1px dashed var(--line);
+}
+
+.today-list .time {
+    font-size: 9.5px;
+
+    color: #a39b96;
+
+    width: 54px;
+
+    flex-shrink: 0;
+}
+
+.today-list .title {
+    flex: 1;
+
+    font-size: 10.5px;
+
+    color: var(--gold);
+}
+
+.today-list .chk2 {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 3px;
+
+    border: 0.7px solid rgba(98,67,37,0.5);
+
+    flex-shrink: 0;
+
+    cursor: pointer;
+}
+
+.today-list li.important .chk2 {
+    background: var(--tag-important-fg);
+
+    border-color: var(--tag-important-fg);
+}
+
+.today-list li.health .chk2 {
+    background: var(--tag-health-fg);
+
+    border-color: var(--tag-health-fg);
+}
+
+.today-list li.completed .title {
+    opacity: 0.4;
+
+    text-decoration: line-through;
+}
+
+
+/* =========================================================
+   인라인 수정
+   ========================================================= */
+
+.hover-edit {
+    display: inline-block;
+
+    cursor: pointer;
+
+    border-radius: 3px;
+
+    transition:
+            background-color 0.2s ease;
+
+    padding: 1px 2px;
+
+    margin-left: -2px;
+}
+
+.hover-edit:hover {
+    background-color:
+            rgba(233,105,44,0.10);
+}
+
+.time-edit {
+    width: 60px;
+
+    font-size: 10px;
+
+    border: 1px solid var(--orange-line);
+
+    border-radius: 4px;
+
+    padding: 2px;
+
+    color: var(--gold);
+
+    font-family: inherit;
+
+    background: #fff;
+
+    outline: none;
+
+    flex-shrink: 0;
+}
+
+.title-edit {
+    width: 100%;
+
+    font-size: 10.5px;
+
+    border: 1px solid var(--orange-line);
+
+    border-radius: 4px;
+
+    padding: 3px 5px;
+
+    color: var(--gold);
+
+    font-family: inherit;
+
+    background: #fff;
+
+    outline: none;
+}
+
+
+/* =========================================================
+   📒 메모장
+   ========================================================= */
+
+.memoPanel {
+    position: relative;
+
+    width: 100%;
+
+    height: calc(100% + 7%);
+
+    min-height: 0;
+
+    display: none;
+
+    overflow: visible;
+    margin-bottom: -7%;
+}
+
+
+/* 메모 배경 */
+.memoBackground {
+    position: absolute;
+
+    z-index: 0;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    pointer-events: none;
+}
+
+
+/* 메모 내부 */
+.memoInner {
+    position: absolute;
+
+    z-index: 2;
+
+    inset: 0;
+
+    /*
+     * 위쪽은 날짜 공간
+     * 아래쪽은 줄노트 공간
+     */
+    padding: 7% 9% 8%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-height: 0;
+}
+
+
+/* =========================================================
+   메모 날짜
+   ========================================================= */
+
+.memoHeader {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    margin-bottom: 7px;
+
+    flex-shrink: 0;
+}
+
+.memoDate {
+    color: #624325;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+.memoClose {
+    border: none;
+
+    background: transparent;
+
+    color: #8e8179;
+
+    font-size: 21px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    padding: 0;
+}
+
+
+/* =========================================================
+   시간 / 일정 헤더
+   ========================================================= */
+
+.memoColumnHeader {
+    display: grid;
+
+    grid-template-columns: 25% 75%;
+
+    color: #a18f84;
+
+    font-size: 8.5px;
+
+    margin-bottom: 2px;
+
+    flex-shrink: 0;
+}
+
+.memoColumnHeader div:first-child {
+    padding-left: 3px;
+}
+
+.memoColumnHeader div:last-child {
+    padding-left: 4px;
+}
+
+
+/* =========================================================
+   📝 5px 줄노트
+   ========================================================= */
+
+.memoList {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    padding-right: 3px;
+
+    /*
+     * 줄노트
+     * 28px 한 줄마다 얇은 선
+     */
+    background:
+            repeating-linear-gradient(
+                    to bottom,
+                    transparent 0,
+                    transparent 27px,
+                    rgba(118,146,166,0.30) 27px,
+                    rgba(118,146,166,0.30) 28px
+            );
+}
+
+
+/* 일정 한 줄 */
+.memoEvent {
+    display: grid;
+
+    grid-template-columns: 25% 75%;
+
+    align-items: center;
+
+    height: 28px;
+
+    min-height: 28px;
+
+    border-bottom: none;
+
+    cursor: pointer;
+}
+
+
+/* 시간 */
+.memoTime {
+    min-width: 0;
+
+    padding-left: 3px;
+
+    padding-right: 6px;
+
+    color: #85756c;
+
+    font-size: 9px;
+}
+
+
+/* 일정 제목 */
+.memoSchedule {
+    min-width: 0;
+
+    color: #624325;
+
+    font-size: 10px;
+
+    padding-left: 4px;
+
+    line-height: 1.2;
+}
+
+
+/* 빈 줄 */
+.memoPlaceholder {
+    color: #b9aca5;
+
+    font-size: 9px;
+
+    padding: 2px 3px;
+
+    cursor: pointer;
+}
+
+.memoEvent:hover .memoPlaceholder {
+    color: #9e8d83;
+}
+
+
+/* 새 일정 입력 */
+.memoNewTime {
+    width: 74px;
+
+    height: 22px;
+
+    border: none;
+
+    border-bottom:
+            1px solid
+            rgba(233,105,44,0.55);
+
+    background: transparent;
+
+    color: #624325;
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    outline: none;
+}
+
+.memoNewTitle {
+    width: 100%;
+
+    height: 22px;
+
+    border: none;
+
+    border-bottom:
+            1px solid
+            rgba(233,105,44,0.55);
+
+    background: transparent;
+
+    color: #624325;
+
+    font-family: inherit;
+
+    font-size: 10px;
+
+    outline: none;
+}
+
+
+/* 일정이 없을 때 */
+.memoEmpty {
+    text-align: center;
+
+    color: #a39b96;
+
+    font-size: 10px;
+
+    padding: 30px 10px;
+}
+
+
+/* =========================================================
+   📝 메모장 등장 애니메이션
+   ========================================================= */
+
+.memoPanel.memo-opening {
+    animation:
+            memoRise
+            0.55s
+            cubic-bezier(0.22, 1, 0.36, 1)
+            both;
+}
+
+@keyframes memoRise {
+
+    from {
+        opacity: 0;
+
+        transform:
+                translateY(70px)
+                scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+                translateY(0)
+                scale(1);
+    }
+}
+
+
+/* =========================================================
+   🖍 형광펜
+   ========================================================= */
+
+.penTool {
+    position: absolute;
+
+    z-index: 10;
+
+    /*
+     * 메모 오른쪽 아래 바깥에서 시작
+     */
+    right: -5%;
+
+    bottom: -7%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    opacity: 0;
+}
+
+
+/*
+ * 기존 42 x 82에서 3배
+ * 126 x 246
+ */
+.penButton {
+    border: none;
+
+    background: transparent;
+
+    padding: 0;
+
+    cursor: pointer;
+
+    width: 189px; height: 369px;
+
+    transform: rotate(-12deg);
+}
+
+.penButton img {
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+}
+
+
+/* =========================================================
+   메모 등장 → 형광펜 등장
+   ========================================================= */
+
+.memoPanel.memo-opening .penTool {
+    animation:
+            penSlideIn
+            0.65s
+            0.45s
+            cubic-bezier(0.22, 1, 0.36, 1)
+            forwards;
+}
+
+@keyframes penSlideIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+                translate(90px, 90px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+                translate(0, 0);
+    }
+}
+
+
+/* =========================================================
+   펜 선택 팔레트
+   ========================================================= */
+
+.penPalette {
+    position: absolute;
+
+    right: 105px;
+
+    bottom: 25px;
+
+    display: none;
+
+    align-items: center;
+
+    gap: 4px;
+
+    padding: 6px;
+
+    background:
+            rgba(255,255,255,0.93);
+
+    border:
+            1px solid
+            #e6ddda;
+
+    border-radius: 10px;
+
+    box-shadow:
+            0 8px 20px
+            rgba(60,50,40,0.15);
+}
+
+.penPalette.show {
+    display: flex;
+}
+
+
+/* 펜 선택 하나 */
+.penChoice {
+    width: 30px;
+
+    height: 55px;
+
+    border: none;
+
+    background: transparent;
+
+    padding: 0;
+
+    cursor: pointer;
+}
+
+.penChoice img {
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+/* =========================================================
+   형광펜 모드
+   ========================================================= */
+
+.memoPanel.highlight-mode .memoEvent {
+    cursor: crosshair;
+}
+
+.memoPanel.highlight-mode .memoEvent:hover {
+    background:
+            rgba(233,105,44,0.05);
+}
+
+
+/* =========================================================
+   메모 스크롤바
+   ========================================================= */
+
+.memoList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.memoList::-webkit-scrollbar-thumb {
+    background:
+            rgba(110,81,64,0.25);
+
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   비어 있는 일정
+   ========================================================= */
+
+.empty-note {
+    text-align: center;
+
+    color: #a39b96;
+
+    font-size: 11px;
+
+    padding: 12px 10px;
+}
+
+
+/* =========================================================
+   일정 추가 모달
+   ========================================================= */
+
+.modal-backdrop {
+    position: fixed;
+
+    inset: 0;
+
+    background:
+            rgba(30,26,20,0.4);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    z-index: 30;
+}
+
+.modal-backdrop.show {
+    display: flex;
+}
+
+.modal {
+    background: #fffefb;
+
+    width: 340px;
+
+    border-radius: 16px;
+
+    padding: 24px 24px 22px;
+
+    box-shadow:
+            0 30px 60px -20px
+            var(--shadow);
+
+    font-family:
+            'Noto Sans KR',
+            sans-serif;
+}
+
+.modal h3 {
+    font-family:
+            'Cormorant Garamond',
+            serif;
+
+    font-style: italic;
+
+    color: var(--orange);
+
+    margin: 0 0 14px;
+
+    font-size: 22px;
+
+    font-weight: 600;
+}
+
+.field {
+    margin-bottom: 13px;
+}
+
+.field label {
+    display: block;
+
+    font-size: 13px;
+
+    color: #a39b96;
+
+    margin-bottom: 6px;
+}
+
+.field input[type="text"],
+.field input[type="time"] {
+    width: 100%;
+
+    background: #faf9f7;
+
+    border: 1px solid var(--line);
+
+    border-radius: 10px;
+
+    padding: 9px 11px;
+
+    font-size: 15px;
+
+    color: #514945;
+
+    font-family: inherit;
+}
+
+
+/* =========================================================
+   카테고리
+   ========================================================= */
+
+.chip-row {
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.chip {
+    border: 1px solid var(--line);
+
+    background: #faf9f7;
+
+    color: #a39b96;
+
+    border-radius: 20px;
+
+    padding: 6px 13px;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.chip.sel.todo {
+    background: var(--tag-todo-bg);
+
+    border-color: var(--tag-todo-fg);
+
+    color: var(--tag-todo-fg);
+}
+
+.chip.sel.important {
+    background: var(--tag-important-bg);
+
+    border-color: var(--tag-important-fg);
+
+    color: var(--tag-important-fg);
+}
+
+.chip.sel.health {
+    background: var(--tag-health-bg);
+
+    border-color: var(--tag-health-fg);
+
+    color: var(--tag-health-fg);
+}
+
+
+/* =========================================================
+   비공개
+   ========================================================= */
+
+.toggle-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin: 15px 0 16px;
+}
+
+.toggle-row .tlabel {
+    font-size: 14.5px;
+
+    color: #514945;
+}
+
+.toggle-row .tsub {
+    font-size: 12.5px;
+
+    color: #a39b96;
+
+    margin-top: 2px;
+}
+
+.switch {
+    width: 38px;
+
+    height: 22px;
+
+    border-radius: 20px;
+
+    background: var(--line);
+
+    position: relative;
+
+    cursor: pointer;
+
+    flex-shrink: 0;
+}
+
+.switch.on {
+    background: var(--orange);
+}
+
+.switch .knob {
+    position: absolute;
+
+    top: 2px;
+
+    left: 2px;
+
+    width: 18px;
+
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #fffefb;
+
+    transition:
+            left 0.18s;
+}
+
+.switch.on .knob {
+    left: 18px;
+}
+
+
+/* =========================================================
+   모달 버튼
+   ========================================================= */
+
+.modal-actions {
+    display: flex;
+
+    gap: 9px;
+
+    margin-top: 4px;
+}
+
+.btn {
+    flex: 1;
+
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 11px;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    font-family: inherit;
+}
+
+.btn.primary {
+    background: var(--orange);
+
+    color: #fff;
+}
+
+.btn.ghost {
+    background: #faf9f7;
+
+    color: #a39b96;
+
+    border: 1px solid var(--line);
+}
+
+
+/* =========================================================
+   Toast
+   ========================================================= */
+
+.toast {
+    position: fixed;
+
+    top: 20px;
+
+    left: 50%;
+
+    transform:
+            translateX(-50%)
+            translateY(-10px);
+
+    background: #514945;
+
+    color: #faf9f7;
+
+    font-size: 14px;
+
+    padding: 9px 18px;
+
+    border-radius: 20px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+            all 0.25s ease;
+
+    z-index: 40;
+
+    white-space: nowrap;
+
+    font-family:
+            'Noto Sans KR',
+            sans-serif;
+}
+
+.toast.show {
+    opacity: 1;
+
+    transform:
+            translateX(-50%)
+            translateY(0);
+}
+
+
+/* =========================================================
+   1300px 이상
+   ========================================================= */
+
+@media (min-width: 1300px) {
+
+    .postit {
+        width: 112%;
+    }
+
+}
+
+
+/* =========================================================
+   인라인 편집 포커스
+   ========================================================= */
+
+.time-edit:focus,
+.title-edit:focus,
+.memoNewTime:focus,
+.memoNewTitle:focus {
+    border-bottom-color:
+            var(--orange);
+
+    box-shadow:
+            0 1px 0
+            rgba(233,105,44,0.25);
+}
+

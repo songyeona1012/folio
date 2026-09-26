@@ -1,0 +1,48 @@
+{{!
+    templates/layout/sidebar.mustache
+
+    appShell 안에서 매 페이지마다 통째로 복붙되던 aside.sideBar를
+    이 파셜 하나로 분리했습니다. 각 페이지의 appShell 안쪽에서 include해서 쓰면 됩니다.
+
+    컨트롤러(Model)에서 반드시 내려줘야 하는 값
+    --------------------------------------------------
+    pageTitle      : 사이드바 상단 좌측 소제목 (예: "달력", "관리")
+    userEmoji      : 프로필 이모지 (예: "🐹")
+    userName       : 사용자 이름 (예: "송연아")
+    userEmail      : 사용자 이메일
+    lastLogin      : 마지막 접속일 (예: "2026.09.21")
+
+    아래 5개는 boolean. 현재 페이지에 해당하는 것 하나만 true로 내려주세요.
+    (Mustache는 값 비교가 안 되기 때문에 페이지별로 직접 켜줘야 합니다)
+    navMain        : 달력(/main) 선택 여부
+    navDairy       : 일기(/dairy) 선택 여부
+    navIndex       : 관리(/index) 선택 여부
+    navFriend      : 친구(/friend) 선택 여부
+    navSetting     : 설정(/setting) 선택 여부
+}}
+<aside class="sideBar">
+
+    <div class="pageTitle">{{pageTitle}}</div>
+
+    <div class="userProfile">
+        <div class="profileImage">{{userEmoji}}</div>
+        <div class="userInfo">
+            <strong>{{userName}}</strong>
+            <span>{{userEmail}}</span>
+            <span>마지막 접속 : {{lastLogin}}</span>
+        </div>
+    </div>
+
+    <div class="sideLine"></div>
+
+    <nav class="sideMenu">
+        <a href="/main"{{#navMain}} class="selected"{{/navMain}}>달력</a>
+        <a href="/dairy"{{#navDairy}} class="selected"{{/navDairy}}>일기</a>
+        <a href="/index"{{#navIndex}} class="selected"{{/navIndex}}>관리</a>
+        <a href="/friend"{{#navFriend}} class="selected"{{/navFriend}}>친구</a>
+        <a href="/setting"{{#navSetting}} class="selected"{{/navSetting}}>설정</a>
+    </nav>
+
+    <p class="teamName">ⓒ CREATED BY TEAM HIKING</p>
+
+</aside>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>폴리오 - 친구</title>
+    <link rel="stylesheet" href="/css/manage.css">
+    <link rel="stylesheet" href="/css/calendar.css">
+</head>
+<body>
+<div class="appShell">
+    {{! 컨트롤러에서 pageTitle="친구", navFriend=true 를 내려주세요 }}
+    {{> layout/sidebar}}
+    <main class="mainArea">
+        <div class="topBar"></div>
+        <section class="notebook">
+            {{! 컨트롤러에서 bookmarks = BookmarkLayout.of(1) 을 내려주세요 (친구 = 왼쪽 1개, 오른쪽 3개) }}
+            {{> layout/bookLayout}}
+
+            <section class="leftPage">
+                <div class="placeholder-page">
+                    <h2>친구</h2>
+                    <p>친구 화면이 들어갈 자리입니다.</p>
+                </div>
+            </section>
+
+            <section class="rightPage">
+                <div class="placeholder-page">
+                    <p>준비 중이에요</p>
+                </div>
+            </section>
+        </section>
+    </main>
+</div>
+</body>
+</html>
