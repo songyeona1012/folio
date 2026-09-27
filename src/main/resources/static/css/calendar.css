@@ -1,15 +1,5 @@
-
-/* =========================================================
-   calendar.css
-   manage.css 위에 불러오는 달력 전용 스타일
-   ========================================================= */
-
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap');
 
-
-/* =========================================================
-   기본 변수
-   ========================================================= */
 
 :root {
     --orange: #e9692c;
@@ -29,12 +19,18 @@
     --tag-todo-fg: #4f7a3c;
 
     --shadow: rgba(60, 50, 40, 0.16);
+
+    /* 버튼/메모 공통 따뜻한 색 */
+    --button-bg: #FAFAFA;
+    --button-bg-hover: #FAFAFA;
+    --button-border: #E79E7B;
+    --button-text: #E79E7B;
 }
 
 
 /* =========================================================
-   오른쪽 페이지 기본
-   ========================================================= */
+오른쪽 페이지 기본
+========================================================= */
 
 .rightPage {
     display: flex;
@@ -45,8 +41,8 @@
 
 
 /* =========================================================
-   🔖 책갈피
-   ========================================================= */
+🔖 책갈피
+========================================================= */
 
 .bookmark {
     position: absolute;
@@ -133,8 +129,8 @@
 
 
 /* =========================================================
-   왼쪽 페이지
-   ========================================================= */
+왼쪽 페이지
+========================================================= */
 
 .leftPage {
     padding-top: 3.2%;
@@ -143,8 +139,8 @@
 
 
 /* =========================================================
-   Folio 제목
-   ========================================================= */
+Folio 제목
+========================================================= */
 
 .brand-row {
     display: flex;
@@ -172,15 +168,15 @@
 }
 
 .brand-row .rate {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--gold);
     white-space: nowrap;
 }
 
 
 /* =========================================================
-   혼잡도 / 가까운 일정
-   ========================================================= */
+혼잡도 / 가까운 일정
+========================================================= */
 
 .briefing {
     font-size: 11.5px;
@@ -202,8 +198,8 @@
 
 
 /* =========================================================
-   📌 달력 포스트잇
-   ========================================================= */
+📌 달력 포스트잇
+========================================================= */
 
 .postit {
     position: relative;
@@ -224,9 +220,6 @@
     margin-top: -8px;
     margin-bottom: -18px;
 
-    /*
-     * 포스트잇 이미지
-     */
     background-image: url('../img/postit.png');
 
     background-position: center;
@@ -239,9 +232,6 @@
 
     box-shadow: none;
 
-    /*
-     * 달력 내부 여백
-     */
     padding-top: 25px;
     padding-left: 7%;
     padding-right: 7%;
@@ -250,8 +240,8 @@
 
 
 /* =========================================================
-   달력 상단
-   ========================================================= */
+달력 상단
+========================================================= */
 
 .cal-head {
     display: flex;
@@ -314,8 +304,8 @@
 
 
 /* =========================================================
-   요일
-   ========================================================= */
+요일
+========================================================= */
 
 .weekdays {
     display: grid;
@@ -351,8 +341,8 @@
 
 
 /* =========================================================
-   날짜 그리드
-   ========================================================= */
+날짜 그리드
+========================================================= */
 
 .grid {
     display: grid;
@@ -471,69 +461,202 @@
 
 
 /* =========================================================
-   오른쪽 대시보드
-   ========================================================= */
+오른쪽 대시보드
+========================================================= */
 
 .rightDashboard {
     display: flex;
 
     flex-direction: column;
-
-    width: 100%;
-    height: 100%;
-
-    min-height: 0;
 }
 
 
 /* =========================================================
-   일정 등록 버튼
-   ========================================================= */
+자연어 일정 등록
+========================================================= */
 
-.add-pill {
+.natural-schedule {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    flex: 0 0 auto;
+
+    margin-top: 0;
+    margin-bottom: 50px;
+}
+
+
+/* 자연어 입력창 */
+
+.natural-schedule .add-pill {
     width: 100%;
 
     min-height: 46px;
 
-    background: rgba(250,250,250,0.3);
+    box-sizing: border-box;
 
-    border: 2.5px solid var(--orange-line);
+    background: var(--button-bg);
+
+    border: 2.5px solid var(--button-border);
 
     border-radius: 24px;
 
-    padding: 12px 17px;
+    padding: 12px 52px 12px 17px;
 
     font-size: 11px;
 
     font-weight: 300;
 
-    color: #a39b96;
+    color: var(--button-text);
 
     text-align: left;
 
-    cursor: pointer;
+    outline: none;
 
     font-family: 'Noto Sans KR', sans-serif;
 
-    margin-top: 0;
+    margin: 0;
 
-    margin-bottom: 24px;
+    cursor: text;
 
-    flex-shrink: 0;
+    transition:
+            background 0.15s ease,
+            border-color 0.15s ease;
 }
 
-.add-pill b {
-    color: var(--orange);
+.natural-schedule .add-pill::placeholder {
+    color: var(--button-text);
 
-    font-size: 18px;
+    opacity: 1;
+}
 
-    font-weight: 700;
+.natural-schedule .add-pill:focus,
+.natural-schedule .add-pill:active {
+    outline: none;
+
+    background: var(--button-bg);
+
+    border-color: var(--button-border);
+
+    color: var(--button-text);
+}
+
+.natural-schedule .add-pill:hover {
+    background: var(--button-bg-hover);
+
+    border-color: var(--orange);
 }
 
 
 /* =========================================================
-   우측 섹션
-   ========================================================= */
+자연어 일정 등록 버튼
+========================================================= */
+
+.natural-schedule .naturalScheduleBtn {
+    position: absolute !important;
+
+    right: 8px !important;
+    top: 50% !important;
+
+    width: 32px !important;
+    height: 32px !important;
+
+    transform: translateY(-50%) !important;
+
+    padding: 0 !important;
+
+    border: none !important;
+
+    background-color: transparent !important;
+
+    background-image: url('../img/add.png') !important;
+
+    background-repeat: no-repeat !important;
+
+    background-position: center !important;
+
+    background-size: 24px 24px !important;
+
+    color: transparent !important;
+
+    cursor: pointer;
+
+    outline: none !important;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    display: block;
+}
+
+.natural-schedule .naturalScheduleBtn:hover,
+.natural-schedule .naturalScheduleBtn:focus,
+.natural-schedule .naturalScheduleBtn:active {
+    background-color: transparent !important;
+
+    background-image: url('../img/add.png') !important;
+
+    background-repeat: no-repeat !important;
+
+    background-position: center !important;
+
+    background-size: 24px 24px !important;
+
+    color: transparent !important;
+
+    outline: none !important;
+
+    box-shadow: none;
+
+    transform: translateY(-50%) !important;
+}
+
+.natural-schedule .naturalScheduleBtn:disabled {
+    opacity: 0.6;
+
+    cursor: default;
+}
+
+
+/* =========================================================
+시간 아이콘
+========================================================= */
+
+.time-text {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    cursor: pointer;
+}
+
+.time-text::before {
+    content: "";
+
+    width: 15px;
+    height: 15px;
+
+    flex: 0 0 15px;
+
+    background-image: url('../img/clock.png');
+
+    background-repeat: no-repeat;
+
+    background-position: center;
+
+    background-size: contain;
+}
+
+
+/* =========================================================
+우측 섹션
+========================================================= */
 
 .section {
     margin-bottom: 18px;
@@ -554,7 +677,7 @@
 }
 
 .section h4 {
-    font-size: 11.5px;
+    font-size: 13px;
 
     font-weight: 700;
 
@@ -572,7 +695,7 @@
 }
 
 .section h4 .reorder {
-    font-size: 10px;
+    font-size: 13px;
 
     color: #a39b96;
 
@@ -595,8 +718,8 @@
 
 
 /* =========================================================
-   일상 체크리스트
-   ========================================================= */
+일상 체크리스트
+========================================================= */
 
 .check-list {
     list-style: none;
@@ -651,8 +774,8 @@
 
 
 /* =========================================================
-   건강
-   ========================================================= */
+건강
+========================================================= */
 
 .health-row {
     font-size: 10.5px;
@@ -680,8 +803,8 @@
 
 
 /* =========================================================
-   금일 일정
-   ========================================================= */
+금일 일정
+========================================================= */
 
 .today-list {
     list-style: none;
@@ -762,8 +885,48 @@
 
 
 /* =========================================================
-   인라인 수정
-   ========================================================= */
+일정 삭제 버튼
+========================================================= */
+
+.delete-schedule {
+    width: 17px;
+    height: 17px;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #b9aaa1;
+
+    font-size: 16px;
+
+    line-height: 15px;
+
+    padding: 0;
+
+    margin-left: 1px;
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    transition:
+            color 0.15s ease,
+            background 0.15s ease;
+}
+
+.delete-schedule:hover {
+    color: var(--orange);
+
+    background: rgba(233,105,44,0.08);
+}
+
+
+/* =========================================================
+인라인 수정
+========================================================= */
 
 .hover-edit {
     display: inline-block;
@@ -829,14 +992,13 @@
 
 
 /* =========================================================
-   📒 메모장
-   ========================================================= */
+📒 메모장
+========================================================= */
 
 .memoPanel {
-    position: relative;
+    position: absolute;
 
-    width: 100%;
-
+    width: 90%;
     height: calc(100% + 7%);
 
     min-height: 0;
@@ -844,11 +1006,32 @@
     display: none;
 
     overflow: visible;
-    margin-bottom: -7%;
+
+    background: inherit;
+
+    margin-bottom: -13%;
+    bottom: -13%;
+
+    transform: none;
+
+    left: 5%;
+
+    z-index: 20;
+
+    font-size: 13px;
+}
+
+
+/* 메모 안의 모든 글자 13px 통일 */
+
+.memoPanel,
+.memoPanel * {
+    font-size: 13px !important;
 }
 
 
 /* 메모 배경 */
+
 .memoBackground {
     position: absolute;
 
@@ -866,6 +1049,7 @@
 
 
 /* 메모 내부 */
+
 .memoInner {
     position: absolute;
 
@@ -873,10 +1057,6 @@
 
     inset: 0;
 
-    /*
-     * 위쪽은 날짜 공간
-     * 아래쪽은 줄노트 공간
-     */
     padding: 7% 9% 8%;
 
     display: flex;
@@ -888,19 +1068,21 @@
 
 
 /* =========================================================
-   메모 날짜
-   ========================================================= */
+메모 날짜
+========================================================= */
 
 .memoHeader {
     display: flex;
 
-    justify-content: space-between;
+    justify-content: center;
 
     align-items: flex-start;
 
     margin-bottom: 7px;
 
     flex-shrink: 0;
+
+    position: relative;
 }
 
 .memoDate {
@@ -909,9 +1091,19 @@
     font-size: 15px;
 
     font-weight: 700;
+
+    text-align: center;
 }
 
+
+/* 닫기 버튼 */
+
 .memoClose {
+    position: absolute;
+
+    right: 0;
+    top: 0;
+
     border: none;
 
     background: transparent;
@@ -927,23 +1119,20 @@
     padding: 0;
 }
 
-
-/* =========================================================
-   시간 / 일정 헤더
-   ========================================================= */
-
 .memoColumnHeader {
     display: grid;
 
-    grid-template-columns: 25% 75%;
+    grid-template-columns: 30% 70%;
 
-    color: #a18f84;
+    align-items: center;
 
-    font-size: 8.5px;
+    font-size: 15px;
+}
 
-    margin-bottom: 2px;
+.memoColumnHeader div {
+    position: relative;
 
-    flex-shrink: 0;
+    top: 1px;
 }
 
 .memoColumnHeader div:first-child {
@@ -956,8 +1145,8 @@
 
 
 /* =========================================================
-   📝 5px 줄노트
-   ========================================================= */
+📝 메모 줄
+========================================================= */
 
 .memoList {
     position: relative;
@@ -976,22 +1165,14 @@
 
     padding-right: 3px;
 
-    /*
-     * 줄노트
-     * 28px 한 줄마다 얇은 선
-     */
-    background:
-            repeating-linear-gradient(
-                    to bottom,
-                    transparent 0,
-                    transparent 27px,
-                    rgba(118,146,166,0.30) 27px,
-                    rgba(118,146,166,0.30) 28px
-            );
+    box-sizing: border-box;
+
+    background: none;
 }
 
 
 /* 일정 한 줄 */
+
 .memoEvent {
     display: grid;
 
@@ -999,19 +1180,37 @@
 
     align-items: center;
 
-    height: 28px;
+    width: 100%;
 
+    height: 28px;
     min-height: 28px;
+    max-height: 28px;
+
+    flex: 0 0 28px;
 
     border-bottom: none;
 
     cursor: pointer;
+
+    background: transparent;
+
+    box-sizing: border-box;
+
+    font-size: 13px !important;
 }
 
 
 /* 시간 */
+
 .memoTime {
     min-width: 0;
+
+    width: 100%;
+    height: 28px;
+
+    display: flex;
+
+    align-items: center;
 
     padding-left: 3px;
 
@@ -1019,101 +1218,157 @@
 
     color: #85756c;
 
-    font-size: 9px;
+    font-size: 13px !important;
+
+    line-height: 1;
+
+    box-sizing: border-box;
 }
 
 
 /* 일정 제목 */
+
 .memoSchedule {
     min-width: 0;
 
-    color: #624325;
+    width: 100%;
+    height: 28px;
 
-    font-size: 10px;
+    display: flex;
+
+    align-items: center;
+
+    color: #624325;
 
     padding-left: 4px;
 
-    line-height: 1.2;
+    line-height: 1;
+
+    border-bottom: none;
+
+    box-sizing: border-box;
+
+    font-size: 13px !important;
 }
 
-
-/* 빈 줄 */
+.memoSchedule,
 .memoPlaceholder {
-    color: #b9aca5;
+    font-family: inherit;
 
-    font-size: 9px;
+    font-size: 13px !important;
 
-    padding: 2px 3px;
+    font-weight: 400;
 
-    cursor: pointer;
-}
-
-.memoEvent:hover .memoPlaceholder {
-    color: #9e8d83;
+    line-height: 1;
 }
 
 
-/* 새 일정 입력 */
-.memoNewTime {
-    width: 74px;
+/* =========================================================
+빈 일정 안내
+========================================================= */
 
-    height: 22px;
+.memoPlaceholder {
+    position: relative;
 
-    border: none;
-
-    border-bottom:
-            1px solid
-            rgba(233,105,44,0.55);
-
-    background: transparent;
+    top: 4px;
 
     color: #624325;
 
     font-family: inherit;
 
-    font-size: 9px;
+    font-weight: 400;
+
+    line-height: 1;
+
+    padding: 0px 4px;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+
+    font-size: 13px !important;
+}
+
+.memoEvent:hover .memoPlaceholder {
+    color: #624325;
+}
+
+
+/* =========================================================
+새 일정 입력
+========================================================= */
+
+.memoNewTime {
+    width: 74px;
+
+    height: 28px;
+
+    border: none;
+
+    border-bottom: none;
+
+    background: transparent;
+
+    color: #624325;
+
+    font-family: 'Noto Sans KR', sans-serif;
+
+    font-size: 13px !important;
+
+    font-weight: 400;
 
     outline: none;
+
+    padding: 0 3px;
+
+    box-sizing: border-box;
 }
 
 .memoNewTitle {
     width: 100%;
 
-    height: 22px;
+    height: 28px;
 
     border: none;
 
-    border-bottom:
-            1px solid
-            rgba(233,105,44,0.55);
+    border-bottom: none;
 
     background: transparent;
 
     color: #624325;
 
-    font-family: inherit;
+    font-family: 'Noto Sans KR', sans-serif;
 
-    font-size: 10px;
+    font-size: 13px !important;
+
+    font-weight: 400;
 
     outline: none;
+
+    padding: 0 3px;
+
+    box-sizing: border-box;
 }
 
 
-/* 일정이 없을 때 */
+/* =========================================================
+일정이 없을 때
+========================================================= */
+
 .memoEmpty {
     text-align: center;
 
     color: #a39b96;
 
-    font-size: 10px;
+    font-size: 13px !important;
 
     padding: 30px 10px;
 }
 
 
 /* =========================================================
-   📝 메모장 등장 애니메이션
-   ========================================================= */
+📝 메모장 등장 애니메이션
+========================================================= */
 
 .memoPanel.memo-opening {
     animation:
@@ -1144,20 +1399,16 @@
 
 
 /* =========================================================
-   🖍 형광펜
-   ========================================================= */
+🖍 형광펜
+========================================================= */
 
 .penTool {
     position: absolute;
 
-    z-index: 10;
+    z-index: 30;
 
-    /*
-     * 메모 오른쪽 아래 바깥에서 시작
-     */
-    right: -5%;
-
-    bottom: -7%;
+    right: -3%;
+    bottom: -3%;
 
     display: flex;
 
@@ -1166,13 +1417,16 @@
     align-items: flex-end;
 
     opacity: 0;
+
+    transform: none;
 }
 
 
 /*
- * 기존 42 x 82에서 3배
- * 126 x 246
- */
+* 기존 42 x 82에서 3배
+* 126 x 246
+*/
+
 .penButton {
     border: none;
 
@@ -1182,7 +1436,8 @@
 
     cursor: pointer;
 
-    width: 189px; height: 369px;
+    width: 189px;
+    height: 369px;
 
     transform: rotate(-12deg);
 }
@@ -1199,8 +1454,8 @@
 
 
 /* =========================================================
-   메모 등장 → 형광펜 등장
-   ========================================================= */
+메모 등장 → 형광펜 등장
+========================================================= */
 
 .memoPanel.memo-opening .penTool {
     animation:
@@ -1230,8 +1485,8 @@
 
 
 /* =========================================================
-   펜 선택 팔레트
-   ========================================================= */
+펜 선택 팔레트
+========================================================= */
 
 .penPalette {
     position: absolute;
@@ -1268,6 +1523,7 @@
 
 
 /* 펜 선택 하나 */
+
 .penChoice {
     width: 30px;
 
@@ -1294,8 +1550,8 @@
 
 
 /* =========================================================
-   형광펜 모드
-   ========================================================= */
+형광펜 모드
+========================================================= */
 
 .memoPanel.highlight-mode .memoEvent {
     cursor: crosshair;
@@ -1308,8 +1564,8 @@
 
 
 /* =========================================================
-   메모 스크롤바
-   ========================================================= */
+메모 스크롤바
+========================================================= */
 
 .memoList::-webkit-scrollbar {
     width: 4px;
@@ -1324,8 +1580,8 @@
 
 
 /* =========================================================
-   비어 있는 일정
-   ========================================================= */
+비어 있는 일정
+========================================================= */
 
 .empty-note {
     text-align: center;
@@ -1339,271 +1595,13 @@
 
 
 /* =========================================================
-   일정 추가 모달
-   ========================================================= */
-
-.modal-backdrop {
-    position: fixed;
-
-    inset: 0;
-
-    background:
-            rgba(30,26,20,0.4);
-
-    display: none;
-
-    align-items: center;
-
-    justify-content: center;
-
-    z-index: 30;
-}
-
-.modal-backdrop.show {
-    display: flex;
-}
-
-.modal {
-    background: #fffefb;
-
-    width: 340px;
-
-    border-radius: 16px;
-
-    padding: 24px 24px 22px;
-
-    box-shadow:
-            0 30px 60px -20px
-            var(--shadow);
-
-    font-family:
-            'Noto Sans KR',
-            sans-serif;
-}
-
-.modal h3 {
-    font-family:
-            'Cormorant Garamond',
-            serif;
-
-    font-style: italic;
-
-    color: var(--orange);
-
-    margin: 0 0 14px;
-
-    font-size: 22px;
-
-    font-weight: 600;
-}
-
-.field {
-    margin-bottom: 13px;
-}
-
-.field label {
-    display: block;
-
-    font-size: 13px;
-
-    color: #a39b96;
-
-    margin-bottom: 6px;
-}
-
-.field input[type="text"],
-.field input[type="time"] {
-    width: 100%;
-
-    background: #faf9f7;
-
-    border: 1px solid var(--line);
-
-    border-radius: 10px;
-
-    padding: 9px 11px;
-
-    font-size: 15px;
-
-    color: #514945;
-
-    font-family: inherit;
-}
+일정 추가 모달
+========================================================= */
 
 
 /* =========================================================
-   카테고리
-   ========================================================= */
-
-.chip-row {
-    display: flex;
-
-    gap: 8px;
-
-    flex-wrap: wrap;
-}
-
-.chip {
-    border: 1px solid var(--line);
-
-    background: #faf9f7;
-
-    color: #a39b96;
-
-    border-radius: 20px;
-
-    padding: 6px 13px;
-
-    font-size: 14px;
-
-    cursor: pointer;
-}
-
-.chip.sel.todo {
-    background: var(--tag-todo-bg);
-
-    border-color: var(--tag-todo-fg);
-
-    color: var(--tag-todo-fg);
-}
-
-.chip.sel.important {
-    background: var(--tag-important-bg);
-
-    border-color: var(--tag-important-fg);
-
-    color: var(--tag-important-fg);
-}
-
-.chip.sel.health {
-    background: var(--tag-health-bg);
-
-    border-color: var(--tag-health-fg);
-
-    color: var(--tag-health-fg);
-}
-
-
-/* =========================================================
-   비공개
-   ========================================================= */
-
-.toggle-row {
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    margin: 15px 0 16px;
-}
-
-.toggle-row .tlabel {
-    font-size: 14.5px;
-
-    color: #514945;
-}
-
-.toggle-row .tsub {
-    font-size: 12.5px;
-
-    color: #a39b96;
-
-    margin-top: 2px;
-}
-
-.switch {
-    width: 38px;
-
-    height: 22px;
-
-    border-radius: 20px;
-
-    background: var(--line);
-
-    position: relative;
-
-    cursor: pointer;
-
-    flex-shrink: 0;
-}
-
-.switch.on {
-    background: var(--orange);
-}
-
-.switch .knob {
-    position: absolute;
-
-    top: 2px;
-
-    left: 2px;
-
-    width: 18px;
-
-    height: 18px;
-
-    border-radius: 50%;
-
-    background: #fffefb;
-
-    transition:
-            left 0.18s;
-}
-
-.switch.on .knob {
-    left: 18px;
-}
-
-
-/* =========================================================
-   모달 버튼
-   ========================================================= */
-
-.modal-actions {
-    display: flex;
-
-    gap: 9px;
-
-    margin-top: 4px;
-}
-
-.btn {
-    flex: 1;
-
-    border: none;
-
-    border-radius: 12px;
-
-    padding: 11px;
-
-    font-size: 14px;
-
-    font-weight: 500;
-
-    cursor: pointer;
-
-    font-family: inherit;
-}
-
-.btn.primary {
-    background: var(--orange);
-
-    color: #fff;
-}
-
-.btn.ghost {
-    background: #faf9f7;
-
-    color: #a39b96;
-
-    border: 1px solid var(--line);
-}
-
-
-/* =========================================================
-   Toast
-   ========================================================= */
+Toast
+========================================================= */
 
 .toast {
     position: fixed;
@@ -1652,8 +1650,8 @@
 
 
 /* =========================================================
-   1300px 이상
-   ========================================================= */
+1300px 이상
+========================================================= */
 
 @media (min-width: 1300px) {
 
@@ -1665,8 +1663,8 @@
 
 
 /* =========================================================
-   인라인 편집 포커스
-   ========================================================= */
+인라인 편집 포커스
+========================================================= */
 
 .time-edit:focus,
 .title-edit:focus,
@@ -1680,3 +1678,577 @@
             rgba(233,105,44,0.25);
 }
 
+
+/* =========================================================
+🕓 커스텀 시간 선택 팝오버
+========================================================= */
+
+.time-picker-input {
+    cursor: pointer;
+
+    caret-color: transparent;
+}
+
+.time-picker-input::selection {
+    background: transparent;
+}
+
+.timePickerBackdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 60;
+
+    background: transparent;
+}
+
+.timePickerPopover {
+    position: fixed;
+
+    z-index: 61;
+
+    width: 176px;
+
+    background: #fffefb;
+
+    border: 1px solid var(--button-border);
+
+    border-radius: 16px;
+
+    box-shadow:
+            0 20px 40px -14px
+            var(--shadow);
+
+    padding: 14px 14px 12px;
+
+    font-family:
+            'Noto Sans KR',
+            sans-serif;
+
+    animation:
+            tpPop
+            0.16s
+            cubic-bezier(0.22, 1, 0.36, 1)
+            both;
+}
+
+@keyframes tpPop {
+
+    from {
+        opacity: 0;
+
+        transform:
+                translateY(6px)
+                scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+                translateY(0)
+                scale(1);
+    }
+}
+
+.tpHeader {
+    font-family:
+            'Cormorant Garamond',
+            serif;
+
+    font-style: italic;
+
+    font-weight: 600;
+
+    color: var(--orange);
+
+    font-size: 14px;
+
+    text-align: center;
+
+    margin-bottom: 8px;
+}
+
+.tpAmPmRow {
+    display: flex;
+
+    gap: 6px;
+
+    margin-bottom: 10px;
+}
+
+.tpAmPmBtn {
+    flex: 1;
+
+    border: 1px solid var(--button-border);
+
+    background: var(--button-bg);
+
+    color: var(--button-text);
+
+    border-radius: 20px;
+
+    padding: 5px 0;
+
+    font-size: 11.5px;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+            background 0.15s,
+            color 0.15s,
+            border-color 0.15s;
+}
+
+.tpAmPmBtn:hover {
+    background: var(--button-bg-hover);
+}
+
+.tpAmPmBtn.sel {
+    background: var(--button-bg);
+
+    border-color: var(--button-border);
+
+    color: var(--button-text);
+
+    font-weight: 700;
+}
+
+.tpWheelRow {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4px;
+
+    position: relative;
+
+    height: 132px;
+
+    margin-bottom: 12px;
+}
+
+.tpWheelRow::before {
+    content: "";
+
+    position: absolute;
+
+    left: 4px;
+    right: 4px;
+
+    top: 50%;
+
+    height: 30px;
+
+    transform:
+            translateY(-15px);
+
+    background:
+            rgba(233,105,44,0.08);
+
+    border-top:
+            1px solid
+            var(--orange-line);
+
+    border-bottom:
+            1px solid
+            var(--orange-line);
+
+    border-radius: 8px;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+.tpColumn {
+    position: relative;
+
+    z-index: 1;
+
+    width: 56px;
+
+    height: 132px;
+
+    overflow-y: scroll;
+
+    scroll-snap-type: y mandatory;
+
+    scrollbar-width: none;
+
+    -ms-overflow-style: none;
+}
+
+.tpColumn::-webkit-scrollbar {
+    display: none;
+}
+
+.tpColumn::before,
+.tpColumn::after {
+    content: "";
+
+    display: block;
+
+    height: 51px;
+
+    flex-shrink: 0;
+}
+
+.tpItem {
+    scroll-snap-align: center;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 15px;
+
+    color: #c9beb6;
+
+    cursor: pointer;
+
+    transition:
+            color 0.15s,
+            font-size 0.15s,
+            font-weight 0.15s;
+}
+
+.tpItem.sel {
+    color: var(--gold);
+
+    font-weight: 700;
+
+    font-size: 17px;
+}
+
+.tpColon {
+    position: relative;
+
+    z-index: 1;
+
+    font-family:
+            'Cormorant Garamond',
+            serif;
+
+    font-style: italic;
+
+    color: var(--gold);
+
+    font-size: 20px;
+
+    padding-bottom: 2px;
+}
+
+.tpConfirm {
+    width: 100%;
+
+    border: 1px solid var(--button-border);
+
+    background: var(--button-bg);
+
+    color: var(--button-text);
+
+    border-radius: 12px;
+
+    padding: 9px;
+
+    font-size: 13.5px;
+
+    font-weight: 500;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+            background 0.15s ease,
+            opacity 0.15s ease;
+}
+
+.tpConfirm:hover {
+    background: var(--button-bg-hover);
+
+    opacity: 1;
+}
+
+
+/* =========================
+자연어 일정 입력 모달
+========================= */
+
+.natural-modal-backdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(50, 42, 38, 0.28);
+
+    backdrop-filter: blur(3px);
+}
+
+.natural-modal-backdrop.show {
+    display: flex;
+}
+
+.natural-modal {
+    position: relative;
+
+    width: min(520px, calc(100vw - 40px));
+
+    box-sizing: border-box;
+
+    padding: 38px 38px 34px;
+
+    background: #f8f3eb;
+
+    border: 1px solid #d8ccc2;
+
+    border-radius: 4px;
+
+    box-shadow:
+            0 18px 50px rgba(55, 45, 40, 0.18),
+            0 3px 10px rgba(55, 45, 40, 0.08);
+
+    animation: naturalModalOpen 0.22s ease-out;
+}
+
+.natural-modal-title {
+    margin-bottom: 7px;
+
+    color: #4b403b;
+
+    font-family:
+            "Cormorant Garamond",
+            "Noto Serif KR",
+            serif;
+
+    font-size: 32px;
+
+    font-weight: 600;
+
+    font-style: italic;
+
+    text-align: center;
+}
+
+.natural-modal-subtitle {
+    margin-bottom: 24px;
+
+    color: #8b7d75;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+.natural-modal-close {
+    position: absolute;
+
+    top: 15px;
+
+    right: 18px;
+
+    width: 30px;
+
+    height: 30px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #8c7e76;
+
+    font-size: 25px;
+
+    font-weight: 300;
+
+    line-height: 30px;
+
+    cursor: pointer;
+
+    transition:
+            color 0.15s ease,
+            transform 0.15s ease;
+}
+
+.natural-modal-close:hover {
+    color: #4f443f;
+
+    transform: rotate(5deg);
+}
+
+.natural-input-wrap {
+    position: relative;
+}
+
+.natural-input {
+    display: block;
+
+    width: 100%;
+
+    min-height: 125px;
+
+    box-sizing: border-box;
+
+    resize: none;
+
+    padding: 17px 18px;
+
+    border: 1px solid #d8ccc2;
+
+    border-radius: 3px;
+
+    outline: none;
+
+    background: #fffdf9;
+
+    color: #4b403b;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+
+    transition:
+            border-color 0.18s ease,
+            box-shadow 0.18s ease;
+}
+
+.natural-input::placeholder {
+    color: #b5aaa3;
+}
+
+.natural-input:focus {
+    border-color: #a99a90;
+
+    box-shadow:
+            0 0 0 3px rgba(169, 154, 144, 0.10);
+}
+
+.natural-example {
+    margin-top: 13px;
+
+    padding: 11px 14px;
+
+    background: #eee6dc;
+
+    border-left: 3px solid #c6b6a8;
+
+    color: #7d7068;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 12px;
+}
+
+.natural-example span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #a09289;
+
+    font-size: 11px;
+}
+
+.natural-example p {
+    margin: 0;
+
+    color: #756860;
+}
+
+.natural-submit {
+    display: block;
+
+    width: 100%;
+
+    height: 48px;
+
+    margin-top: 22px;
+
+    border: 1px solid #a99b91;
+
+    border-radius: 3px;
+
+    background: #766960;
+
+    color: #fffaf4;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+            background 0.18s ease,
+            transform 0.12s ease,
+            opacity 0.18s ease;
+}
+
+.natural-submit:hover {
+    background: #62564f;
+}
+
+.natural-submit:active {
+    transform: translateY(1px);
+}
+
+.natural-submit:disabled {
+    opacity: 0.55;
+
+    cursor: default;
+}
+
+@keyframes naturalModalOpen {
+    from {
+        opacity: 0;
+
+        transform:
+                translateY(10px)
+                scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+                translateY(0)
+                scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+
+    .natural-modal {
+        width: calc(100vw - 28px);
+
+        padding: 32px 24px 25px;
+    }
+
+    .natural-modal-title {
+        font-size: 28px;
+    }
+}

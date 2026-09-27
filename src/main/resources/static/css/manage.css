@@ -25,97 +25,6 @@ body {
     overflow: hidden;
 }
 
-
-.sideBar {
-    position: relative;
-    z-index: 2;
-    width: 175px;
-    height: 100vh;
-    flex: 0 0 175px;
-    background: #fffdfc;
-    border: 1px solid #d7c9c0;
-}
-
-.pageTitle {
-    position: absolute;
-    top: -29px;
-    left: 2px;
-    width: 520px;
-    color: #aaa39f;
-    font-size: 15px;
-    white-space: nowrap;
-}
-
-.userProfile {
-    display: flex;
-    gap: 9px;
-    align-items: center;
-    padding: 23px 18px 15px;
-    font-family: 'Noto Sans KR', sans-serif;
-}
-
-.profileImage {
-    width: 43px;
-    height: 43px;
-    flex: 0 0 43px;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    border-radius: 2px;
-    background: #e9d6c8;
-    font-size: 28px;
-}
-
-.userInfo strong,
-.userInfo span {
-    display: block;
-}
-
-.userInfo strong {
-    color: #514945;
-    font-size: 10px;
-    font-weight: 500;
-}
-
-.userInfo span {
-    color: #a39b96;
-    font-size: 6px;
-    line-height: 1.5;
-}
-
-.sideLine {
-    height: 1px;
-    margin: 0 14px 10px;
-    background: #e6ddda;
-}
-
-.sideMenu {
-    display: grid;
-    gap: 14px;
-    padding: 0 22px;
-    font-size: 10px;
-}
-
-.sideMenu a {
-    width: max-content;
-    padding: 2px 5px;
-    color: #72635a;
-    text-decoration: none;
-}
-
-.sideMenu .selected {
-    background: #f2d9cf;
-}
-
-.teamName {
-    position: absolute;
-    bottom: 16px;
-    left: 20px;
-    margin: 0;
-    color: #d17753;
-    font: italic 7px Georgia, serif;
-}
-
 /* =========================
    메인 영역
 ========================= */
@@ -212,14 +121,17 @@ body {
 
 .clip {
     position: absolute;
-    z-index: 4;
+    z-index: 0;
     top: -2.5%;
     right: 2.8%;
-    width: 3.2%;
-    height: 12%;
+    width: 2.5%;
+    height: 9.5%;
     object-fit: fill;
-}
+    cursor: pointer;
 
+    transform: rotate(5deg);
+    transform-origin: center center;
+}
 /* =========================
    관리 페이지
 ========================= */
@@ -450,12 +362,6 @@ body {
 ========================= */
 
 @media (min-width: 1300px) {
-
-    .sideBar {
-        width: 175px;
-        flex-basis: 175px;
-    }
-
     .notebook {
         width: calc(100% - 130px);
         aspect-ratio: 1086 / 907;
