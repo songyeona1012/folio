@@ -290,7 +290,7 @@
                 });
                 dot.append(svgElement('title', {},
                     `${point.date} · ${line.name} ${value.toFixed(1)}${point.forecast ? ' (미래 계획)' : ''}`
-                    ));
+                ));
                 svg.append(dot);
                 previous = {
                     x: x(i),
@@ -318,6 +318,24 @@
             if (version === reportVersion) box.textContent = e.message;
         }
     }
+    const scrollAreas = '.memoRows, .detailList, .analysisPage, .editorPage';
+
+    function updateScrollThumb(area) {
+        const distance = area.scrollHeight - area.clientHeight;
+        const ratio = distance > 0 ? Math.max(0, Math.min(1, area.scrollTop / distance)) : 0;
+        area.style.setProperty('--scroll-thumb-position', `${ratio * 100}%`);
+    }
+
+    // Position the small image within the native thumb so both ends match the rail.
+    document.addEventListener('scroll', event => {
+        if (event.target instanceof Element && event.target.matches(scrollAreas)) {
+            updateScrollThumb(event.target);
+        }
+    }, true);
+    window.addEventListener('resize', () => {
+        document.querySelectorAll(scrollAreas).forEach(updateScrollThumb);
+    });
+
     const saved = localStorage.getItem('folio.showEmpty');
     $('showEmpty').checked = saved !== 'false';
 

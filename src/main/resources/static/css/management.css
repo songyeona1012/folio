@@ -583,3 +583,36 @@
         font-size: 10px;
     }
 }
+
+/* Separate rail and handle images retain native wheel, touch and drag scrolling. */
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage) {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+    scrollbar-gutter: stable;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+    background: transparent;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-track {
+    background: url('/img/scroll-rail.png') center / 1px 100% no-repeat;
+    margin-block: 3px;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-thumb {
+    min-height: 34px;
+    background: url('/img/scroll-thumb.png') center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-corner {
+    background: transparent;
+}
