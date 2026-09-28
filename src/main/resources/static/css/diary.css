@@ -1,0 +1,307 @@
+/* =========================================================
+   diary.css — 일기 페이지 전용 스타일
+   calendar.css의 --orange / --gold / --line 등 변수를 그대로 씁니다.
+   ========================================================= */
+
+/* ---------------- 왼쪽 페이지: 제목 ---------------- */
+.diaryLeftPage h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+    color: var(--gold);
+    font-size: 24px;
+    margin: 0 0 8px;
+}
+
+.diaryIntro {
+    font-size: 10.5px;
+    line-height: 1.7;
+    color: var(--gold);
+    opacity: 0.85;
+    margin-bottom: 16px;
+}
+
+/* ---------------- 연도 네비게이션 ---------------- */
+.yearNav {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.yearNav button {
+    border: none;
+    background: transparent;
+    color: var(--gold);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 4px;
+}
+.yearNav button:hover { color: var(--orange); }
+.yearNav .yearLabel {
+    font-size: 13px;
+    font-weight: 700;
+    color: #342f2d;
+    border-bottom: 1px solid #342f2d;
+    padding-bottom: 2px;
+}
+
+/* ---------------- 기분 그래프 ---------------- */
+.moodChart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 6px;
+    height: 100px;
+    padding: 6px 6px 0;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 4px;
+}
+.moodChart .bar {
+    width: 11%;
+    height: var(--height, 20%);
+    border: 1px solid var(--orange-line);
+    border-radius: 2px 2px 0 0;
+    background: linear-gradient(#fff, #faf7f2);
+}
+.moodLabels {
+    display: flex;
+    justify-content: space-around;
+    margin: 4px 0 14px;
+    font-size: 8.5px;
+    color: #a39b96;
+}
+
+/* ---------------- 월별 폴더 그리드 ---------------- */
+.folderGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px 10px;
+}
+
+.folderItem {
+    position: relative;
+    aspect-ratio: 1 / 0.82;
+    cursor: pointer;
+}
+
+/* 폴더 모양은 이미지 없이 CSS로만 그려요 (탭 + 몸통) */
+.folderItem .folderTab {
+    position: absolute;
+    top: 0; left: 8%;
+    width: 40%;
+    height: 14%;
+    background: #f3d98a;
+    border-radius: 4px 4px 0 0;
+}
+.folderItem .folderBody {
+    position: absolute;
+    top: 10%; left: 0;
+    width: 100%; height: 90%;
+    background: linear-gradient(160deg, #fbe7a8, #f4d582);
+    border-radius: 3px;
+    box-shadow: 0 3px 6px rgba(60,50,40,0.12);
+}
+.folderItem .folderNum {
+    position: absolute;
+    right: 6%;
+    bottom: 6%;
+    font-size: 10px;
+    font-weight: 700;
+    color: #a9822f;
+    opacity: 0.85;
+    z-index: 2;
+}
+.folderItem .folderCaption {
+    position: absolute;
+    top: 2%; left: 10%;
+    font-size: 6px;
+    color: #8a6a26;
+    z-index: 2;
+}
+
+/* 사진이 있는 달(예: 08월)은 이 클래스를 추가해서 실제 사진을 배경으로 넣어주세요.
+   -> 아래 "필요한 이미지" 안내 참고 */
+.folderItem.hasPhoto .folderBody {
+    background-image: url('/img/diary-folder-photo-sample.jpg');
+    background-size: cover;
+    background-position: center;
+}
+.folderItem.hasPhoto .folderNum { display: none; }
+
+/* ---------------- 오른쪽 페이지 ---------------- */
+.diaryHelpRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: #a39b96;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+    cursor: pointer;
+    width: max-content;
+}
+.diaryHelpRow .qMark {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1px solid #c9beb6;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+}
+
+.diaryHeaderRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.diaryAvatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #bdf0d8, #8fe0c0);
+    flex-shrink: 0;
+}
+.diaryHeaderText { display: flex; flex-direction: column; gap: 3px; }
+.diaryHeaderText .diaryHeadline {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+}
+
+/* ⭐ 별점 (요청하신 기능 파트) */
+.starRating {
+    display: flex;
+    gap: 2px;
+}
+.starRating .star {
+    font-size: 16px;
+    line-height: 1;
+    color: #e2dcd4;
+    cursor: pointer;
+    transition: color 0.12s, transform 0.12s;
+}
+.starRating .star:hover { transform: scale(1.12); }
+.starRating .star.filled { color: #f0b429; }
+
+.diaryDateHint {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 10.5px;
+    color: #a39b96;
+    margin-left: auto;
+    cursor: pointer;
+}
+.diaryDateHint:hover { color: var(--orange); }
+
+/* ---------------- 양식 전환 탭 ---------------- */
+.formTabRow {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.formTabBtn {
+    flex: 1;
+    border: 1px solid var(--line);
+    background: #faf9f7;
+    color: #a39b96;
+    border-radius: 20px;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+}
+.formTabBtn.active {
+    border-color: #6fa3d8;
+    color: #3c7bb8;
+    background: #eef5fb;
+    font-weight: 700;
+}
+
+/* ---------------- 자유형 양식 ---------------- */
+.freeformArea {
+    display: none;
+}
+.freeformArea.show { display: block; }
+.freeformArea textarea {
+    width: 100%;
+    min-height: 320px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #faf9f7;
+    padding: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    color: #514945;
+}
+
+/* 줄노트(가로줄) 스타일: line-height와 background-size 줄 간격을 맞춰야 선 위에 글자가 얹혀요 */
+.freeformArea textarea.lined {
+    line-height: 26px;
+    background-image: repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 25px,
+            var(--line) 25px,
+            var(--line) 26px
+    );
+    background-position: 0 12px; /* padding-top(12px)만큼 내려서 첫 줄부터 선에 맞춤 */
+}
+
+/* ---------------- 시간 기록형 양식 ---------------- */
+.timetableArea { display: none; }
+.timetableArea.show { display: block; }
+
+.timetableGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 14px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+.timetableCol { display: flex; flex-direction: column; }
+.timetableRow {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px dashed var(--line);
+    padding: 4px 0;
+}
+.timetableRow .hourLabel {
+    font-size: 9.5px;
+    color: #a39b96;
+    text-align: right;
+}
+.timetableRow input {
+    border: none;
+    background: transparent;
+    font-size: 10.5px;
+    color: var(--gold);
+    font-family: inherit;
+    padding: 3px 4px;
+}
+.timetableRow input:focus {
+    outline: none;
+    background: rgba(233,105,44,0.06);
+    border-radius: 4px;
+}
+
+/* ---------------- 저장 버튼 ---------------- */
+.diarySaveRow {
+    text-align: center;
+    margin-top: 16px;
+}
+.diarySaveBtn {
+    border: none;
+    background: var(--orange);
+    color: #fff;
+    border-radius: 20px;
+    padding: 9px 34px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.diarySaveBtn:hover { opacity: 0.92; }
