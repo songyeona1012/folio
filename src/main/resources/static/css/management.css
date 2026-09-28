@@ -239,9 +239,7 @@
 .managementApp .removeRule {
     border: 0;
     border-radius: 50%;
-    background: #ed9ba4;
-    color: white;
-    font: 700 18px Arial;
+    background: transparent url('/img/management-delete.png') center / contain no-repeat;
     width: 21px;
     height: 21px;
     padding: 0;
@@ -344,49 +342,147 @@
     margin: 4px 0;
 }
 
-.pressureChart {
-    display: flex;
-    gap: 3px;
-    align-items: stretch;
-    height: 160px;
-    min-height: 160px;
-    border-bottom: 1px solid #bcada0;
-    background: repeating-linear-gradient(to top, transparent 0, transparent 39px, #e9e3db 40px);
-    padding-top: 6px;
+/* The overview uses an SVG line chart; reports keep their existing layout. */
+.relaxedWord {
+    color: #2ea132;
 }
 
-.chartColumn {
+.managementApp .analysisHeader h2 {
+    text-align: center;
+    font-size: 16px;
+    margin: 18px 0 12px;
+}
+
+.chartToolbar {
+    align-self: flex-end;
     display: flex;
-    flex: 1;
-    min-width: 0;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    position: relative;
-}
-
-.chartFill {
-    width: 70%;
-    background: linear-gradient(#c6d4c2, #95aa9e);
-    border: 1px solid #8ca195;
-    border-radius: 3px 3px 0 0;
-    min-height: 2px;
-}
-
-.chartFill.forecast {
-    background: #f7f2e9;
-    border: 1px dashed #c0ab91;
-}
-
-.chartColumn small {
-    position: absolute;
-    bottom: -20px;
+    gap: 4px;
     font-size: 9px;
-    white-space: nowrap;
+}
+
+.managementApp .chartToolbar .periodSelector {
+    display: flex;
+    border: 1px solid #cdbdad;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.managementApp .chartToolbar button {
+    padding: 3px 10px;
+    font-size: 10px;
 }
 
 .pressureChart {
-    margin-bottom: 24px;
+    position: relative;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.pressureChart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.pressureChart text {
+    fill: #837465;
+    font-family: inherit;
+    font-size: 10px;
+}
+
+.chartEmpty {
+    position: absolute;
+    top: 45%;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+}
+
+.chartLegend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 10px;
+}
+
+.chartLegend span::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 2px;
+    background: var(--series-color);
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.chartOptions {
+    font-size: 10px;
+    color: #958779;
+    margin: 8px 0;
+    line-height: 1.8;
+}
+
+.chartOptions summary {
+    cursor: pointer;
+}
+
+.reportNotice {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 16px;
+    flex-shrink: 0;
+}
+
+.reportSmile {
+    display: block;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffe8a0 25%, #ffe8a077 50%, transparent 73%);
+}
+
+.reportSmile svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #493716;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.managementApp #reportNotice {
+    border-color: #bda791;
+    border-radius: 14px;
+    background: transparent;
+    padding: 6px 15px;
+    font-size: 11px;
+    text-align: left;
+    line-height: 1.6;
+}
+
+.reportChoice {
+    display: flex;
+    gap: 8px;
+    padding-left: 52px;
+}
+
+.managementApp .reportChoice button {
+    min-width: 58px;
+    font-size: 11px;
+}
+
+.closeReport {
+    float: right;
+    font-size: 10px;
+}
+
+.reportSection:focus {
+    outline: none;
 }
 
 .methodDetails {

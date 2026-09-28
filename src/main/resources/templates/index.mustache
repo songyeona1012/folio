@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
         <link rel="stylesheet" href="/css/sidebar.css">
         <link rel="stylesheet" href="/css/management.css">
     </head>
+
     <body class="managementApp" data-view="overview">
         <div class="appShell">{{> layout/sidebar}}
             <main class="mainArea">
@@ -26,37 +28,53 @@
                             <p>주기적으로 돌아오는 일정을 모아서 관리합니다.</p>
                             <p class="tip" id="weeklyBrief">이번 주 일정을 확인하고 있어요.</p>
                         </header>
-                        <nav class="categoryLinks" aria-label="관리 카테고리">
-                            <a href="/category?category=health">건강</a>
-                            <a href="/category?category=subscription">구독</a>
-                            <a href="/category?category=relationship">교제</a>
-                            <a href="/category?category=daily">일상</a>
-                        </nav>
                         <div id="categoryGrid" class="categoryGrid"></div>
-                        <p id="emptyCategories" hidden>등록된 관리 일정이 없어요. 위 카테고리에서 일정을 등록해주세요.</p>
+                        <p id="emptyCategories" hidden>등록된 관리 일정이 없어요. 유동적 화면을 켜고 메모지의 상세 버튼에서 일정을 등록해주세요.</p>
                     </section>
                     <section class="rightPage analysisPage">
-                        <header class="analysisHeader">
-                            <h2>나의 압박감 흐름</h2>
-                            <span>기록으로 돌아보는 하루</span>
-                        </header>
-                        <div class="periodSelector" role="group" aria-label="그래프 기간">
-                            <button data-period="week" class="active" aria-pressed="true">주간</button>
-                            <button data-period="month" aria-pressed="false">월간</button>
-                            <button data-period="year" aria-pressed="false">연간</button>
+                        <div class="chartToolbar">
+                            <span>조회 기간</span>
+                            <div class="periodSelector" role="group" aria-label="그래프 기간">
+                                <button data-period="week" class="active" aria-pressed="true">주간</button>
+                                <button data-period="month" aria-pressed="false">월간</button>
+                                <button data-period="year" aria-pressed="false">연간</button>
+                            </div>
                         </div>
-                        <label class="dateLabel">기준 날짜
-                            <input id="analysisDate" type="date" min="2001-01-01" max="2100-12-31">
-                        </label>
-                        <p id="rangeLabel"></p>
-                        <div id="pressureChart" class="pressureChart" aria-label="압박감 추정 그래프"></div>
-                        <p id="chartSummary"></p>
-                        <p class="muted">점선: 미래 계획 · 빈 칸: 기록 없음 · 0~100점</p>
-                        <details class="methodDetails">
-                            <summary>어떤 지표로 계산하나요?</summary>
+                        <header class="analysisHeader">
+                            <h2>관리 달성 현황</h2>
+                        </header>
+                        <div id="pressureChart" class="pressureChart" aria-label="관리 달성 현황 선 그래프"></div>
+                        <div class="chartLegend">
+                            <span style="--series-color:#7986da">달성률 (%)</span>
+                            <span style="--series-color:#91bd8c">일정 혼잡도</span>
+                            <span style="--series-color:#ef929c">압박감 추정</span>
+                        </div>
+                        <details class="chartOptions">
+                            <summary>기간 및 분석 기준</summary>
+                            <label class="dateLabel">기준 날짜
+                                <input id="analysisDate" type="date" min="2001-01-01" max="2100-12-31">
+                            </label>
+                            <p id="rangeLabel"></p>
+                            <p id="chartSummary"></p>
+                            <p class="muted">0~100 · 빈 구간: 기록 없음 · 미래 일정의 달성률은 표시하지 않습니다.</p>
                             <p id="methodText"></p>
                         </details>
-                        <section class="reportSection">
+                        <div class="reportNotice">
+                            <span class="reportSmile" aria-hidden="true">
+                                <svg viewBox="0 0 40 40">
+                                    <path d="M12 17v3m15-3v3M8 26q12 8 25-2" />
+                                </svg>
+                            </span>
+                            <button id="reportNotice" aria-expanded="false" aria-controls="reportChoice">월간
+                                기록지를 확인하시겠습니까?</button>
+                        </div>
+                        <div id="reportChoice" class="reportChoice" role="group"
+                            aria-label="월간 기록지를 확인하시겠습니까?" hidden>
+                            <button id="reportYes">예</button>
+                            <button id="reportNo">아니오</button>
+                        </div>
+                        <section id="reportSection" class="reportSection" tabindex="-1" hidden>
+                            <button id="closeReport" class="closeReport">기록지 닫기</button>
                             <h3>나의 기록지</h3>
                             <div class="reportButtons">
                                 <button data-report="week">주간 레포트</button>
@@ -74,4 +92,5 @@
         <p id="appStatus" class="appStatus" role="status" aria-live="polite"></p>
         <script src="/js/management.js" defer></script>
     </body>
+
 </html>
