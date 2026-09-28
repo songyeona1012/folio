@@ -1,0 +1,489 @@
+.managementApp {
+    font-size: 13px;
+}
+
+.managementApp button,
+.managementApp input,
+.managementApp select {
+    font: inherit;
+    color: inherit;
+}
+
+.managementApp button {
+    cursor: pointer;
+    border: 1px solid #d9c9b8;
+    border-radius: 7px;
+    background: #fffdf8;
+    padding: 7px 11px;
+}
+
+.managementApp button:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+.managementApp a {
+    color: #786250;
+}
+
+.managementApp button:focus-visible,
+.managementApp a:focus-visible,
+.managementApp input:focus-visible {
+    outline: 2px solid #9b7957;
+    outline-offset: 3px;
+}
+
+.managementApp .leftPage,
+.managementApp .rightPage {
+    top: 6%;
+    bottom: 7%;
+    padding: 3.5% 3% 2%;
+    min-height: 0;
+}
+
+.managementApp .leftPage {
+    left: 3%;
+    width: 47%;
+}
+
+.managementApp .rightPage {
+    right: 3%;
+    width: 47%;
+}
+
+.managementApp .managementIntro {
+    font-size: 11px;
+    line-height: 1.65;
+    flex-shrink: 0;
+}
+
+.managementApp .managementIntro h1 {
+    font-size: 19px;
+}
+
+.managementHeading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.dynamicToggle {
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.dynamicToggle input {
+    accent-color: #cc9272;
+}
+
+.categoryLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11px;
+    margin: 10px 0;
+}
+
+.categoryLinks a {
+    text-decoration: none;
+}
+
+.categoryLinks a[aria-current] {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.managementApp .categoryGrid {
+    gap: 12px;
+    min-height: 0;
+    margin-top: 5px;
+    grid-auto-rows: minmax(0, 1fr);
+}
+
+.managementApp .categoryCard {
+    aspect-ratio: auto;
+    height: 100%;
+    max-height: none;
+    min-height: 120px;
+}
+
+.managementApp .categoryTape {
+    left: 9%;
+    width: 47%;
+    height: 30px;
+    top: 0;
+    pointer-events: none;
+}
+
+.managementApp .categoryName {
+    top: 7px;
+    left: 9%;
+    width: 47%;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.managementApp .tapeBlue {
+    top: -5px;
+    height: 39px;
+    width: 49%;
+}
+
+.managementApp .detailIcon {
+    display: block;
+    top: 8%;
+    right: 12%;
+    width: 16px;
+    height: 16px;
+    z-index: 5;
+    line-height: 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.memoRows {
+    position: absolute;
+    z-index: 2;
+    top: 38px;
+    left: 12%;
+    right: 12%;
+    bottom: 14%;
+    overflow: auto;
+    font-size: 11px;
+}
+
+.memoRow {
+    padding: 6px 0;
+    border-bottom: 1px solid #d9d8cc;
+}
+
+.memoRow strong {
+    display: block;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+}
+
+.memoRow small {
+    display: block;
+    color: #8c8476;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.largeMemo {
+    position: relative;
+    flex: 1;
+    min-height: 180px;
+}
+
+.largeMemo .categoryTape {
+    width: 26%;
+    left: 8%;
+}
+
+.largeMemo .categoryName {
+    width: 26%;
+    left: 8%;
+}
+
+.largeMemo .detailIcon {
+    top: 5%;
+    right: 8%;
+}
+
+.detailList {
+    position: absolute;
+    z-index: 2;
+    top: 45px;
+    bottom: 12%;
+    left: 10%;
+    right: 10%;
+    overflow: auto;
+}
+
+.detailRow {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.managementApp .detailOpen {
+    flex: 1;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    min-width: 0;
+}
+
+.detailOpen strong {
+    display: block;
+    font-weight: 400;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.detailOpen small {
+    display: block;
+    font-size: 10px;
+    color: #8d887c;
+    line-height: 1.9;
+    margin-top: 6px;
+}
+
+.managementApp .removeRule {
+    border: 0;
+    border-radius: 50%;
+    background: #ed9ba4;
+    color: white;
+    font: 700 18px Arial;
+    width: 21px;
+    height: 21px;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.subtleButton {
+    align-self: flex-start;
+    margin-top: 5px;
+    font-size: 11px !important;
+}
+
+.managementApp .editorPage {
+    overflow: auto;
+}
+
+.editorHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.editorHeading h2 {
+    font-size: 19px;
+}
+
+.editorPage label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 16px 0;
+}
+
+.editorPage input,
+.editorPage select,
+.dateLabel input {
+    border: 1px solid #d6caba;
+    border-radius: 5px;
+    padding: 8px;
+    background: #fffdf8;
+    min-width: 0;
+}
+
+.cycleFields {
+    display: flex;
+    gap: 12px;
+}
+
+.cycleFields label {
+    width: 50%;
+}
+
+#calendarLink {
+    display: inline-block;
+    margin-left: 18px;
+}
+
+.analysisPage {
+    overflow: auto !important;
+    gap: 8px;
+}
+
+.analysisHeader h2 {
+    font-size: 18px;
+    margin: 0 0 6px;
+}
+
+.analysisHeader span,
+.muted {
+    font-size: 11px;
+    color: #958779;
+    line-height: 1.7;
+}
+
+.managementApp .periodSelector {
+    align-self: flex-end;
+    flex-shrink: 0;
+}
+
+.managementApp .periodSelector button {
+    border: 0;
+    border-radius: 0;
+    font-size: 11px;
+}
+
+.managementApp .periodSelector .active {
+    background: #f0d7c8;
+}
+
+.dateLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+}
+
+#rangeLabel,
+#chartSummary {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.pressureChart {
+    display: flex;
+    gap: 3px;
+    align-items: stretch;
+    height: 160px;
+    min-height: 160px;
+    border-bottom: 1px solid #bcada0;
+    background: repeating-linear-gradient(to top, transparent 0, transparent 39px, #e9e3db 40px);
+    padding-top: 6px;
+}
+
+.chartColumn {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.chartFill {
+    width: 70%;
+    background: linear-gradient(#c6d4c2, #95aa9e);
+    border: 1px solid #8ca195;
+    border-radius: 3px 3px 0 0;
+    min-height: 2px;
+}
+
+.chartFill.forecast {
+    background: #f7f2e9;
+    border: 1px dashed #c0ab91;
+}
+
+.chartColumn small {
+    position: absolute;
+    bottom: -20px;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.pressureChart {
+    margin-bottom: 24px;
+}
+
+.methodDetails {
+    font-size: 11px;
+    line-height: 1.75;
+}
+
+.methodDetails summary {
+    cursor: pointer;
+}
+
+.reportSection {
+    margin-top: 8px;
+}
+
+.reportSection h3 {
+    font-size: 14px;
+}
+
+.reportButtons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.reportButtons button {
+    font-size: 11px;
+}
+
+#reportResult {
+    white-space: pre-wrap;
+    font-size: 12px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.reportSource {
+    display: block;
+    background: #ede9df;
+    padding: 4px 8px;
+    margin-bottom: 7px;
+    font-size: 10px;
+}
+
+.appStatus {
+    position: fixed;
+    z-index: 30;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 70vw;
+    background: #6e5140;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px #0002;
+}
+
+.appStatus:empty {
+    display: none;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media(max-height:750px) {
+    .managementApp .notebook {
+        height: calc(100vh - 55px);
+    }
+
+    .managementApp .managementIntro {
+        font-size: 10px;
+    }
+
+    .managementApp .categoryCard {
+        min-height: 100px;
+    }
+
+    .memoRows {
+        top: 33px;
+    }
+
+    .managementApp .tip {
+        margin-top: 5px;
+    }
+}
+
+@media(max-width:1100px) {
+
+    .managementApp .leftPage,
+    .managementApp .rightPage {
+        padding-left: 2%;
+        padding-right: 2%;
+    }
+
+    .managementApp .managementIntro {
+        font-size: 10px;
+    }
+}
