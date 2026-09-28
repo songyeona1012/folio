@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap');
 
-
 :root {
     --orange: #e9692c;
     --orange-line: #e79e7b;
@@ -9,13 +8,13 @@
     --sun: #923a3a;
     --sat: #5c68b9;
 
-    --tag-health-bg: rgba(114,131,151,0.20);
+    --tag-health-bg: rgba(114, 131, 151, 0.20);
     --tag-health-fg: #4c5c6b;
 
-    --tag-important-bg: rgba(215,105,80,0.20);
+    --tag-important-bg: rgba(215, 105, 80, 0.20);
     --tag-important-fg: #ad4b31;
 
-    --tag-todo-bg: rgba(140,190,110,0.24);
+    --tag-todo-bg: rgba(140, 190, 110, 0.24);
     --tag-todo-fg: #4f7a3c;
 
     --shadow: rgba(60, 50, 40, 0.16);
@@ -27,7 +26,6 @@
     --button-text: #E79E7B;
 }
 
-
 /* =========================================================
 오른쪽 페이지 기본
 ========================================================= */
@@ -38,7 +36,6 @@
     padding-top: 3.2%;
     overflow: visible;
 }
-
 
 /* =========================================================
 🔖 책갈피
@@ -77,7 +74,6 @@
     mix-blend-mode: normal;
 }
 
-
 /* 왼쪽 */
 
 .pos-l1 {
@@ -99,7 +95,6 @@
     left: 37%;
     top: 0.8%;
 }
-
 
 /* 오른쪽 */
 
@@ -127,7 +122,6 @@
     transform: translateY(-2px);
 }
 
-
 /* =========================================================
 왼쪽 페이지
 ========================================================= */
@@ -136,7 +130,6 @@
     padding-top: 3.2%;
     padding-bottom: 1.5%;
 }
-
 
 /* =========================================================
 Folio 제목
@@ -173,7 +166,6 @@ Folio 제목
     white-space: nowrap;
 }
 
-
 /* =========================================================
 혼잡도 / 가까운 일정
 ========================================================= */
@@ -195,7 +187,6 @@ Folio 제목
 .briefing strong {
     font-weight: 700;
 }
-
 
 /* =========================================================
 📌 달력 포스트잇
@@ -237,7 +228,6 @@ Folio 제목
     padding-right: 7%;
     padding-bottom: 25px;
 }
-
 
 /* =========================================================
 달력 상단
@@ -302,7 +292,6 @@ Folio 제목
     color: var(--orange);
 }
 
-
 /* =========================================================
 요일
 ========================================================= */
@@ -339,7 +328,6 @@ Folio 제목
     color: var(--sat);
 }
 
-
 /* =========================================================
 날짜 그리드
 ========================================================= */
@@ -375,7 +363,7 @@ Folio 제목
 }
 
 .day:hover:not(.other) {
-    background: rgba(233,105,44,0.07);
+    background: rgba(233, 105, 44, 0.07);
 }
 
 .day .num {
@@ -459,7 +447,6 @@ Folio 제목
     color: var(--tag-todo-fg);
 }
 
-
 /* =========================================================
 오른쪽 대시보드
 ========================================================= */
@@ -469,7 +456,6 @@ Folio 제목
 
     flex-direction: column;
 }
-
 
 /* =========================================================
 자연어 일정 등록
@@ -487,7 +473,6 @@ Folio 제목
     margin-top: 0;
     margin-bottom: 50px;
 }
-
 
 /* 자연어 입력창 */
 
@@ -523,8 +508,8 @@ Folio 제목
     cursor: text;
 
     transition:
-            background 0.15s ease,
-            border-color 0.15s ease;
+        background 0.15s ease,
+        border-color 0.15s ease;
 }
 
 .natural-schedule .add-pill::placeholder {
@@ -549,7 +534,6 @@ Folio 제목
 
     border-color: var(--orange);
 }
-
 
 /* =========================================================
 자연어 일정 등록 버튼
@@ -621,7 +605,6 @@ Folio 제목
     cursor: default;
 }
 
-
 /* =========================================================
 시간 아이콘
 ========================================================= */
@@ -652,7 +635,6 @@ Folio 제목
 
     background-size: contain;
 }
-
 
 /* =========================================================
 우측 섹션
@@ -704,18 +686,17 @@ Folio 제목
     cursor: pointer;
 }
 
-.rightDashboard > .section:first-of-type {
+.rightDashboard>.section:first-of-type {
     margin-top: 8px;
 }
 
-.rightDashboard > .section:first-of-type h4 {
+.rightDashboard>.section:first-of-type h4 {
     margin-bottom: 9px;
 }
 
-.rightDashboard > .section:nth-of-type(2) {
+.rightDashboard>.section:nth-of-type(2) {
     margin-top: 4px;
 }
-
 
 /* =========================================================
 일상 체크리스트
@@ -753,7 +734,7 @@ Folio 제목
     width: 10px;
     height: 10px;
 
-    border: 0.7px solid rgba(98,67,37,0.8);
+    border: 0.7px solid rgba(98, 67, 37, 0.8);
 
     border-radius: 2px;
 
@@ -771,7 +752,6 @@ Folio 제목
 
     text-decoration: line-through;
 }
-
 
 /* =========================================================
 건강
@@ -800,7 +780,6 @@ Folio 제목
 
     white-space: nowrap;
 }
-
 
 /* =========================================================
 금일 일정
@@ -858,7 +837,7 @@ Folio 제목
 
     border-radius: 3px;
 
-    border: 0.7px solid rgba(98,67,37,0.5);
+    border: 0.7px solid rgba(98, 67, 37, 0.5);
 
     flex-shrink: 0;
 
@@ -882,7 +861,6 @@ Folio 제목
 
     text-decoration: line-through;
 }
-
 
 /* =========================================================
 일정 삭제 버튼
@@ -913,16 +891,15 @@ Folio 제목
     border-radius: 50%;
 
     transition:
-            color 0.15s ease,
-            background 0.15s ease;
+        color 0.15s ease,
+        background 0.15s ease;
 }
 
 .delete-schedule:hover {
     color: var(--orange);
 
-    background: rgba(233,105,44,0.08);
+    background: rgba(233, 105, 44, 0.08);
 }
-
 
 /* =========================================================
 인라인 수정
@@ -936,7 +913,7 @@ Folio 제목
     border-radius: 3px;
 
     transition:
-            background-color 0.2s ease;
+        background-color 0.2s ease;
 
     padding: 1px 2px;
 
@@ -945,7 +922,7 @@ Folio 제목
 
 .hover-edit:hover {
     background-color:
-            rgba(233,105,44,0.10);
+        rgba(233, 105, 44, 0.10);
 }
 
 .time-edit {
@@ -990,7 +967,6 @@ Folio 제목
     outline: none;
 }
 
-
 /* =========================================================
 📒 메모장
 ========================================================= */
@@ -1021,14 +997,12 @@ Folio 제목
     font-size: 13px;
 }
 
-
 /* 메모 안의 모든 글자 13px 통일 */
 
 .memoPanel,
 .memoPanel * {
     font-size: 13px !important;
 }
-
 
 /* 메모 배경 */
 
@@ -1047,7 +1021,6 @@ Folio 제목
     pointer-events: none;
 }
 
-
 /* 메모 내부 */
 
 .memoInner {
@@ -1065,7 +1038,6 @@ Folio 제목
 
     min-height: 0;
 }
-
 
 /* =========================================================
 메모 날짜
@@ -1094,7 +1066,6 @@ Folio 제목
 
     text-align: center;
 }
-
 
 /* 닫기 버튼 */
 
@@ -1143,7 +1114,6 @@ Folio 제목
     padding-left: 4px;
 }
 
-
 /* =========================================================
 📝 메모 줄
 ========================================================= */
@@ -1169,7 +1139,6 @@ Folio 제목
 
     background: none;
 }
-
 
 /* 일정 한 줄 */
 
@@ -1199,7 +1168,6 @@ Folio 제목
     font-size: 13px !important;
 }
 
-
 /* 시간 */
 
 .memoTime {
@@ -1224,7 +1192,6 @@ Folio 제목
 
     box-sizing: border-box;
 }
-
 
 /* 일정 제목 */
 
@@ -1262,7 +1229,6 @@ Folio 제목
     line-height: 1;
 }
 
-
 /* =========================================================
 빈 일정 안내
 ========================================================= */
@@ -1292,7 +1258,6 @@ Folio 제목
 .memoEvent:hover .memoPlaceholder {
     color: #624325;
 }
-
 
 /* =========================================================
 새 일정 입력
@@ -1350,7 +1315,6 @@ Folio 제목
     box-sizing: border-box;
 }
 
-
 /* =========================================================
 일정이 없을 때
 ========================================================= */
@@ -1365,17 +1329,13 @@ Folio 제목
     padding: 30px 10px;
 }
 
-
 /* =========================================================
 📝 메모장 등장 애니메이션
 ========================================================= */
 
 .memoPanel.memo-opening {
     animation:
-            memoRise
-            0.55s
-            cubic-bezier(0.22, 1, 0.36, 1)
-            both;
+        memoRise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes memoRise {
@@ -1384,19 +1344,16 @@ Folio 제목
         opacity: 0;
 
         transform:
-                translateY(70px)
-                scale(0.98);
+            translateY(70px) scale(0.98);
     }
 
     to {
         opacity: 1;
 
         transform:
-                translateY(0)
-                scale(1);
+            translateY(0) scale(1);
     }
 }
-
 
 /* =========================================================
 🖍 형광펜
@@ -1420,7 +1377,6 @@ Folio 제목
 
     transform: none;
 }
-
 
 /*
 * 기존 42 x 82에서 3배
@@ -1452,18 +1408,13 @@ Folio 제목
     object-fit: contain;
 }
 
-
 /* =========================================================
 메모 등장 → 형광펜 등장
 ========================================================= */
 
 .memoPanel.memo-opening .penTool {
     animation:
-            penSlideIn
-            0.65s
-            0.45s
-            cubic-bezier(0.22, 1, 0.36, 1)
-            forwards;
+        penSlideIn 0.65s 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes penSlideIn {
@@ -1472,17 +1423,16 @@ Folio 제목
         opacity: 0;
 
         transform:
-                translate(90px, 90px);
+            translate(90px, 90px);
     }
 
     to {
         opacity: 1;
 
         transform:
-                translate(0, 0);
+            translate(0, 0);
     }
 }
-
 
 /* =========================================================
 펜 선택 팔레트
@@ -1504,23 +1454,20 @@ Folio 제목
     padding: 6px;
 
     background:
-            rgba(255,255,255,0.93);
+        rgba(255, 255, 255, 0.93);
 
     border:
-            1px solid
-            #e6ddda;
+        1px solid #e6ddda;
 
     border-radius: 10px;
 
     box-shadow:
-            0 8px 20px
-            rgba(60,50,40,0.15);
+        0 8px 20px rgba(60, 50, 40, 0.15);
 }
 
 .penPalette.show {
     display: flex;
 }
-
 
 /* 펜 선택 하나 */
 
@@ -1548,7 +1495,6 @@ Folio 제목
     display: block;
 }
 
-
 /* =========================================================
 형광펜 모드
 ========================================================= */
@@ -1559,9 +1505,8 @@ Folio 제목
 
 .memoPanel.highlight-mode .memoEvent:hover {
     background:
-            rgba(233,105,44,0.05);
+        rgba(233, 105, 44, 0.05);
 }
-
 
 /* =========================================================
 메모 스크롤바
@@ -1573,11 +1518,10 @@ Folio 제목
 
 .memoList::-webkit-scrollbar-thumb {
     background:
-            rgba(110,81,64,0.25);
+        rgba(110, 81, 64, 0.25);
 
     border-radius: 10px;
 }
-
 
 /* =========================================================
 비어 있는 일정
@@ -1593,11 +1537,9 @@ Folio 제목
     padding: 12px 10px;
 }
 
-
 /* =========================================================
 일정 추가 모달
 ========================================================= */
-
 
 /* =========================================================
 Toast
@@ -1611,8 +1553,7 @@ Toast
     left: 50%;
 
     transform:
-            translateX(-50%)
-            translateY(-10px);
+        translateX(-50%) translateY(-10px);
 
     background: #514945;
 
@@ -1629,25 +1570,23 @@ Toast
     pointer-events: none;
 
     transition:
-            all 0.25s ease;
+        all 0.25s ease;
 
     z-index: 40;
 
     white-space: nowrap;
 
     font-family:
-            'Noto Sans KR',
-            sans-serif;
+        'Noto Sans KR',
+        sans-serif;
 }
 
 .toast.show {
     opacity: 1;
 
     transform:
-            translateX(-50%)
-            translateY(0);
+        translateX(-50%) translateY(0);
 }
-
 
 /* =========================================================
 1300px 이상
@@ -1661,7 +1600,6 @@ Toast
 
 }
 
-
 /* =========================================================
 인라인 편집 포커스
 ========================================================= */
@@ -1671,13 +1609,11 @@ Toast
 .memoNewTime:focus,
 .memoNewTitle:focus {
     border-bottom-color:
-            var(--orange);
+        var(--orange);
 
     box-shadow:
-            0 1px 0
-            rgba(233,105,44,0.25);
+        0 1px 0 rgba(233, 105, 44, 0.25);
 }
-
 
 /* =========================================================
 🕓 커스텀 시간 선택 팝오버
@@ -1717,20 +1653,16 @@ Toast
     border-radius: 16px;
 
     box-shadow:
-            0 20px 40px -14px
-            var(--shadow);
+        0 20px 40px -14px var(--shadow);
 
     padding: 14px 14px 12px;
 
     font-family:
-            'Noto Sans KR',
-            sans-serif;
+        'Noto Sans KR',
+        sans-serif;
 
     animation:
-            tpPop
-            0.16s
-            cubic-bezier(0.22, 1, 0.36, 1)
-            both;
+        tpPop 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes tpPop {
@@ -1739,23 +1671,21 @@ Toast
         opacity: 0;
 
         transform:
-                translateY(6px)
-                scale(0.97);
+            translateY(6px) scale(0.97);
     }
 
     to {
         opacity: 1;
 
         transform:
-                translateY(0)
-                scale(1);
+            translateY(0) scale(1);
     }
 }
 
 .tpHeader {
     font-family:
-            'Cormorant Garamond',
-            serif;
+        'Cormorant Garamond',
+        serif;
 
     font-style: italic;
 
@@ -1798,9 +1728,9 @@ Toast
     cursor: pointer;
 
     transition:
-            background 0.15s,
-            color 0.15s,
-            border-color 0.15s;
+        background 0.15s,
+        color 0.15s,
+        border-color 0.15s;
 }
 
 .tpAmPmBtn:hover {
@@ -1846,18 +1776,16 @@ Toast
     height: 30px;
 
     transform:
-            translateY(-15px);
+        translateY(-15px);
 
     background:
-            rgba(233,105,44,0.08);
+        rgba(233, 105, 44, 0.08);
 
     border-top:
-            1px solid
-            var(--orange-line);
+        1px solid var(--orange-line);
 
     border-bottom:
-            1px solid
-            var(--orange-line);
+        1px solid var(--orange-line);
 
     border-radius: 8px;
 
@@ -1917,9 +1845,9 @@ Toast
     cursor: pointer;
 
     transition:
-            color 0.15s,
-            font-size 0.15s,
-            font-weight 0.15s;
+        color 0.15s,
+        font-size 0.15s,
+        font-weight 0.15s;
 }
 
 .tpItem.sel {
@@ -1936,8 +1864,8 @@ Toast
     z-index: 1;
 
     font-family:
-            'Cormorant Garamond',
-            serif;
+        'Cormorant Garamond',
+        serif;
 
     font-style: italic;
 
@@ -1970,8 +1898,8 @@ Toast
     cursor: pointer;
 
     transition:
-            background 0.15s ease,
-            opacity 0.15s ease;
+        background 0.15s ease,
+        opacity 0.15s ease;
 }
 
 .tpConfirm:hover {
@@ -1979,7 +1907,6 @@ Toast
 
     opacity: 1;
 }
-
 
 /* =========================
 자연어 일정 입력 모달
@@ -2023,8 +1950,8 @@ Toast
     border-radius: 4px;
 
     box-shadow:
-            0 18px 50px rgba(55, 45, 40, 0.18),
-            0 3px 10px rgba(55, 45, 40, 0.08);
+        0 18px 50px rgba(55, 45, 40, 0.18),
+        0 3px 10px rgba(55, 45, 40, 0.08);
 
     animation: naturalModalOpen 0.22s ease-out;
 }
@@ -2035,9 +1962,9 @@ Toast
     color: #4b403b;
 
     font-family:
-            "Cormorant Garamond",
-            "Noto Serif KR",
-            serif;
+        "Cormorant Garamond",
+        "Noto Serif KR",
+        serif;
 
     font-size: 32px;
 
@@ -2088,8 +2015,8 @@ Toast
     cursor: pointer;
 
     transition:
-            color 0.15s ease,
-            transform 0.15s ease;
+        color 0.15s ease,
+        transform 0.15s ease;
 }
 
 .natural-modal-close:hover {
@@ -2132,8 +2059,8 @@ Toast
     line-height: 1.7;
 
     transition:
-            border-color 0.18s ease,
-            box-shadow 0.18s ease;
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
 .natural-input::placeholder {
@@ -2144,7 +2071,7 @@ Toast
     border-color: #a99a90;
 
     box-shadow:
-            0 0 0 3px rgba(169, 154, 144, 0.10);
+        0 0 0 3px rgba(169, 154, 144, 0.10);
 }
 
 .natural-example {
@@ -2203,9 +2130,9 @@ Toast
     cursor: pointer;
 
     transition:
-            background 0.18s ease,
-            transform 0.12s ease,
-            opacity 0.18s ease;
+        background 0.18s ease,
+        transform 0.12s ease,
+        opacity 0.18s ease;
 }
 
 .natural-submit:hover {
@@ -2227,16 +2154,14 @@ Toast
         opacity: 0;
 
         transform:
-                translateY(10px)
-                scale(0.98);
+            translateY(10px) scale(0.98);
     }
 
     to {
         opacity: 1;
 
         transform:
-                translateY(0)
-                scale(1);
+            translateY(0) scale(1);
     }
 }
 

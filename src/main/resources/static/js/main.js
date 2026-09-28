@@ -1,1747 +1,1732 @@
-
-
-    (function () {
-    let YEAR = 2026, MONTH = 8;
-    const TODAY = { y: 2026, m: 9, d: 21 };
-    let selectedDate = { y: 2026, m: 8, d: 7 };
-
+(function() {
+    const now = new Date();
+    const TODAY = {
+        y: now.getFullYear(),
+        m: now.getMonth() + 1,
+        d: now.getDate()
+    };
+    const queryDate = new URLSearchParams(location.search).get('date');
+    const requested = /^\d{4}-\d{2}-\d{2}$/.test(queryDate || '') ? new Date(queryDate + 'T12:00:00') :
+        now;
+    const initial = Number.isNaN(requested.getTime()) ? now : requested;
+    let YEAR = initial.getFullYear(),
+        MONTH = initial.getMonth() + 1;
+    let selectedDate = {
+        y: YEAR,
+        m: MONTH,
+        d: initial.getDate()
+    };
     let tempIdCounter = 1000;
-
-    let events = {
-    "2026-8-7": [
-{ id: tempIdCounter++, title: "중등부 수학 숙제 검사", time: "16:40", cat: "important", priv: false, completed: false },
-{ id: tempIdCounter++, title: "퇴근!", time: "19:20", cat: "todo", priv: false, completed: false },
-{ id: tempIdCounter++, title: "저녁약속. 용산 사계", time: "21:00", cat: "todo", priv: false, completed: false }
-    ]
-};
+    let events = {};
 
     let selectedPen = "red";
 
     const penOrder = ["red", "orange", "green", "blue", "purple"];
 
     const penColors = {
-    red: "#D76950",
-    orange: "#E9BD2C",
-    green: "#86E740",
-    blue: "#49B0FF",
-    purple: "#A641EE"
-};
+        red: "#D76950",
+        orange: "#E9BD2C",
+        green: "#86E740",
+        blue: "#49B0FF",
+        purple: "#A641EE"
+    };
 
     const highlightStorageKey = "folioHighlights";
 
     function getHighlights() {
-    try {
-    return JSON.parse(localStorage.getItem(highlightStorageKey) || "{}");
-} catch (e) {
-    return {};
-}
-}
+        try {
+            return JSON.parse(localStorage.getItem(highlightStorageKey) || "{}");
+        } catch (e) {
+            return {};
+        }
+    }
 
     function saveHighlights(data) {
-    localStorage.setItem(highlightStorageKey, JSON.stringify(data));
-}
+        localStorage.setItem(highlightStorageKey, JSON.stringify(data));
+    }
 
     const monthNames = [
-    "1월", "2월", "3월", "4월", "5월", "6월",
-    "7월", "8월", "9월", "10월", "11월", "12월"
+        "1월", "2월", "3월", "4월", "5월", "6월",
+        "7월", "8월", "9월", "10월", "11월", "12월"
     ];
 
     function key(y, m, d) {
-    return y + "-" + m + "-" + d;
-}
+        return y + "-" + m + "-" + d;
+    }
 
     function daysInMonth(y, m) {
-    return new Date(y, m, 0).getDate();
-}
+        return new Date(y, m, 0).getDate();
+    }
 
     function firstWeekday(y, m) {
-    return new Date(y, m - 1, 1).getDay();
-}
+        return new Date(y, m - 1, 1).getDay();
+    }
 
     function pad(n) {
-    return n < 10 ? "0" + n : String(n);
-}
+        return n < 10 ? "0" + n : String(n);
+    }
 
     function formatDate(y, m, d) {
-    return y + "." + pad(m) + "." + pad(d);
-}
+        return y + "." + pad(m) + "." + pad(d);
+    }
 
     function escapeHtml(value) {
-    return String(value || "").replace(
-    /[&<>"']/g,
-    c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;"
-}[c])
-    );
-}
+        return String(value || "").replace(
+            /[&<>"']/g,
+            c => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            } [c])
+        );
+    }
 
     function sortEvents(list) {
-    const rank = {
-    health: 0,
-    important: 1,
-    todo: 2
-};
+        const rank = {
+            health: 0,
+            important: 1,
+            todo: 2
+        };
 
-    return list.slice().sort((a, b) => {
-    const ra = rank[a.cat] !== undefined ? rank[a.cat] : 2;
-    const rb = rank[b.cat] !== undefined ? rank[b.cat] : 2;
+        return list.slice().sort((a, b) => {
+            const ra = rank[a.cat] !== undefined ? rank[a.cat] : 2;
+            const rb = rank[b.cat] !== undefined ? rank[b.cat] : 2;
 
-    if (ra !== rb) return ra - rb;
+            if (ra !== rb) return ra - rb;
 
-    return (a.time || "").localeCompare(b.time || "");
-});
-}
+            return (a.time || "").localeCompare(b.time || "");
+        });
+    }
 
     function formatTime(t) {
-    if (!t) return "";
+        if (!t) return "";
 
-    const parts = t.split(":");
-    let h = parseInt(parts[0], 10);
-    const m = parts[1] || "00";
+        const parts = t.split(":");
+        let h = parseInt(parts[0], 10);
+        const m = parts[1] || "00";
 
-    const period = h < 12 ? "오전" : "오후";
+        const period = h < 12 ? "오전" : "오후";
 
-    let h12 = h % 12;
-    if (h12 === 0) h12 = 12;
+        let h12 = h % 12;
+        if (h12 === 0) h12 = 12;
 
-    return period + " " + h12 + "시" +
-    (m !== "00" ? " " + parseInt(m, 10) + "분" : "");
-}
+        return period + " " + h12 + "시" +
+            (m !== "00" ? " " + parseInt(m, 10) + "분" : "");
+    }
 
     function pad2(n) {
-    return n < 10 ? "0" + n : "" + n;
-}
+        return n < 10 ? "0" + n : "" + n;
+    }
 
     function parseTimeValue(v) {
-    if (!v) {
-    return {
-    h: 9,
-    m: 0,
-    ampm: "AM"
-};
-}
+        if (!v) {
+            return {
+                h: 9,
+                m: 0,
+                ampm: "AM"
+            };
+        }
 
-    const parts = v.split(":");
+        const parts = v.split(":");
 
-    let h = parseInt(parts[0], 10);
-    let m = parseInt(parts[1] || "0", 10);
+        let h = parseInt(parts[0], 10);
+        let m = parseInt(parts[1] || "0", 10);
 
-    const ampm = h >= 12 ? "PM" : "AM";
+        const ampm = h >= 12 ? "PM" : "AM";
 
-    let h12 = h % 12;
-    if (h12 === 0) h12 = 12;
+        let h12 = h % 12;
+        if (h12 === 0) h12 = 12;
 
-    m = Math.round(m / 5) * 5;
+        m = Math.round(m / 5) * 5;
 
-    if (m === 60) m = 55;
+        if (m === 60) m = 55;
 
-    return {
-    h: h12,
-    m: m,
-    ampm: ampm
-};
-}
+        return {
+            h: h12,
+            m: m,
+            ampm: ampm
+        };
+    }
 
     function closeTimePicker() {
-    const old = document.querySelector(".timePickerPopover");
-    const oldBackdrop = document.querySelector(".timePickerBackdrop");
+        const old = document.querySelector(".timePickerPopover");
+        const oldBackdrop = document.querySelector(".timePickerBackdrop");
 
-    if (old) old.remove();
-    if (oldBackdrop) oldBackdrop.remove();
-}
+        if (old) old.remove();
+        if (oldBackdrop) oldBackdrop.remove();
+    }
 
     function openTimePicker(anchorEl, currentValue, onConfirm) {
-    closeTimePicker();
+        closeTimePicker();
 
-    const state = parseTimeValue(currentValue);
+        const state = parseTimeValue(currentValue);
 
-    const backdrop = document.createElement("div");
-    backdrop.className = "timePickerBackdrop";
+        const backdrop = document.createElement("div");
+        backdrop.className = "timePickerBackdrop";
 
-    const pop = document.createElement("div");
-    pop.className = "timePickerPopover";
+        const pop = document.createElement("div");
+        pop.className = "timePickerPopover";
 
-    const header = document.createElement("div");
-    header.className = "tpHeader";
+        const header = document.createElement("div");
+        header.className = "tpHeader";
 
-    header.textContent = "◷ 시간 선택";
+        header.textContent = "◷ 시간 선택";
 
-    const ampmRow = document.createElement("div");
-    ampmRow.className = "tpAmPmRow";
+        const ampmRow = document.createElement("div");
+        ampmRow.className = "tpAmPmRow";
 
-    const amBtn = document.createElement("button");
-    amBtn.type = "button";
-    amBtn.className =
-    "tpAmPmBtn" + (state.ampm === "AM" ? " sel" : "");
-    amBtn.textContent = "오전";
+        const amBtn = document.createElement("button");
+        amBtn.type = "button";
+        amBtn.className =
+            "tpAmPmBtn" + (state.ampm === "AM" ? " sel" : "");
+        amBtn.textContent = "오전";
 
-    const pmBtn = document.createElement("button");
-    pmBtn.type = "button";
-    pmBtn.className =
-    "tpAmPmBtn" + (state.ampm === "PM" ? " sel" : "");
-    pmBtn.textContent = "오후";
+        const pmBtn = document.createElement("button");
+        pmBtn.type = "button";
+        pmBtn.className =
+            "tpAmPmBtn" + (state.ampm === "PM" ? " sel" : "");
+        pmBtn.textContent = "오후";
 
-    amBtn.addEventListener("click", () => {
-    state.ampm = "AM";
-    amBtn.classList.add("sel");
-    pmBtn.classList.remove("sel");
-});
+        amBtn.addEventListener("click", () => {
+            state.ampm = "AM";
+            amBtn.classList.add("sel");
+            pmBtn.classList.remove("sel");
+        });
 
-    pmBtn.addEventListener("click", () => {
-    state.ampm = "PM";
-    pmBtn.classList.add("sel");
-    amBtn.classList.remove("sel");
-});
+        pmBtn.addEventListener("click", () => {
+            state.ampm = "PM";
+            pmBtn.classList.add("sel");
+            amBtn.classList.remove("sel");
+        });
 
-    ampmRow.appendChild(amBtn);
-    ampmRow.appendChild(pmBtn);
+        ampmRow.appendChild(amBtn);
+        ampmRow.appendChild(pmBtn);
 
-    const wheelRow = document.createElement("div");
-    wheelRow.className = "tpWheelRow";
+        const wheelRow = document.createElement("div");
+        wheelRow.className = "tpWheelRow";
 
-    function buildColumn(values, selectedValue, onPick) {
-    const col = document.createElement("div");
-    col.className = "tpColumn";
+        function buildColumn(values, selectedValue, onPick) {
+            const col = document.createElement("div");
+            col.className = "tpColumn";
 
-    values.forEach(v => {
-    const item = document.createElement("div");
+            values.forEach(v => {
+                const item = document.createElement("div");
 
-    item.className =
-    "tpItem" + (v === selectedValue ? " sel" : "");
+                item.className =
+                    "tpItem" + (v === selectedValue ? " sel" : "");
 
-    item.textContent = pad2(v);
+                item.textContent = pad2(v);
 
-    item.addEventListener("click", () => {
-    col.querySelectorAll(".tpItem").forEach(el =>
-    el.classList.remove("sel")
-    );
+                item.addEventListener("click", () => {
+                    col.querySelectorAll(".tpItem").forEach(el =>
+                        el.classList.remove("sel")
+                    );
 
-    item.classList.add("sel");
+                    item.classList.add("sel");
 
-    item.scrollIntoView({
-    behavior: "smooth",
-    block: "center"
-});
+                    item.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
 
-    onPick(v);
-});
+                    onPick(v);
+                });
 
-    col.appendChild(item);
-});
+                col.appendChild(item);
+            });
 
-    return col;
-}
+            return col;
+        }
 
-    const hourCol = buildColumn(
-    [1,2,3,4,5,6,7,8,9,10,11,12],
-    state.h,
-    v => {
-    state.h = v;
-}
-    );
+        const hourCol = buildColumn(
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            state.h,
+            v => {
+                state.h = v;
+            }
+        );
 
-    const colon = document.createElement("div");
-    colon.className = "tpColon";
-    colon.textContent = ":";
+        const colon = document.createElement("div");
+        colon.className = "tpColon";
+        colon.textContent = ":";
 
-    const minuteCol = buildColumn(
-    [0,5,10,15,20,25,30,35,40,45,50,55],
-    state.m,
-    v => {
-    state.m = v;
-}
-    );
+        const minuteCol = buildColumn(
+            [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+            state.m,
+            v => {
+                state.m = v;
+            }
+        );
 
-    wheelRow.appendChild(hourCol);
-    wheelRow.appendChild(colon);
-    wheelRow.appendChild(minuteCol);
+        wheelRow.appendChild(hourCol);
+        wheelRow.appendChild(colon);
+        wheelRow.appendChild(minuteCol);
 
-    const confirmBtn = document.createElement("button");
+        const confirmBtn = document.createElement("button");
 
-    confirmBtn.type = "button";
-    confirmBtn.className = "tpConfirm";
-    confirmBtn.textContent = "확인";
+        confirmBtn.type = "button";
+        confirmBtn.className = "tpConfirm";
+        confirmBtn.textContent = "확인";
 
-    confirmBtn.addEventListener("click", () => {
-    let h24 = state.h % 12;
+        confirmBtn.addEventListener("click", () => {
+            let h24 = state.h % 12;
 
-    if (state.ampm === "PM") {
-    h24 += 12;
-}
+            if (state.ampm === "PM") {
+                h24 += 12;
+            }
 
-    const value =
-    pad2(h24) + ":" + pad2(state.m);
+            const value =
+                pad2(h24) + ":" + pad2(state.m);
 
-    closeTimePicker();
+            closeTimePicker();
 
-    onConfirm(value);
-});
+            onConfirm(value);
+        });
 
-    pop.appendChild(header);
-    pop.appendChild(ampmRow);
-    pop.appendChild(wheelRow);
-    pop.appendChild(confirmBtn);
+        pop.appendChild(header);
+        pop.appendChild(ampmRow);
+        pop.appendChild(wheelRow);
+        pop.appendChild(confirmBtn);
 
-    document.body.appendChild(backdrop);
-    document.body.appendChild(pop);
+        document.body.appendChild(backdrop);
+        document.body.appendChild(pop);
 
-    const rect = anchorEl.getBoundingClientRect();
+        const rect = anchorEl.getBoundingClientRect();
 
-    const popWidth = 176;
+        const popWidth = 176;
 
-    let left = rect.left;
+        let left = rect.left;
 
-    if (left + popWidth > window.innerWidth - 8) {
-    left = window.innerWidth - popWidth - 8;
-}
+        if (left + popWidth > window.innerWidth - 8) {
+            left = window.innerWidth - popWidth - 8;
+        }
 
-    if (left < 8) {
-    left = 8;
-}
+        if (left < 8) {
+            left = 8;
+        }
 
-    let top = rect.bottom + 6;
+        let top = rect.bottom + 6;
 
-    if (top + 230 > window.innerHeight) {
-    top = rect.top - 230;
-}
+        if (top + 230 > window.innerHeight) {
+            top = rect.top - 230;
+        }
 
-    pop.style.left = left + "px";
-    pop.style.top = top + "px";
+        pop.style.left = left + "px";
+        pop.style.top = top + "px";
 
-    requestAnimationFrame(() => {
-    const selHour =
-    hourCol.querySelector(".tpItem.sel");
+        requestAnimationFrame(() => {
+            const selHour =
+                hourCol.querySelector(".tpItem.sel");
 
-    const selMinute =
-    minuteCol.querySelector(".tpItem.sel");
+            const selMinute =
+                minuteCol.querySelector(".tpItem.sel");
 
-    if (selHour) {
-    selHour.scrollIntoView({
-    block: "center"
-});
-}
+            if (selHour) {
+                selHour.scrollIntoView({
+                    block: "center"
+                });
+            }
 
-    if (selMinute) {
-    selMinute.scrollIntoView({
-    block: "center"
-});
-}
-});
+            if (selMinute) {
+                selMinute.scrollIntoView({
+                    block: "center"
+                });
+            }
+        });
 
-    backdrop.addEventListener("click", () => closeTimePicker());
-}
+        backdrop.addEventListener("click", () => closeTimePicker());
+    }
 
     function attachTimePicker(inputEl, onChange) {
-    inputEl.type = "text";
-    inputEl.readOnly = true;
-    inputEl.classList.add("time-picker-input");
+        inputEl.type = "text";
+        inputEl.readOnly = true;
+        inputEl.classList.add("time-picker-input");
 
-    inputEl.addEventListener("click", e => {
-    e.stopPropagation();
+        inputEl.addEventListener("click", e => {
+            e.stopPropagation();
 
-    openTimePicker(
-    inputEl,
-    inputEl.value,
-    newValue => {
-    inputEl.value = newValue;
+            openTimePicker(
+                inputEl,
+                inputEl.value,
+                newValue => {
+                    inputEl.value = newValue;
 
-    if (onChange) {
-    onChange(newValue);
-}
-}
-    );
-});
-}
+                    if (onChange) {
+                        onChange(newValue);
+                    }
+                }
+            );
+        });
+    }
 
     function updateScheduleLocal(ev) {
-    if (String(ev.id).startsWith("local_")) return;
+        if (String(ev.id).startsWith("local_")) return;
 
-    fetch("/api/schedules/" + ev.id, {
-    method: "PATCH",
-    headers: {
-    "Content-Type": "application/json"
-},
-    body: JSON.stringify({
-    title: ev.title,
-    time: ev.time,
-    completed: ev.completed
-})
-}).catch(e =>
-    console.log("서버 오프라인, 로컬에서만 반영됨")
-    );
-}
+        fetch("/api/schedules/" + ev.id, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                title: ev.title,
+                time: ev.time,
+                completed: ev.completed
+            })
+        }).catch(e =>
+            console.log("서버 오프라인, 로컬에서만 반영됨")
+        );
+    }
 
     /* 일정 삭제 */
     function deleteSchedule(ev) {
-    const title = ev.title || "이 일정";
+        const title = ev.title || "이 일정";
 
-    if (!confirm("'" + title + "' 일정을 삭제할까요?")) {
-    return;
-}
+        if (!confirm("'" + title + "' 일정을 삭제할까요?")) {
+            return;
+        }
 
-    const k = key(
-    selectedDate.y,
-    selectedDate.m,
-    selectedDate.d
-    );
+        const k = key(
+            selectedDate.y,
+            selectedDate.m,
+            selectedDate.d
+        );
 
-    if (events[k]) {
-    events[k] = events[k].filter(item => item.id !== ev.id);
-}
+        if (events[k]) {
+            events[k] = events[k].filter(item => item.id !== ev.id);
+        }
 
-    if (!String(ev.id).startsWith("local_")) {
-    fetch("/api/schedules/" + ev.id, {
-    method: "DELETE"
-}).catch(e =>
-    console.log("서버 오프라인, 로컬에서만 삭제됨")
-    );
-}
+        if (!String(ev.id).startsWith("local_")) {
+            fetch("/api/schedules/" + ev.id, {
+                method: "DELETE"
+            }).catch(e =>
+                console.log("서버 오프라인, 로컬에서만 삭제됨")
+            );
+        }
 
-    refreshViews();
-    showToast("일정이 삭제되었습니다");
-}
+        refreshViews();
+        showToast("일정이 삭제되었습니다");
+    }
 
     function loadMonthEvents() {
-    fetch(
-    "/api/schedules?year=" +
-    YEAR +
-    "&month=" +
-    MONTH
-    )
-    .then(res => {
-    if (!res.ok) {
-    throw new Error("로드 실패");
-}
+        fetch(
+                "/api/schedules?year=" +
+                YEAR +
+                "&month=" +
+                MONTH
+            )
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("로드 실패");
+                }
 
-    return res.json();
-})
-    .then(data => {
-    events = {};
+                return res.json();
+            })
+            .then(data => {
+                events = {};
 
-    data.forEach(item => {
-    if (!item || !item.date) return;
+                data.forEach(item => {
+                    if (!item || !item.date) return;
 
-    const parts =
-    String(item.date).split("-");
+                    const parts =
+                        String(item.date).split("-");
 
-    if (parts.length !== 3) return;
+                    if (parts.length !== 3) return;
 
-    const k = key(
-    parseInt(parts[0], 10),
-    parseInt(parts[1], 10),
-    parseInt(parts[2], 10)
-    );
+                    const k = key(
+                        parseInt(parts[0], 10),
+                        parseInt(parts[1], 10),
+                        parseInt(parts[2], 10)
+                    );
 
-    if (!events[k]) {
-    events[k] = [];
-}
+                    if (!events[k]) {
+                        events[k] = [];
+                    }
 
-    events[k].push({
-    id: item.id,
-    title: item.title || "",
-    time: item.time || "",
-    cat: item.category || "todo",
-    priv: !!item.private,
-    completed: !!item.completed
-});
-});
+                    events[k].push({
+                        id: item.id,
+                        title: item.title || "",
+                        time: item.time || "",
+                        cat: item.category || "todo",
+                        priv: !!item.private,
+                        completed: !!item.completed
+                    });
+                });
 
-    refreshViews();
-})
-    .catch(() => {
-    refreshViews();
-});
-}
+                refreshViews();
+            })
+            .catch(() => {
+                refreshViews();
+            });
+    }
 
     function refreshViews() {
-    renderGrid();
-    renderTodayList();
+        renderGrid();
+        renderTodayList();
 
-    if (
-    document.getElementById("memoPanel").style.display ===
-    "flex"
-    ) {
-    renderMemo();
-}
-}
+        if (
+            document.getElementById("memoPanel").style.display ===
+            "flex"
+        ) {
+            renderMemo();
+        }
+    }
 
     function renderGrid() {
-    const grid = document.getElementById("grid");
+        const grid = document.getElementById("grid");
 
-    if (!grid) return;
+        if (!grid) return;
 
-    grid.innerHTML = "";
+        grid.innerHTML = "";
 
-    const total = daysInMonth(YEAR, MONTH);
-    const startWd = firstWeekday(YEAR, MONTH);
+        const total = daysInMonth(YEAR, MONTH);
+        const startWd = firstWeekday(YEAR, MONTH);
 
-    const prevMonth =
-    MONTH === 1 ? 12 : MONTH - 1;
+        const prevMonth =
+            MONTH === 1 ? 12 : MONTH - 1;
 
-    const prevYear =
-    MONTH === 1 ? YEAR - 1 : YEAR;
+        const prevYear =
+            MONTH === 1 ? YEAR - 1 : YEAR;
 
-    const nextMonth =
-    MONTH === 12 ? 1 : MONTH + 1;
+        const nextMonth =
+            MONTH === 12 ? 1 : MONTH + 1;
 
-    const nextYear =
-    MONTH === 12 ? YEAR + 1 : YEAR;
+        const nextYear =
+            MONTH === 12 ? YEAR + 1 : YEAR;
 
-    const prevTotal =
-    daysInMonth(prevYear, prevMonth);
+        const prevTotal =
+            daysInMonth(prevYear, prevMonth);
 
-    const cells = [];
+        const cells = [];
 
-    for (let i = 0; i < startWd; i++) {
-    cells.push({
-    y: prevYear,
-    m: prevMonth,
-    d: prevTotal - startWd + 1 + i,
-    other: true
-});
-}
+        for (let i = 0; i < startWd; i++) {
+            cells.push({
+                y: prevYear,
+                m: prevMonth,
+                d: prevTotal - startWd + 1 + i,
+                other: true
+            });
+        }
 
-    for (let d = 1; d <= total; d++) {
-    cells.push({
-    y: YEAR,
-    m: MONTH,
-    d: d,
-    other: false
-});
-}
+        for (let d = 1; d <= total; d++) {
+            cells.push({
+                y: YEAR,
+                m: MONTH,
+                d: d,
+                other: false
+            });
+        }
 
-    let nextDay = 1;
+        let nextDay = 1;
 
-    while (cells.length < 42) {
-    cells.push({
-    y: nextYear,
-    m: nextMonth,
-    d: nextDay,
-    other: true
-});
+        while (cells.length < 42) {
+            cells.push({
+                y: nextYear,
+                m: nextMonth,
+                d: nextDay,
+                other: true
+            });
 
-    nextDay++;
-}
+            nextDay++;
+        }
 
-    cells.forEach((cell, idx) => {
-    const el = document.createElement("div");
+        cells.forEach((cell, idx) => {
+            const el = document.createElement("div");
 
-    el.className =
-    "day" +
-    (cell.other ? " other" : "") +
-    (idx % 7 === 0 ? " sun" : "") +
-    (idx % 7 === 6 ? " sat" : "");
+            el.className =
+                "day" +
+                (cell.other ? " other" : "") +
+                (idx % 7 === 0 ? " sun" : "") +
+                (idx % 7 === 6 ? " sat" : "");
 
-    if (
-    !cell.other &&
-    cell.y === TODAY.y &&
-    cell.m === TODAY.m &&
-    cell.d === TODAY.d
-    ) {
-    el.classList.add("today");
-}
+            if (
+                !cell.other &&
+                cell.y === TODAY.y &&
+                cell.m === TODAY.m &&
+                cell.d === TODAY.d
+            ) {
+                el.classList.add("today");
+            }
 
-    if (
-    !cell.other &&
-    cell.y === selectedDate.y &&
-    cell.m === selectedDate.m &&
-    cell.d === selectedDate.d
-    ) {
-    el.classList.add("selected");
-}
+            if (
+                !cell.other &&
+                cell.y === selectedDate.y &&
+                cell.m === selectedDate.m &&
+                cell.d === selectedDate.d
+            ) {
+                el.classList.add("selected");
+            }
 
-    const num = document.createElement("div");
+            const num = document.createElement("div");
 
-    num.className = "num";
-    num.textContent = cell.d;
+            num.className = "num";
+            num.textContent = cell.d;
 
-    el.appendChild(num);
+            el.appendChild(num);
 
-    if (!cell.other) {
-    const k = key(
-    YEAR,
-    MONTH,
-    cell.d
-    );
+            if (!cell.other) {
+                const k = key(
+                    YEAR,
+                    MONTH,
+                    cell.d
+                );
 
-    const evs =
-    sortEvents(events[k] || []);
+                const evs =
+                    sortEvents(events[k] || []);
 
-    evs.slice(0, 2).forEach(ev => {
-    const tag =
-    document.createElement("div");
+                evs.slice(0, 2).forEach(ev => {
+                    const tag =
+                        document.createElement("div");
 
-    tag.className =
-    "tag " + ev.cat;
+                    tag.className =
+                        "tag " + ev.cat;
 
-    tag.textContent = ev.title;
+                    tag.textContent = ev.title;
 
-    el.appendChild(tag);
-});
+                    el.appendChild(tag);
+                });
 
-    el.addEventListener("click", e => {
-    selectedDate = {
-    y: cell.y,
-    m: cell.m,
-    d: cell.d
-};
+                el.addEventListener("click", e => {
+                    selectedDate = {
+                        y: cell.y,
+                        m: cell.m,
+                        d: cell.d
+                    };
 
-    document.getElementById(
-    "todayTitle"
-    ).textContent =
-    "금일 일정 목록 [ " +
-    String(cell.y).slice(2) +
-    "." +
-    pad(cell.m) +
-    "." +
-    pad(cell.d) +
-    " ]";
+                    document.getElementById(
+                            "todayTitle"
+                        ).textContent =
+                        "금일 일정 목록 [ " +
+                        String(cell.y).slice(2) +
+                        "." +
+                        pad(cell.m) +
+                        "." +
+                        pad(cell.d) +
+                        " ]";
 
-    refreshViews();
-    openMemo();
-});
-}
+                    refreshViews();
+                    openMemo();
+                });
+            }
 
-    grid.appendChild(el);
-});
-}
+            grid.appendChild(el);
+        });
+    }
 
     function renderTodayList() {
-    const k = key(
-    selectedDate.y,
-    selectedDate.m,
-    selectedDate.d
-    );
+        const k = key(
+            selectedDate.y,
+            selectedDate.m,
+            selectedDate.d
+        );
 
-    events[k] = sortEvents(events[k] || []);
+        events[k] = sortEvents(events[k] || []);
 
-    const list = events[k];
+        const list = events[k];
 
-    const wrap =
-    document.getElementById("todayList");
+        const wrap =
+            document.getElementById("todayList");
 
-    if (!wrap) return;
+        if (!wrap) return;
 
-    wrap.innerHTML = "";
+        wrap.innerHTML = "";
 
-    if (!list.length) {
-    wrap.innerHTML =
-    '<div class="empty-note">등록된 일정이 없어요. 위의 + 버튼으로 추가해보세요.</div>';
+        if (!list.length) {
+            wrap.innerHTML =
+                '<div class="empty-note">등록된 일정이 없어요. 위의 + 버튼으로 추가해보세요.</div>';
 
-    return;
-}
+            return;
+        }
 
-    list.forEach(ev => {
-    const li = document.createElement("li");
+        list.forEach(ev => {
+            const li = document.createElement("li");
 
-    li.className = ev.cat;
+            li.className = ev.cat;
 
-    if (ev.completed) {
-    li.classList.add("completed");
-}
+            if (ev.completed) {
+                li.classList.add("completed");
+            }
 
-    const timeSpan =
-    document.createElement("span");
+            const timeSpan =
+                document.createElement("span");
 
-    timeSpan.className =
-    "time hover-edit";
+            timeSpan.className =
+                "time hover-edit";
 
-    timeSpan.textContent =
-    ev.time
-    ? formatTime(ev.time)
-    : "시간없음";
+            timeSpan.textContent =
+                ev.time ?
+                formatTime(ev.time) :
+                "시간없음";
 
-    const titleSpan =
-    document.createElement("span");
+            const titleSpan =
+                document.createElement("span");
 
-    titleSpan.className =
-    "title hover-edit";
+            titleSpan.className =
+                "title hover-edit";
 
-    titleSpan.innerHTML =
-    escapeHtml(ev.title) +
-    (ev.priv ? " 🔒" : "");
+            titleSpan.innerHTML =
+                escapeHtml(ev.title) +
+                (ev.priv ? " 🔒" : "");
 
-    const titleInput =
-    document.createElement("input");
+            const titleInput =
+                document.createElement("input");
 
-    titleInput.type = "text";
-    titleInput.className = "title-edit";
-    titleInput.value = ev.title;
-    titleInput.style.display = "none";
+            titleInput.type = "text";
+            titleInput.className = "title-edit";
+            titleInput.value = ev.title;
+            titleInput.style.display = "none";
 
-    const chk =
-    document.createElement("span");
+            const chk =
+                document.createElement("span");
 
-    chk.className = "chk2";
+            chk.className = "chk2";
 
-    /* 삭제 버튼 */
-    const deleteBtn =
-    document.createElement("button");
+            /* 삭제 버튼 */
+            const deleteBtn =
+                document.createElement("button");
 
-    deleteBtn.type = "button";
-    deleteBtn.className =
-    "delete-schedule";
+            deleteBtn.type = "button";
+            deleteBtn.className =
+                "delete-schedule";
 
-    deleteBtn.textContent = "×";
-    deleteBtn.title = "일정 삭제";
+            deleteBtn.textContent = "×";
+            deleteBtn.title = "일정 삭제";
 
-    li.appendChild(timeSpan);
-    li.appendChild(titleSpan);
-    li.appendChild(titleInput);
-    li.appendChild(chk);
-    li.appendChild(deleteBtn);
+            li.appendChild(timeSpan);
+            li.appendChild(titleSpan);
+            li.appendChild(titleInput);
+            li.appendChild(chk);
+            li.appendChild(deleteBtn);
 
-    timeSpan.addEventListener("click", e => {
-    e.stopPropagation();
+            timeSpan.addEventListener("click", e => {
+                e.stopPropagation();
 
-    openTimePicker(
-    timeSpan,
-    ev.time || "",
-    newValue => {
-    if (newValue !== ev.time) {
-    ev.time = newValue;
-    updateScheduleLocal(ev);
-    refreshViews();
-    showToast(
-    "시간이 수정되었어요"
-    );
-}
-}
-    );
-});
+                openTimePicker(
+                    timeSpan,
+                    ev.time || "",
+                    newValue => {
+                        if (newValue !== ev.time) {
+                            ev.time = newValue;
+                            updateScheduleLocal(ev);
+                            refreshViews();
+                            showToast(
+                                "시간이 수정되었어요"
+                            );
+                        }
+                    }
+                );
+            });
 
-    titleSpan.addEventListener("click", e => {
-    e.stopPropagation();
+            titleSpan.addEventListener("click", e => {
+                e.stopPropagation();
 
-    titleSpan.style.display = "none";
-    titleInput.style.display = "block";
+                titleSpan.style.display = "none";
+                titleInput.style.display = "block";
 
-    titleInput.focus();
-});
+                titleInput.focus();
+            });
 
-    titleInput.addEventListener("blur", () => {
-    const val =
-    titleInput.value.trim();
+            titleInput.addEventListener("blur", () => {
+                const val =
+                    titleInput.value.trim();
 
-    if (
-    val &&
-    val !== ev.title
-    ) {
-    ev.title = val;
+                if (
+                    val &&
+                    val !== ev.title
+                ) {
+                    ev.title = val;
 
-    updateScheduleLocal(ev);
-    refreshViews();
+                    updateScheduleLocal(ev);
+                    refreshViews();
 
-    showToast(
-    "제목이 수정되었어요"
-    );
-} else {
-    titleInput.value =
-    ev.title;
+                    showToast(
+                        "제목이 수정되었어요"
+                    );
+                } else {
+                    titleInput.value =
+                        ev.title;
 
-    titleInput.style.display =
-    "none";
+                    titleInput.style.display =
+                        "none";
 
-    titleSpan.style.display =
-    "block";
-}
-});
+                    titleSpan.style.display =
+                        "block";
+                }
+            });
 
-    titleInput.addEventListener(
-    "keydown",
-    e => {
-    if (e.key === "Enter") {
-    titleInput.blur();
-}
-}
-    );
+            titleInput.addEventListener(
+                "keydown",
+                e => {
+                    if (e.key === "Enter") {
+                        titleInput.blur();
+                    }
+                }
+            );
 
-    chk.addEventListener("click", e => {
-    e.stopPropagation();
+            chk.addEventListener("click", e => {
+                e.stopPropagation();
 
-    ev.completed =
-    !ev.completed;
+                ev.completed = !ev.completed;
 
-    updateScheduleLocal(ev);
-    refreshViews();
-});
+                updateScheduleLocal(ev);
+                refreshViews();
+            });
 
-    deleteBtn.addEventListener(
-    "click",
-    e => {
-    e.stopPropagation();
-    deleteSchedule(ev);
-}
-    );
+            deleteBtn.addEventListener(
+                "click",
+                e => {
+                    e.stopPropagation();
+                    deleteSchedule(ev);
+                }
+            );
 
-    wrap.appendChild(li);
-});
-}
+            wrap.appendChild(li);
+        });
+    }
 
     // 메모장 열기
     function openMemo() {
-    const memo =
-    document.getElementById("memoPanel");
+        const memo =
+            document.getElementById("memoPanel");
 
-    memo.style.display = "flex";
+        memo.style.display = "flex";
 
-    memo.classList.remove(
-    "memo-closing"
-    );
+        memo.classList.remove(
+            "memo-closing"
+        );
 
-    memo.classList.remove(
-    "memo-opening"
-    );
+        memo.classList.remove(
+            "memo-opening"
+        );
 
-    void memo.offsetWidth;
+        void memo.offsetWidth;
 
-    renderMemo();
+        renderMemo();
 
-    requestAnimationFrame(() =>
-    memo.classList.add(
-    "memo-opening"
-    )
-    );
-}
+        requestAnimationFrame(() =>
+            memo.classList.add(
+                "memo-opening"
+            )
+        );
+    }
 
     // 외부 클릭 시 부드럽게 닫기 기능
     function closeMemo() {
-    const memo =
-    document.getElementById("memoPanel");
+        const memo =
+            document.getElementById("memoPanel");
 
-    if (
-    memo.style.display === "flex" &&
-    !memo.classList.contains(
-    "memo-closing"
-    )
-    ) {
-    memo.classList.remove(
-    "memo-opening"
-    );
+        if (
+            memo.style.display === "flex" &&
+            !memo.classList.contains(
+                "memo-closing"
+            )
+        ) {
+            memo.classList.remove(
+                "memo-opening"
+            );
 
-    memo.classList.add(
-    "memo-closing"
-    );
+            memo.classList.add(
+                "memo-closing"
+            );
 
-    setTimeout(() => {
-    memo.style.display = "none";
+            setTimeout(() => {
+                memo.style.display = "none";
 
-    memo.classList.remove(
-    "memo-closing"
-    );
+                memo.classList.remove(
+                    "memo-closing"
+                );
 
-    memo.classList.remove(
-    "highlight-mode"
-    );
-}, 450);
-}
-}
+                memo.classList.remove(
+                    "highlight-mode"
+                );
+            }, 450);
+        }
+    }
 
     document.addEventListener(
-    "click",
-    e => {
-    const memo =
-    document.getElementById(
-    "memoPanel"
-    );
+        "click",
+        e => {
+            const memo =
+                document.getElementById(
+                    "memoPanel"
+                );
 
-    if (
-    memo.style.display ===
-    "flex"
-    ) {
-    if (
-    !memo.contains(e.target) &&
-    !e.target.closest(
-    ".day:not(.other)"
-    ) &&
-    !e.target.closest(
-    ".timePickerPopover"
-    ) &&
-    !e.target.closest(
-    ".timePickerBackdrop"
-    )
-    ) {
-    closeMemo();
-}
-}
-}
+            if (
+                memo.style.display ===
+                "flex"
+            ) {
+                if (
+                    !memo.contains(e.target) &&
+                    !e.target.closest(
+                        ".day:not(.other)"
+                    ) &&
+                    !e.target.closest(
+                        ".timePickerPopover"
+                    ) &&
+                    !e.target.closest(
+                        ".timePickerBackdrop"
+                    )
+                ) {
+                    closeMemo();
+                }
+            }
+        }
     );
 
     function renderMemo() {
-    const memoList =
-    document.getElementById(
-    "memoList"
-    );
-
-    if (!memoList) return;
-
-    document.getElementById(
-    "memoDateLabel"
-    ).textContent =
-    formatDate(
-    selectedDate.y,
-    selectedDate.m,
-    selectedDate.d
-    );
-
-    memoList.innerHTML = "";
-
-    const k = key(
-    selectedDate.y,
-    selectedDate.m,
-    selectedDate.d
-    );
-
-    const list =
-    sortEvents(events[k] || []);
-
-    const highlights =
-    getHighlights();
-
-    for (
-    let i = 0;
-    i <= list.length;
-    i++
-    ) {
-    const ev =
-    list[i] || null;
-
-    const row =
-    document.createElement("div");
-
-    row.className =
-    "memoEvent";
-
-    if (ev) {
-    row.dataset.id = ev.id;
-
-    const timeCell =
-    document.createElement("div");
-
-    timeCell.className =
-    "memoTime";
-        const timeText =
-            document.createElement(
-                "span"
+        const memoList =
+            document.getElementById(
+                "memoList"
             );
 
-        timeText.className =
-            "hover-edit time-text";
+        if (!memoList) return;
 
-        const clockIcon =
-            document.createElement("img");
+        document.getElementById(
+                "memoDateLabel"
+            ).textContent =
+            formatDate(
+                selectedDate.y,
+                selectedDate.m,
+                selectedDate.d
+            );
 
-        clockIcon.src =
-            "/img/clock.png";
+        memoList.innerHTML = "";
 
-        clockIcon.alt =
-            "시간 선택";
-
-        clockIcon.className =
-            "clock-icon";
-
-        timeText.appendChild(
-            clockIcon
+        const k = key(
+            selectedDate.y,
+            selectedDate.m,
+            selectedDate.d
         );
 
-        const timeLabel =
-            document.createElement("span");
+        const list =
+            sortEvents(events[k] || []);
 
-        timeLabel.textContent =
-            ev.time || "시간 선택";
+        const highlights =
+            getHighlights();
 
-        timeText.appendChild(
-            timeLabel
-        );
+        for (
+            let i = 0; i <= list.length; i++
+        ) {
+            const ev =
+                list[i] || null;
 
-        timeCell.appendChild(
-            timeText
-        );
-    const titleCell =
-    document.createElement("div");
+            const row =
+                document.createElement("div");
 
-    titleCell.className =
-    "memoSchedule";
+            row.className =
+                "memoEvent";
 
-    const titleText =
-    document.createElement(
-    "span"
-    );
+            if (ev) {
+                row.dataset.id = ev.id;
 
-    titleText.className =
-    "hover-edit title-text";
+                const timeCell =
+                    document.createElement("div");
 
-    titleText.textContent =
-    ev.title;
+                timeCell.className =
+                    "memoTime";
+                const timeText =
+                    document.createElement(
+                        "span"
+                    );
 
-    titleCell.appendChild(
-    titleText
-    );
+                timeText.className =
+                    "hover-edit time-text";
 
-    if (highlights[ev.id]) {
-    applyHighlightStyle(
-    titleText,
-    highlights[ev.id]
-    );
-}
+                const clockIcon =
+                    document.createElement("img");
 
-    row.addEventListener(
-    "click",
-    e => {
-    if (
-    document
-    .getElementById(
-    "memoPanel"
-    )
-    .classList.contains(
-    "highlight-mode"
-    )
-    ) {
-    e.stopPropagation();
+                clockIcon.src =
+                    "/img/clock.png";
 
-    setHighlight(
-    ev,
-    titleText
-    );
-}
-}
-    );
+                clockIcon.alt =
+                    "시간 선택";
 
-    timeText.addEventListener(
-    "click",
-    e => {
-    e.stopPropagation();
+                clockIcon.className =
+                    "clock-icon";
 
-    if (
-    document
-    .getElementById(
-    "memoPanel"
-    )
-    .classList.contains(
-    "highlight-mode"
-    )
-    ) {
-    setHighlight(
-    ev,
-    titleText
-    );
+                timeText.appendChild(
+                    clockIcon
+                );
 
-    return;
-}
+                const timeLabel =
+                    document.createElement("span");
 
-    startInlineEdit(
-    timeText,
-    ev,
-    "time"
-    );
-}
-    );
+                timeLabel.textContent =
+                    ev.time || "시간 선택";
 
-    titleText.addEventListener(
-    "click",
-    e => {
-    e.stopPropagation();
+                timeText.appendChild(
+                    timeLabel
+                );
 
-    if (
-    document
-    .getElementById(
-    "memoPanel"
-    )
-    .classList.contains(
-    "highlight-mode"
-    )
-    ) {
-    setHighlight(
-    ev,
-    titleText
-    );
+                timeCell.appendChild(
+                    timeText
+                );
+                const titleCell =
+                    document.createElement("div");
 
-    return;
-}
+                titleCell.className =
+                    "memoSchedule";
 
-    startInlineEdit(
-    titleText,
-    ev,
-    "title"
-    );
-}
-    );
+                const titleText =
+                    document.createElement(
+                        "span"
+                    );
 
-    row.appendChild(timeCell);
-    row.appendChild(titleCell);
-} else {
-    row.classList.add(
-    "memo-empty"
-    );
+                titleText.className =
+                    "hover-edit title-text";
 
-    row.innerHTML =
-    `<div class="memoTime"><span class="memoPlaceholder">시간 선택</span></div><div class="memoSchedule"><span class="memoPlaceholder">일정을 작성해주세요.</span></div>`;
+                titleText.textContent =
+                    ev.title;
 
-    row.addEventListener(
-    "click",
-    e => {
-    e.stopPropagation();
+                titleCell.appendChild(
+                    titleText
+                );
 
-    activateEmptyMemoRow(
-    row
-    );
-}
-    );
-}
+                if (highlights[ev.id]) {
+                    applyHighlightStyle(
+                        titleText,
+                        highlights[ev.id]
+                    );
+                }
 
-    memoList.appendChild(row);
-}
-}
+                row.addEventListener(
+                    "click",
+                    e => {
+                        if (
+                            document
+                            .getElementById(
+                                "memoPanel"
+                            )
+                            .classList.contains(
+                                "highlight-mode"
+                            )
+                        ) {
+                            e.stopPropagation();
+
+                            setHighlight(
+                                ev,
+                                titleText
+                            );
+                        }
+                    }
+                );
+
+                timeText.addEventListener(
+                    "click",
+                    e => {
+                        e.stopPropagation();
+
+                        if (
+                            document
+                            .getElementById(
+                                "memoPanel"
+                            )
+                            .classList.contains(
+                                "highlight-mode"
+                            )
+                        ) {
+                            setHighlight(
+                                ev,
+                                titleText
+                            );
+
+                            return;
+                        }
+
+                        startInlineEdit(
+                            timeText,
+                            ev,
+                            "time"
+                        );
+                    }
+                );
+
+                titleText.addEventListener(
+                    "click",
+                    e => {
+                        e.stopPropagation();
+
+                        if (
+                            document
+                            .getElementById(
+                                "memoPanel"
+                            )
+                            .classList.contains(
+                                "highlight-mode"
+                            )
+                        ) {
+                            setHighlight(
+                                ev,
+                                titleText
+                            );
+
+                            return;
+                        }
+
+                        startInlineEdit(
+                            titleText,
+                            ev,
+                            "title"
+                        );
+                    }
+                );
+
+                row.appendChild(timeCell);
+                row.appendChild(titleCell);
+            } else {
+                row.classList.add(
+                    "memo-empty"
+                );
+
+                row.innerHTML =
+                    `<div class="memoTime"><span class="memoPlaceholder">시간 선택</span></div><div class="memoSchedule"><span class="memoPlaceholder">일정을 작성해주세요.</span></div>`;
+
+                row.addEventListener(
+                    "click",
+                    e => {
+                        e.stopPropagation();
+
+                        activateEmptyMemoRow(
+                            row
+                        );
+                    }
+                );
+            }
+
+            memoList.appendChild(row);
+        }
+    }
 
     function startInlineEdit(
-    target,
-    ev,
-    field
+        target,
+        ev,
+        field
     ) {
-    if (field === "time") {
-    openTimePicker(
-    target,
-    ev.time || "",
-    newValue => {
-    ev.time = newValue;
+        if (field === "time") {
+            openTimePicker(
+                target,
+                ev.time || "",
+                newValue => {
+                    ev.time = newValue;
 
-    updateScheduleLocal(ev);
-    refreshViews();
+                    updateScheduleLocal(ev);
+                    refreshViews();
 
-    showToast(
-    "수정되었습니다"
-    );
-}
-    );
+                    showToast(
+                        "수정되었습니다"
+                    );
+                }
+            );
 
-    return;
-}
+            return;
+        }
 
-    if (
-    target.dataset.editing ===
-    "true"
-    ) {
-    return;
-}
+        if (
+            target.dataset.editing ===
+            "true"
+        ) {
+            return;
+        }
 
-    target.dataset.editing =
-    "true";
+        target.dataset.editing =
+            "true";
 
-    const input =
-    document.createElement(
-    "input"
-    );
+        const input =
+            document.createElement(
+                "input"
+            );
 
-    input.type = "text";
-    input.className =
-    "memoNewTitle";
+        input.type = "text";
+        input.className =
+            "memoNewTitle";
 
-    input.value = ev.title;
+        input.value = ev.title;
 
-    target.replaceWith(input);
+        target.replaceWith(input);
 
-    input.focus();
-    input.select();
+        input.focus();
+        input.select();
 
-    let finished = false;
+        let finished = false;
 
-    function finish(save) {
-    if (finished) return;
+        function finish(save) {
+            if (finished) return;
 
-    finished = true;
+            finished = true;
 
-    if (!save) {
-    renderMemo();
-    return;
-}
+            if (!save) {
+                renderMemo();
+                return;
+            }
 
-    const newValue =
-    input.value.trim();
+            const newValue =
+                input.value.trim();
 
-    if (!newValue) {
-    renderMemo();
-    return;
-}
+            if (!newValue) {
+                renderMemo();
+                return;
+            }
 
-    ev.title = newValue;
+            ev.title = newValue;
 
-    updateScheduleLocal(ev);
-    refreshViews();
+            updateScheduleLocal(ev);
+            refreshViews();
 
-    showToast(
-    "수정되었습니다"
-    );
-}
+            showToast(
+                "수정되었습니다"
+            );
+        }
 
-    input.addEventListener(
-    "blur",
-    () => finish(true)
-    );
+        input.addEventListener(
+            "blur",
+            () => finish(true)
+        );
 
-    input.addEventListener(
-    "keydown",
-    e => {
-    if (e.key === "Enter") {
-    e.preventDefault();
-    input.blur();
-}
+        input.addEventListener(
+            "keydown",
+            e => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    input.blur();
+                }
 
-    if (e.key === "Escape") {
-    e.preventDefault();
-    finish(false);
-}
-}
-    );
-}
+                if (e.key === "Escape") {
+                    e.preventDefault();
+                    finish(false);
+                }
+            }
+        );
+    }
 
     function activateEmptyMemoRow(row) {
-    if (
-    row.classList.contains(
-    "editing-new"
-    )
-    ) {
-    return;
-}
+        if (
+            row.classList.contains(
+                "editing-new"
+            )
+        ) {
+            return;
+        }
 
-    row.classList.add(
-    "editing-new"
-    );
+        row.classList.add(
+            "editing-new"
+        );
 
-    const timeCell =
-    row.querySelector(
-    ".memoTime"
-    );
+        const timeCell =
+            row.querySelector(
+                ".memoTime"
+            );
 
-    const titleCell =
-    row.querySelector(
-    ".memoSchedule"
-    );
+        const titleCell =
+            row.querySelector(
+                ".memoSchedule"
+            );
 
-    timeCell.innerHTML = "";
-    titleCell.innerHTML = "";
+        timeCell.innerHTML = "";
+        titleCell.innerHTML = "";
 
-    const timeInput =
-    document.createElement(
-    "input"
-    );
+        const timeInput =
+            document.createElement(
+                "input"
+            );
 
-    timeInput.className =
-    "memoNewTime";
+        timeInput.className =
+            "memoNewTime";
 
-    attachTimePicker(
-    timeInput,
-    () => titleInput.focus()
-    );
+        attachTimePicker(
+            timeInput,
+            () => titleInput.focus()
+        );
 
-    const titleInput =
-    document.createElement(
-    "input"
-    );
+        const titleInput =
+            document.createElement(
+                "input"
+            );
 
-    titleInput.type = "text";
+        titleInput.type = "text";
 
-    titleInput.className =
-    "memoNewTitle";
+        titleInput.className =
+            "memoNewTitle";
 
-    titleInput.placeholder =
-    "일정을 작성해주세요.";
+        titleInput.placeholder =
+            "일정을 작성해주세요.";
 
-    timeCell.appendChild(
-    timeInput
-    );
+        timeCell.appendChild(
+            timeInput
+        );
 
-    titleCell.appendChild(
-    titleInput
-    );
+        titleCell.appendChild(
+            titleInput
+        );
 
-    titleInput.focus();
+        titleInput.focus();
 
-    function saveNewSchedule() {
-    const title =
-    titleInput.value.trim();
+        function saveNewSchedule() {
+            const title =
+                titleInput.value.trim();
 
-    const time =
-    timeInput.value || "";
+            const time =
+                timeInput.value || "";
 
-    if (!title) {
-    renderMemo();
-    return;
-}
+            if (!title) {
+                renderMemo();
+                return;
+            }
 
-    const k = key(
-    selectedDate.y,
-    selectedDate.m,
-    selectedDate.d
-    );
+            const k = key(
+                selectedDate.y,
+                selectedDate.m,
+                selectedDate.d
+            );
 
-    if (!events[k]) {
-    events[k] = [];
-}
+            if (!events[k]) {
+                events[k] = [];
+            }
 
-    const tempEv = {
-    id: "local_" + Date.now(),
-    title: title,
-    time: time,
-    cat: "todo",
-    priv: false,
-    completed: false
-};
+            const tempEv = {
+                id: "local_" + Date.now(),
+                title: title,
+                time: time,
+                cat: "todo",
+                priv: false,
+                completed: false
+            };
 
-    events[k].push(tempEv);
+            events[k].push(tempEv);
 
-    refreshViews();
+            refreshViews();
 
-    showToast(
-    "일정이 저장되었습니다"
-    );
+            showToast(
+                "일정이 저장되었습니다"
+            );
 
-    fetch("/api/schedules", {
-    method: "POST",
-    headers: {
-    "Content-Type":
-    "application/json"
-},
-    body: JSON.stringify({
-    title: title,
-    date:
-    selectedDate.y +
-    "-" +
-    pad(
-    selectedDate.m
-    ) +
-    "-" +
-    pad(
-    selectedDate.d
-    ),
-    time: time,
-    category: "todo",
-    private: false
-})
-})
-    .then(res =>
-    res.json()
-    )
-    .then(saved =>
-    tempEv.id =
-    saved.id
-    )
-    .catch(() => {});
-}
+            fetch("/api/schedules", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        date: selectedDate.y +
+                            "-" +
+                            pad(
+                                selectedDate.m
+                            ) +
+                            "-" +
+                            pad(
+                                selectedDate.d
+                            ),
+                        time: time,
+                        category: "todo",
+                        private: false
+                    })
+                })
+                .then(res =>
+                    res.json()
+                )
+                .then(saved =>
+                    tempEv.id =
+                    saved.id
+                )
+                .catch(() => {});
+        }
 
-    function handleBlur() {
-    setTimeout(() => {
-    if (
-    document.querySelector(
-    ".timePickerPopover"
-    )
-    ) {
-    return;
-}
+        function handleBlur() {
+            setTimeout(() => {
+                if (
+                    document.querySelector(
+                        ".timePickerPopover"
+                    )
+                ) {
+                    return;
+                }
 
-    if (
-    document.activeElement !==
-    timeInput &&
-    document.activeElement !==
-    titleInput
-    ) {
-    saveNewSchedule();
-}
-}, 100);
-}
+                if (
+                    document.activeElement !==
+                    timeInput &&
+                    document.activeElement !==
+                    titleInput
+                ) {
+                    saveNewSchedule();
+                }
+            }, 100);
+        }
 
-    timeInput.addEventListener(
-    "blur",
-    handleBlur
-    );
+        timeInput.addEventListener(
+            "blur",
+            handleBlur
+        );
 
-    titleInput.addEventListener(
-    "blur",
-    handleBlur
-    );
+        titleInput.addEventListener(
+            "blur",
+            handleBlur
+        );
 
-    titleInput.addEventListener(
-    "keydown",
-    e => {
-    if (e.key === "Enter") {
-    e.preventDefault();
-    titleInput.blur();
-}
+        titleInput.addEventListener(
+            "keydown",
+            e => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    titleInput.blur();
+                }
 
-    if (e.key === "Escape") {
-    e.preventDefault();
-    renderMemo();
-}
-}
-    );
-}
+                if (e.key === "Escape") {
+                    e.preventDefault();
+                    renderMemo();
+                }
+            }
+        );
+    }
 
     function applyHighlightStyle(
-    element,
-    pen
+        element,
+        pen
     ) {
-    const color =
-    penColors[pen] ||
-    penColors.red;
+        const color =
+            penColors[pen] ||
+            penColors.red;
 
-    element.style.background =
-    "linear-gradient(transparent 35%, " +
-    color +
-    "88 35%, " +
-    color +
-    "88 90%, transparent 90%)";
+        element.style.background =
+            "linear-gradient(transparent 35%, " +
+            color +
+            "88 35%, " +
+            color +
+            "88 90%, transparent 90%)";
 
-    element.style.borderRadius =
-    "3px";
+        element.style.borderRadius =
+            "3px";
 
-    element.style.padding =
-    "1px 4px";
-}
+        element.style.padding =
+            "1px 4px";
+    }
 
     function setHighlight(
-    ev,
-    titleText
+        ev,
+        titleText
     ) {
-    const highlights =
-    getHighlights();
+        const highlights =
+            getHighlights();
 
-    highlights[ev.id] =
-    selectedPen;
+        highlights[ev.id] =
+            selectedPen;
 
-    saveHighlights(
-    highlights
-    );
+        saveHighlights(
+            highlights
+        );
 
-    applyHighlightStyle(
-    titleText,
-    selectedPen
-    );
-}
-
-    document
-    .getElementById("penButton")
-    .addEventListener(
-    "click",
-    e => {
-    e.stopPropagation();
-
-    selectedPen =
-    penOrder[
-    (
-    penOrder.indexOf(
-    selectedPen
-    ) + 1
-    ) %
-    penOrder.length
-    ];
-
-    document.getElementById(
-    "penImage"
-    ).src =
-    "/img/pen_" +
-    selectedPen +
-    ".png";
+        applyHighlightStyle(
+            titleText,
+            selectedPen
+        );
+    }
 
     document
-    .getElementById(
-    "memoPanel"
-    )
-    .classList.add(
-    "highlight-mode"
-    );
-}
-    );
+        .getElementById("penButton")
+        .addEventListener(
+            "click",
+            e => {
+                e.stopPropagation();
+
+                selectedPen =
+                    penOrder[
+                        (
+                            penOrder.indexOf(
+                                selectedPen
+                            ) + 1
+                        ) %
+                        penOrder.length
+                    ];
+
+                document.getElementById(
+                        "penImage"
+                    ).src =
+                    "/img/pen_" +
+                    selectedPen +
+                    ".png";
+
+                document
+                    .getElementById(
+                        "memoPanel"
+                    )
+                    .classList.add(
+                        "highlight-mode"
+                    );
+            }
+        );
 
     document
-    .getElementById("prevBtn")
-    .addEventListener(
-    "click",
-    () => {
-    MONTH--;
+        .getElementById("prevBtn")
+        .addEventListener(
+            "click",
+            () => {
+                MONTH--;
 
-    if (MONTH < 1) {
-    MONTH = 12;
-    YEAR--;
-}
+                if (MONTH < 1) {
+                    MONTH = 12;
+                    YEAR--;
+                }
 
-    selectedDate = {
-    y: YEAR,
-    m: MONTH,
-    d: 1
-};
+                selectedDate = {
+                    y: YEAR,
+                    m: MONTH,
+                    d: 1
+                };
 
-    updateMonthLabel();
-    loadMonthEvents();
-}
-    );
+                updateMonthLabel();
+                loadMonthEvents();
+            }
+        );
 
     document
-    .getElementById("nextBtn")
-    .addEventListener(
-    "click",
-    () => {
-    MONTH++;
+        .getElementById("nextBtn")
+        .addEventListener(
+            "click",
+            () => {
+                MONTH++;
 
-    if (MONTH > 12) {
-    MONTH = 1;
-    YEAR++;
-}
+                if (MONTH > 12) {
+                    MONTH = 1;
+                    YEAR++;
+                }
 
-    selectedDate = {
-    y: YEAR,
-    m: MONTH,
-    d: 1
-};
+                selectedDate = {
+                    y: YEAR,
+                    m: MONTH,
+                    d: 1
+                };
 
-    updateMonthLabel();
-    loadMonthEvents();
-}
-    );
+                updateMonthLabel();
+                loadMonthEvents();
+            }
+        );
 
     function updateMonthLabel() {
-    document.getElementById(
-    "yearLabel"
-    ).textContent = YEAR;
+        document.getElementById(
+            "yearLabel"
+        ).textContent = YEAR;
 
-    document.getElementById(
-    "monthLabel"
-    ).textContent =
-    monthNames[MONTH - 1];
-}
+        document.getElementById(
+                "monthLabel"
+            ).textContent =
+            monthNames[MONTH - 1];
+    }
 
     document
-    .querySelectorAll(
-    ".check-list .chk"
-    )
-    .forEach(chk =>
-    chk.parentElement.addEventListener(
-    "click",
-    function () {
-    this.classList.toggle(
-    "done"
-    );
-}
-    )
-    );
-
-
-
-
+        .querySelectorAll(
+            ".check-list .chk"
+        )
+        .forEach(chk =>
+            chk.parentElement.addEventListener(
+                "click",
+                function() {
+                    this.classList.toggle(
+                        "done"
+                    );
+                }
+            )
+        );
 
     let toastTimer;
 
     function showToast(msg) {
-    const t =
-    document.getElementById(
-    "toast"
-    );
+        const t =
+            document.getElementById(
+                "toast"
+            );
 
-    t.textContent = msg;
+        t.textContent = msg;
 
-    t.classList.add("show");
+        t.classList.add("show");
 
-    clearTimeout(toastTimer);
+        clearTimeout(toastTimer);
 
-    toastTimer = setTimeout(
-    () =>
-    t.classList.remove(
-    "show"
-    ),
-    1800
-    );
-}
-        // ==============================
-        // 자연어 일정 등록
-        // ==============================
+        toastTimer = setTimeout(
+            () =>
+            t.classList.remove(
+                "show"
+            ),
+            1800
+        );
+    }
+    // ==============================
+    // 자연어 일정 등록
+    // ==============================
 
-        const naturalScheduleInput =
-            document.getElementById("naturalScheduleInput");
+    const naturalScheduleInput =
+        document.getElementById("naturalScheduleInput");
 
-        const naturalScheduleBtn =
-            document.getElementById("naturalScheduleBtn");
+    const naturalScheduleBtn =
+        document.getElementById("naturalScheduleBtn");
 
-        naturalScheduleBtn.addEventListener("click", async () => {
+    naturalScheduleBtn.addEventListener("click", async () => {
 
-            const text =
-                naturalScheduleInput.value.trim();
+        const text =
+            naturalScheduleInput.value.trim();
 
-            if (!text) {
-                showToast("일정을 입력해주세요");
-                naturalScheduleInput.focus();
-                return;
+        if (!text) {
+            showToast("일정을 입력해주세요");
+            naturalScheduleInput.focus();
+            return;
+        }
+
+        naturalScheduleBtn.disabled = true;
+        naturalScheduleBtn.textContent = "AI가 읽는 중...";
+
+        try {
+
+            // 1. 자연어 → Gemini
+            const aiResponse = await fetch(
+                "/api/ai/parse-schedule", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        text: text
+                    })
+                }
+            );
+
+            if (!aiResponse.ok) {
+                throw new Error(
+                    "AI 일정 해석에 실패했어요"
+                );
             }
 
-            naturalScheduleBtn.disabled = true;
-            naturalScheduleBtn.textContent = "AI가 읽는 중...";
+            const schedule =
+                await aiResponse.json();
 
-            try {
+            if (!schedule.date) {
+                throw new Error(
+                    "날짜를 해석하지 못했어요"
+                );
+            }
 
-                // 1. 자연어 → Gemini
-                const aiResponse = await fetch(
-                    "/api/ai/parse-schedule",
-                    {
+            // 2. AI가 분석한 일정 → DB 저장
+            naturalScheduleBtn.textContent =
+                "일정 저장 중...";
+
+            const saveResponse =
+                await fetch(
+                    "/api/schedules", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            text: text
+                            title: schedule.title || text,
+
+                            date: schedule.date,
+
+                            time: schedule.time || "",
+
+                            category: schedule.category || "todo",
+
+                            private: schedule.private !== undefined ?
+                                !!schedule.private :
+                                !!schedule.isPrivate,
+
+                            completed: false
                         })
                     }
                 );
 
-                if (!aiResponse.ok) {
-                    throw new Error(
-                        "AI 일정 해석에 실패했어요"
-                    );
-                }
+            if (!saveResponse.ok) {
+                throw new Error(
+                    "일정 저장에 실패했어요"
+                );
+            }
 
-                const schedule =
-                    await aiResponse.json();
+            const savedSchedule =
+                await saveResponse.json();
 
-                if (!schedule.date) {
-                    throw new Error(
-                        "날짜를 해석하지 못했어요"
-                    );
-                }
+            // 3. 입력창 비우기
+            naturalScheduleInput.value = "";
 
-                // 2. AI가 분석한 일정 → DB 저장
-                naturalScheduleBtn.textContent =
-                    "일정 저장 중...";
+            // 4. 저장된 날짜로 이동
+            if (savedSchedule.date) {
 
-                const saveResponse =
-                    await fetch(
-                        "/api/schedules",
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-                            body: JSON.stringify({
-                                title:
-                                    schedule.title || text,
+                const parts =
+                    String(savedSchedule.date).split("-");
 
-                                date:
-                                schedule.date,
+                if (parts.length === 3) {
 
-                                time:
-                                    schedule.time || "",
+                    const y =
+                        parseInt(parts[0], 10);
 
-                                category:
-                                    schedule.category || "todo",
+                    const m =
+                        parseInt(parts[1], 10);
 
-                                private:
-                                    schedule.private !== undefined
-                                        ? !!schedule.private
-                                        : !!schedule.isPrivate,
+                    const d =
+                        parseInt(parts[2], 10);
 
-                                completed: false
-                            })
-                        }
-                    );
+                    YEAR = y;
+                    MONTH = m;
 
-                if (!saveResponse.ok) {
-                    throw new Error(
-                        "일정 저장에 실패했어요"
-                    );
-                }
+                    selectedDate = {
+                        y: y,
+                        m: m,
+                        d: d
+                    };
 
-                const savedSchedule =
-                    await saveResponse.json();
-
-                // 3. 입력창 비우기
-                naturalScheduleInput.value = "";
-
-                // 4. 저장된 날짜로 이동
-                if (savedSchedule.date) {
-
-                    const parts =
-                        String(savedSchedule.date).split("-");
-
-                    if (parts.length === 3) {
-
-                        const y =
-                            parseInt(parts[0], 10);
-
-                        const m =
-                            parseInt(parts[1], 10);
-
-                        const d =
-                            parseInt(parts[2], 10);
-
-                        YEAR = y;
-                        MONTH = m;
-
-                        selectedDate = {
-                            y: y,
-                            m: m,
-                            d: d
-                        };
-
-                        document.getElementById(
+                    document.getElementById(
                             "todayTitle"
                         ).textContent =
-                            "금일 일정 목록 [ " +
-                            String(y).slice(2) +
-                            "." +
-                            pad(m) +
-                            "." +
-                            pad(d) +
-                            " ]";
+                        "금일 일정 목록 [ " +
+                        String(y).slice(2) +
+                        "." +
+                        pad(m) +
+                        "." +
+                        pad(d) +
+                        " ]";
 
-                        updateMonthLabel();
-                    }
+                    updateMonthLabel();
                 }
-
-                // 5. 달력 새로고침
-                loadMonthEvents();
-
-                showToast(
-                    "AI가 일정을 등록했어요"
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "자연어 일정 등록 오류:",
-                    error
-                );
-
-                showToast(
-                    error.message ||
-                    "일정 등록 중 오류가 발생했어요"
-                );
-
-            } finally {
-
-                naturalScheduleBtn.disabled =
-                    false;
-
-                naturalScheduleBtn.textContent =
-                    "등록";
             }
-        });
 
+            // 5. 달력 새로고침
+            loadMonthEvents();
 
-        // Enter로 등록
-        naturalScheduleInput.addEventListener(
-            "keydown",
-            e => {
+            showToast(
+                "AI가 일정을 등록했어요"
+            );
 
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    naturalScheduleBtn.click();
-                }
+        } catch (error) {
 
+            console.error(
+                "자연어 일정 등록 오류:",
+                error
+            );
+
+            showToast(
+                error.message ||
+                "일정 등록 중 오류가 발생했어요"
+            );
+
+        } finally {
+
+            naturalScheduleBtn.disabled =
+                false;
+
+            naturalScheduleBtn.textContent =
+                "등록";
+        }
+    });
+
+    // Enter로 등록
+    naturalScheduleInput.addEventListener(
+        "keydown",
+        e => {
+
+            if (e.key === "Enter") {
+                e.preventDefault();
+                naturalScheduleBtn.click();
             }
-        );
+
+        }
+    );
     updateMonthLabel();
     renderGrid();
     loadMonthEvents();
 
 })();
-

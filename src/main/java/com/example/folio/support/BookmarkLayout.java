@@ -1,4 +1,3 @@
-
 package com.example.folio.support;
 
 import java.util.ArrayList;
@@ -18,28 +17,15 @@ import java.util.Map;
 
 public final class BookmarkLayout {
 
-    private static final String[] HREFS = {
-            "/main",
-            "/dairy",
-            "/index",
-            "/friend"
-    };
+    private static final String[] HREFS = { "/main", "/dairy", "/index", "/friend" };
 
-    private static final String[] IMAGES = {
-            "index1.png",
-            "index2.png",
-            "index3.png",
-            "index4.png"
-    };
+    private static final String[] IMAGES = { "index1.png", "index2.png", "index3.png", "index4.png" };
 
     private BookmarkLayout() {}
 
     public static List<Map<String, Object>> of(int leftCount) {
-
         if (leftCount < 0 || leftCount > 4) {
-            throw new IllegalArgumentException(
-                    "leftCount는 0~4 사이여야 합니다: " + leftCount
-            );
+            throw new IllegalArgumentException("leftCount는 0~4 사이여야 합니다: " + leftCount);
         }
 
         List<Map<String, Object>> result = new ArrayList<>();
@@ -48,15 +34,14 @@ public final class BookmarkLayout {
         int rightIdx = 0;
 
         for (int i = 0; i < HREFS.length; i++) {
-
             boolean isLeft = i < leftCount;
 
             String posClass;
 
             if (isLeft) {
-                posClass = "pos-l" + (++leftIdx);
+                posClass = "pos-l" + ++leftIdx;
             } else {
-                posClass = "pos-r" + (++rightIdx);
+                posClass = "pos-r" + ++rightIdx;
             }
 
             Map<String, Object> bookmark = new LinkedHashMap<>();

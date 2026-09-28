@@ -1,135 +1,133 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>폴리오 - 달력</title>
-    <link rel="stylesheet" href="/css/manage.css">
-    <link rel="stylesheet" href="/css/calendar.css">
-    <link rel="stylesheet" href="/css/sidebar.css">
-</head>
-<body>
-<div class="appShell">
-    {{> layout/sidebar}}
-    <main class="mainArea">
-        <div class="topBar"></div>
-        <section class="notebook">
-            {{> layout/bookLayout}}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>폴리오 - 달력</title>
+        <link rel="stylesheet" href="/css/manage.css">
+        <link rel="stylesheet" href="/css/calendar.css">
+        <link rel="stylesheet" href="/css/sidebar.css">
+    </head>
+    <body>
+        <div class="appShell">
+            {{> layout/sidebar}}
+            <main class="mainArea">
+                <div class="topBar"></div>
+                <section class="notebook">
+                    {{> layout/bookLayout}}
 
-            <!-- 왼쪽 달력 페이지 -->
-            <section class="leftPage">
-                <div class="brand-row">
-                    <h1 id="brandTitle">Bogeum's Folio</h1>
-                    <span class="rate" id="rateLabel">일정 완료도 : 87%</span>
-                </div>
-
-                <div class="briefing">
-                    혼잡도 : <strong id="congestLabel">내일 오후에 일정이 밀집되어있습니다.</strong><br>
-                    가장 가까운 일정 : <strong id="nextEventLabel">[오늘 오후 4시 40분] 중등부 수학 숙제 검사</strong>
-                </div>
-
-                <div class="postit">
-                    <div class="cal-head">
-                        <span class="year" id="yearLabel">2026</span>
-                        <span class="month" id="monthLabel">8월</span>
-
-                        <div class="cal-nav">
-                            <button id="prevBtn" type="button">‹</button>
-                            <button id="nextBtn" type="button">›</button>
-                        </div>
-                    </div>
-
-                    <div class="weekdays">
-                        <span>일</span>
-                        <span>월</span>
-                        <span>화</span>
-                        <span>수</span>
-                        <span>목</span>
-                        <span>금</span>
-                        <span>토</span>
-                    </div>
-
-                    <div class="grid" id="grid"></div>
-                </div>
-            </section>
-
-            <!-- 오른쪽 페이지 -->
-            <section class="rightPage">
-
-                <!-- 대시보드 -->
-                <div class="rightDashboard" id="rightDashboard">
-
-                    <!-- 자연어 일정 추가 -->
-                    <div class="natural-schedule">
-                        <input
-                                type="text"
-                                id="naturalScheduleInput"
-                                class="add-pill"
-                                placeholder="예) 내일 오후 6시 가족 저녁식사"
-                        >
-
-                        <button
-                                type="button"
-                                class="naturalScheduleBtn"
-                                id="naturalScheduleBtn"
-                        >
-                            <img src="/img/add.png" alt="일정 등록">
-                        </button>
-                    </div>
-
-                    <div class="section">
-                        <h4>일상 <span class="reorder" title="순서 변경"></span></h4>
-
-                        <ul class="check-list" id="dailyList">
-                            <li><span class="chk"></span> 물 1L 마시기</li>
-                            <li><span class="chk"></span> 비타민 영양제 먹기</li>
-                        </ul>
-                    </div>
-
-                    <div class="section">
-                        <h4>가장 가까운 건강 관리</h4>
-
-                        <div class="health-row">
-                            <span>치과 정기 스케일링</span>
-                            <span class="muted">[ 다음 건강 일정 : 27일 뒤 ]</span>
-                        </div>
-                    </div>
-
-                    <div class="section grow">
-                        <h4 id="todayTitle">금일 일정 목록 [ 26.08.07 ]</h4>
-                        <ul class="today-list" id="todayList"></ul>
-                    </div>
-                </div>
-
-                <!-- 메모장 -->
-                <div class="memoPanel" id="memoPanel">
-                    <img class="memoBackground" src="/img/memo.png" alt="메모장">
-
-                    <div class="memoInner">
-                        <div class="memoHeader">
-                            <div class="memoDate" id="memoDateLabel">2026.08.07</div>
+                    <!-- 왼쪽 달력 페이지 -->
+                    <section class="leftPage">
+                        <div class="brand-row">
+                            <h1 id="brandTitle">Bogeum's Folio</h1>
+                            <span class="rate" id="rateLabel">일정 완료도 : 87%</span>
                         </div>
 
-                        <div class="memoList" id="memoList"></div>
-                    </div>
+                        <div class="briefing">
+                            혼잡도 : <strong id="congestLabel">내일 오후에 일정이 밀집되어있습니다.</strong>
+                            <br>
+                            가장 가까운 일정 : <strong id="nextEventLabel">[오늘 오후 4시 40분] 중등부 수학 숙제 검사</strong>
+                        </div>
 
-                    <!-- 형광펜 -->
-                    <div class="penTool">
-                        <button type="button" class="penButton" id="penButton" title="형광펜 색상 변경">
-                            <img id="penImage" src="/img/pen_red.png" alt="형광펜">
-                        </button>
-                    </div>
-                </div>
-            </section>
-        </section>
-    </main>
-</div>
+                        <div class="postit">
+                            <div class="cal-head">
+                                <span class="year" id="yearLabel">2026</span>
+                                <span class="month" id="monthLabel">8월</span>
+
+                                <div class="cal-nav">
+                                    <button id="prevBtn" type="button">‹</button>
+                                    <button id="nextBtn" type="button">›</button>
+                                </div>
+                            </div>
+
+                            <div class="weekdays">
+                                <span>일</span>
+                                <span>월</span>
+                                <span>화</span>
+                                <span>수</span>
+                                <span>목</span>
+                                <span>금</span>
+                                <span>토</span>
+                            </div>
+
+                            <div class="grid" id="grid"></div>
+                        </div>
+                    </section>
+
+                    <!-- 오른쪽 페이지 -->
+                    <section class="rightPage">
+
+                        <!-- 대시보드 -->
+                        <div class="rightDashboard" id="rightDashboard">
+
+                            <!-- 자연어 일정 추가 -->
+                            <div class="natural-schedule">
+                                <input type="text" id="naturalScheduleInput" class="add-pill"
+                                    placeholder="예) 내일 오후 6시 가족 저녁식사">
+
+                                <button type="button" class="naturalScheduleBtn" id="naturalScheduleBtn">
+                                    <img src="/img/add.png" alt="일정 등록">
+                                </button>
+                            </div>
+
+                            <div class="section">
+                                <h4>일상 <span class="reorder" title="순서 변경"></span>
+                                </h4>
+
+                                <ul class="check-list" id="dailyList">
+                                    <li>
+                                        <span class="chk"></span> 물 1L 마시기
+                                    </li>
+                                    <li>
+                                        <span class="chk"></span> 비타민 영양제 먹기
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="section">
+                                <h4>가장 가까운 건강 관리</h4>
+
+                                <div class="health-row">
+                                    <span>치과 정기 스케일링</span>
+                                    <span class="muted">[ 다음 건강 일정 : 27일 뒤 ]</span>
+                                </div>
+                            </div>
+
+                            <div class="section grow">
+                                <h4 id="todayTitle">금일 일정 목록 [ 26.08.07 ]</h4>
+                                <ul class="today-list" id="todayList"></ul>
+                            </div>
+                        </div>
+
+                        <!-- 메모장 -->
+                        <div class="memoPanel" id="memoPanel">
+                            <img class="memoBackground" src="/img/memo.png" alt="메모장">
+
+                            <div class="memoInner">
+                                <div class="memoHeader">
+                                    <div class="memoDate" id="memoDateLabel">2026.08.07</div>
+                                </div>
+
+                                <div class="memoList" id="memoList"></div>
+                            </div>
+
+                            <!-- 형광펜 -->
+                            <div class="penTool">
+                                <button type="button" class="penButton" id="penButton" title="형광펜 색상 변경">
+                                    <img id="penImage" src="/img/pen_red.png" alt="형광펜">
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </main>
+        </div>
 
 
-<div class="toast" id="toast"></div>
+        <div class="toast" id="toast"></div>
 
 
-<script src="/js/main.js"></script>
+        <script src="/js/main.js"></script>
 
-</body>
+    </body>
 </html>

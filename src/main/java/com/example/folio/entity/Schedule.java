@@ -1,7 +1,6 @@
 package com.example.folio.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -9,12 +8,33 @@ import java.time.LocalTime;
 // javax.persistence.* 로 바꿔주세요.
 
 @Entity
-@Table(name = "schedule")
+@Table(name = "schedule", uniqueConstraints = @UniqueConstraint(columnNames = { "recurring_id", "date" }))
 public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "recurring_id")
+    private Long recurringId;
+
+    private boolean cancelled;
+
+    public Long getRecurringId() {
+        return recurringId;
+    }
+
+    public void setRecurringId(Long value) {
+        recurringId = value;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean value) {
+        cancelled = value;
+    }
 
     @Column(nullable = false)
     private String title;
@@ -46,23 +66,55 @@ public class Schedule {
         this.completed = false;
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getTitle() {
+        return title;
+    }
 
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public LocalTime getTime() { return time; }
-    public void setTime(LocalTime time) { this.time = time; }
+    public LocalDate getDate() {
+        return date;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 
-    public boolean isPrivate() { return isPrivate; }
-    public void setPrivate(boolean aPrivate) { isPrivate = aPrivate; }
+    public LocalTime getTime() {
+        return time;
+    }
 
-    public boolean isCompleted() { return completed; }
-    public void setCompleted(boolean completed) { this.completed = completed; }
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
 }

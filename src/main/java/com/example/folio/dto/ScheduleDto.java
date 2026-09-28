@@ -6,32 +6,67 @@ public class ScheduleDto {
 
     private Long id;
     private String title;
-    private String date;      // yyyy-MM-dd
-    private String time;      // HH:mm, 없으면 null
-    private String category;  // todo | important | health
+    private String date; // yyyy-MM-dd
+    private String time; // HH:mm, 없으면 null
+    private String category; // todo | important | health
     private boolean isPrivate;
     private boolean completed;
 
     public ScheduleDto() {}
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getTime() { return time; }
-    public void setTime(String time) { this.time = time; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public String getDate() {
+        return date;
+    }
 
-    public boolean isPrivate() { return isPrivate; }
-    public void setPrivate(boolean aPrivate) { isPrivate = aPrivate; }
+    public void setDate(String date) {
+        this.date = date;
+    }
 
-    public boolean isCompleted() { return completed; }
-    public void setCompleted(boolean completed) { this.completed = completed; }
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
 }

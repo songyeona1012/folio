@@ -1,255 +1,319 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>폴리오 - 일기</title>
-    <link rel="stylesheet" href="/css/manage.css">
-    <link rel="stylesheet" href="/css/calendar.css">
-    <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/diary.css">
-</head>
-<body>
-<div class="appShell">
-{{! 컨트롤러에서 pageTitle="일기", navDairy=true 를 내려주세요 }}
-{{> layout/sidebar}}
-<main class="mainArea">
-    <div class="topBar"></div>
-<section class="notebook">
-{{! 컨트롤러에서 bookmarks = BookmarkLayout.of(1) 을 내려주세요 (일기 = 왼쪽 1개, 오른쪽 3개) }}
-{{> layout/bookLayout}}
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>폴리오 - 일기</title>
+        <link rel="stylesheet" href="/css/manage.css">
+        <link rel="stylesheet" href="/css/calendar.css">
+        <link rel="stylesheet" href="/css/sidebar.css">
+        <link rel="stylesheet" href="/css/diary.css">
+    </head>
+    <body>
+        <div class="appShell">
+            {{! 컨트롤러에서 pageTitle="일기", navDairy=true 를 내려주세요 }}
+            {{> layout/sidebar}}
+            <main class="mainArea">
+                <div class="topBar"></div>
+                <section class="notebook">
+                    {{! 컨트롤러에서 bookmarks = BookmarkLayout.of(1) 을 내려주세요 (일기 = 왼쪽 1개, 오른쪽 3개) }}
+                    {{> layout/bookLayout}}
 
-    <!-- 왼쪽: 연도별 기록 요약 -->
-<section class="leftPage diaryLeftPage">
-    <h1>일기 :</h1>
-    <p class="diaryIntro">
-        매일 나의 기분과 하루를 기록해보세요.<br>
-        + 자유형과 시간형 양식으로 취향에 맞게 기록할 수 있어요.
-    </p>
+                    <!-- 왼쪽: 연도별 기록 요약 -->
+                    <section class="leftPage diaryLeftPage">
+                        <h1>일기 :</h1>
+                        <p class="diaryIntro">
+                            매일 나의 기분과 하루를 기록해보세요.
+                            <br>
+                            + 자유형과 시간형 양식으로 취향에 맞게 기록할 수 있어요.
+                        </p>
 
-    <div class="yearNav">
-        <button type="button" id="prevYearBtn">‹</button>
-        <span class="yearLabel" id="diaryYearLabel">2026</span>
-        <span>년도의 기록</span>
-        <button type="button" id="nextYearBtn">›</button>
-    </div>
+                        <div class="yearNav">
+                            <button type="button" id="prevYearBtn">‹</button>
+                            <span class="yearLabel" id="diaryYearLabel">2026</span>
+                            <span>년도의 기록</span>
+                            <button type="button" id="nextYearBtn">›</button>
+                        </div>
 
-    <!-- 기분 그래프 (월별 평점 평균 등, 값은 컨트롤러에서 --height로 내려주면 됩니다) -->
-    <div class="moodChart" id="moodChart">
-        <div class="bar" style="--height:46%"></div>
-        <div class="bar" style="--height:38%"></div>
-        <div class="bar" style="--height:30%"></div>
-        <div class="bar" style="--height:52%"></div>
-        <div class="bar" style="--height:44%"></div>
-        <div class="bar" style="--height:22%"></div>
-        <div class="bar" style="--height:88%"></div>
-        <div class="bar" style="--height:70%"></div>
-    </div>
-    <div class="moodLabels">
-        <span>01</span><span>02</span><span>03</span><span>04</span>
-        <span>05</span><span>06</span><span>07</span><span>08</span>
-    </div>
+                        <!-- 기분 그래프 (월별 평점 평균 등, 값은 컨트롤러에서 --height로 내려주면 됩니다) -->
+                        <div class="moodChart" id="moodChart">
+                            <div class="bar" style="--height:46%"></div>
+                            <div class="bar" style="--height:38%"></div>
+                            <div class="bar" style="--height:30%"></div>
+                            <div class="bar" style="--height:52%"></div>
+                            <div class="bar" style="--height:44%"></div>
+                            <div class="bar" style="--height:22%"></div>
+                            <div class="bar" style="--height:88%"></div>
+                            <div class="bar" style="--height:70%"></div>
+                        </div>
+                        <div class="moodLabels">
+                            <span>01</span>
+                            <span>02</span>
+                            <span>03</span>
+                            <span>04</span>
+                            <span>05</span>
+                            <span>06</span>
+                            <span>07</span>
+                            <span>08</span>
+                        </div>
 
-    <div class="folderGrid" id="folderGrid">
-        <div class="folderItem" data-month="1"><span class="folderCaption">1월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">01</span></div></div>
-        <div class="folderItem" data-month="2"><span class="folderCaption">2월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">02</span></div></div>
-        <div class="folderItem" data-month="3"><span class="folderCaption">3월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">03</span></div></div>
-        <div class="folderItem" data-month="4"><span class="folderCaption">4월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">04</span></div></div>
-        <div class="folderItem" data-month="5"><span class="folderCaption">5월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">05</span></div></div>
-        <div class="folderItem" data-month="6"><span class="folderCaption">6월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">06</span></div></div>
-        <div class="folderItem" data-month="7"><span class="folderCaption">7월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">07</span></div></div>
-        <!-- 사진이 있는 달의 예시: hasPhoto 클래스 추가 -->
-        <div class="folderItem hasPhoto" data-month="8"><span class="folderCaption">8월의 기록</span><div class="folderTab"></div><div class="folderBody"><span class="folderNum">08</span></div></div>
-    </div>
-</section>
+                        <div class="folderGrid" id="folderGrid">
+                            <div class="folderItem" data-month="1">
+                                <span class="folderCaption">1월의 기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">01</span>
+                                </div>
+                            </div>
+                            <div class="folderItem" data-month="2">
+                                <span class="folderCaption">2월의 기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">02</span>
+                                </div>
+                            </div>
+                            <div class="folderItem" data-month="3">
+                                <span class="folderCaption">3월의 기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">03</span>
+                                </div>
+                            </div>
+                            <div class="folderItem" data-month="4">
+                                <span class="folderCaption">4월의 기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">04</span>
+                                </div>
+                            </div>
+                            <div class="folderItem" data-month="5">
+                                <span class="folderCaption">5월의 기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">05</span>
+                                </div>
+                            </div>
+                            <div class="folderItem" data-month="6">
+                                <span class="folderCaption">6월의 기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">06</span>
+                                </div>
+                            </div>
+                            <div class="folderItem" data-month="7">
+                                <span class="folderCaption">7월의 기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">07</span>
+                                </div>
+                            </div>
+                            <!-- 사진이 있는 달의 예시: hasPhoto 클래스 추가 -->
+                            <div class="folderItem hasPhoto" data-month="8">
+                                <span class="folderCaption">8월의
+                                    기록</span>
+                                <div class="folderTab"></div>
+                                <div class="folderBody">
+                                    <span class="folderNum">08</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-    <!-- 오른쪽: 오늘의 일기 작성 -->
-    <section class="rightPage">
-        <div class="diaryHelpRow" id="diaryHelpRow">
-            <span class="qMark">?</span>
-            <span>기능이 궁금하신가요?</span>
+                    <!-- 오른쪽: 오늘의 일기 작성 -->
+                    <section class="rightPage">
+                        <div class="diaryHelpRow" id="diaryHelpRow">
+                            <span class="qMark">?</span>
+                            <span>기능이 궁금하신가요?</span>
+                        </div>
+
+                        <div class="diaryHeaderRow">
+                            <div class="diaryAvatar"></div>
+                            <div class="diaryHeaderText">
+                                <span class="diaryHeadline">일기 바로 작성</span>
+
+                                <!-- ⭐ 별점 (요청하신 기능) -->
+                                <div class="starRating" id="starRating" data-value="0">
+                                    <span class="star" data-value="1">★</span>
+                                    <span class="star" data-value="2">★</span>
+                                    <span class="star" data-value="3">★</span>
+                                    <span class="star" data-value="4">★</span>
+                                    <span class="star" data-value="5">★</span>
+                                </div>
+                                <!-- 선택된 별점 값. 폼 제출 시 이 값을 서버로 보내면 됩니다 -->
+                                <input type="hidden" id="diaryRatingValue" name="rating" value="0">
+                            </div>
+
+                            <span class="diaryDateHint" id="diaryDateHint">클릭하여 날짜 입력 ex) 00.00.00</span>
+                        </div>
+
+                        <div class="formTabRow">
+                            <button type="button" class="formTabBtn" id="freeformTabBtn">자유형 일기 양식</button>
+                            <button type="button" class="formTabBtn active" id="timetableTabBtn">시간 기록형 일기
+                                양식</button>
+                        </div>
+
+                        <!-- 자유형 양식 -->
+                        <div class="freeformArea" id="freeformArea">
+                            <textarea id="freeformText" class="lined"
+                                placeholder="일기를 자유롭게 작성해주세요."></textarea>
+                        </div>
+
+                        <!-- 시간 기록형 양식 -->
+                        <div class="timetableArea show" id="timetableArea">
+                            <div class="timetableGrid" id="timetableGrid">
+                                <div class="timetableCol" id="timetableColLeft"></div>
+                                <div class="timetableCol" id="timetableColRight"></div>
+                            </div>
+                        </div>
+
+                        <div class="diarySaveRow">
+                            <button type="button" class="diarySaveBtn" id="diarySaveBtn">저장</button>
+                        </div>
+                    </section>
+                </section>
+            </main>
         </div>
 
-        <div class="diaryHeaderRow">
-            <div class="diaryAvatar"></div>
-            <div class="diaryHeaderText">
-                <span class="diaryHeadline">일기 바로 작성</span>
+        <script>
+            (function() {
 
-                <!-- ⭐ 별점 (요청하신 기능) -->
-                <div class="starRating" id="starRating" data-value="0">
-                    <span class="star" data-value="1">★</span>
-                    <span class="star" data-value="2">★</span>
-                    <span class="star" data-value="3">★</span>
-                    <span class="star" data-value="4">★</span>
-                    <span class="star" data-value="5">★</span>
-                </div>
-                <!-- 선택된 별점 값. 폼 제출 시 이 값을 서버로 보내면 됩니다 -->
-                <input type="hidden" id="diaryRatingValue" name="rating" value="0">
-            </div>
+                /* ============================================================
+                    별점 시스템
+                   - 클릭하면 해당 값까지 채워지고 #diaryRatingValue(hidden input)에 저장됩니다.
+                   - 마우스를 올리면 미리보기로 채워지고, 벗어나면 실제 선택값으로 돌아갑니다.
+                   ============================================================ */
+                (function initStarRating() {
+                    const wrap = document.getElementById("starRating");
+                    const hiddenInput = document.getElementById("diaryRatingValue");
+                    const stars = Array.from(wrap.querySelectorAll(".star"));
 
-            <span class="diaryDateHint" id="diaryDateHint">클릭하여 날짜 입력 ex) 00.00.00</span>
-        </div>
+                    function paint(upTo) {
+                        stars.forEach(star => {
+                            const v = parseInt(star.getAttribute("data-value"), 10);
+                            star.classList.toggle("filled", v <= upTo);
+                        });
+                    }
 
-        <div class="formTabRow">
-            <button type="button" class="formTabBtn" id="freeformTabBtn">자유형 일기 양식</button>
-            <button type="button" class="formTabBtn active" id="timetableTabBtn">시간 기록형 일기 양식</button>
-        </div>
+                    function getSelected() {
+                        return parseInt(wrap.getAttribute("data-value"), 10) || 0;
+                    }
 
-        <!-- 자유형 양식 -->
-        <div class="freeformArea" id="freeformArea">
-            <textarea id="freeformText" class="lined" placeholder="일기를 자유롭게 작성해주세요."></textarea>
-        </div>
+                    stars.forEach(star => {
+                        const v = parseInt(star.getAttribute("data-value"), 10);
 
-        <!-- 시간 기록형 양식 -->
-        <div class="timetableArea show" id="timetableArea">
-            <div class="timetableGrid" id="timetableGrid">
-                <div class="timetableCol" id="timetableColLeft"></div>
-                <div class="timetableCol" id="timetableColRight"></div>
-            </div>
-        </div>
+                        star.addEventListener("mouseenter", () => paint(v));
+                        star.addEventListener("click", () => {
+                            wrap.setAttribute("data-value", String(v));
+                            hiddenInput.value = String(v);
+                            paint(v);
+                        });
+                    });
 
-        <div class="diarySaveRow">
-            <button type="button" class="diarySaveBtn" id="diarySaveBtn">저장</button>
-        </div>
-    </section>
-</section>
-</main>
-</div>
+                    wrap.addEventListener("mouseleave", () => paint(getSelected()));
 
-<script>
-    (function () {
+                    // 초기 표시(서버에서 기존 별점을 내려주는 경우 대비)
+                    paint(getSelected());
+                })();
 
-        /* ============================================================
-           ⭐ 별점 시스템 (요청하신 기능)
-           - 클릭하면 해당 값까지 채워지고 #diaryRatingValue(hidden input)에 저장됩니다.
-           - 마우스를 올리면 미리보기로 채워지고, 벗어나면 실제 선택값으로 돌아갑니다.
-           ============================================================ */
-        (function initStarRating() {
-            const wrap = document.getElementById("starRating");
-            const hiddenInput = document.getElementById("diaryRatingValue");
-            const stars = Array.from(wrap.querySelectorAll(".star"));
+                /* ============================================================
+                   양식 전환 탭 (자유형 / 시간 기록형)
+                   ============================================================ */
+                const freeformTabBtn = document.getElementById("freeformTabBtn");
+                const timetableTabBtn = document.getElementById("timetableTabBtn");
+                const freeformArea = document.getElementById("freeformArea");
+                const timetableArea = document.getElementById("timetableArea");
 
-            function paint(upTo) {
-                stars.forEach(star => {
-                    const v = parseInt(star.getAttribute("data-value"), 10);
-                    star.classList.toggle("filled", v <= upTo);
+                freeformTabBtn.addEventListener("click", () => {
+                    freeformTabBtn.classList.add("active");
+                    timetableTabBtn.classList.remove("active");
+                    freeformArea.classList.add("show");
+                    timetableArea.classList.remove("show");
                 });
-            }
-
-            function getSelected() {
-                return parseInt(wrap.getAttribute("data-value"), 10) || 0;
-            }
-
-            stars.forEach(star => {
-                const v = parseInt(star.getAttribute("data-value"), 10);
-
-                star.addEventListener("mouseenter", () => paint(v));
-                star.addEventListener("click", () => {
-                    wrap.setAttribute("data-value", String(v));
-                    hiddenInput.value = String(v);
-                    paint(v);
+                timetableTabBtn.addEventListener("click", () => {
+                    timetableTabBtn.classList.add("active");
+                    freeformTabBtn.classList.remove("active");
+                    timetableArea.classList.add("show");
+                    freeformArea.classList.remove("show");
                 });
-            });
 
-            wrap.addEventListener("mouseleave", () => paint(getSelected()));
+                /* ============================================================
+                   시간 기록형 양식 - 00~23시 두 칸(왼쪽 00~11 / 오른쪽 12~23) 자동 생성
+                   ============================================================ */
+                (function buildTimetable() {
+                    const left = document.getElementById("timetableColLeft");
+                    const right = document.getElementById("timetableColRight");
 
-            // 초기 표시(서버에서 기존 별점을 내려주는 경우 대비)
-            paint(getSelected());
-        })();
+                    function pad2(n) {
+                        return n < 10 ? "0" + n : "" + n;
+                    }
 
-        /* ============================================================
-           양식 전환 탭 (자유형 / 시간 기록형)
-           ============================================================ */
-        const freeformTabBtn = document.getElementById("freeformTabBtn");
-        const timetableTabBtn = document.getElementById("timetableTabBtn");
-        const freeformArea = document.getElementById("freeformArea");
-        const timetableArea = document.getElementById("timetableArea");
+                    for (let h = 0; h < 24; h++) {
+                        const row = document.createElement("div");
+                        row.className = "timetableRow";
 
-        freeformTabBtn.addEventListener("click", () => {
-            freeformTabBtn.classList.add("active");
-            timetableTabBtn.classList.remove("active");
-            freeformArea.classList.add("show");
-            timetableArea.classList.remove("show");
-        });
-        timetableTabBtn.addEventListener("click", () => {
-            timetableTabBtn.classList.add("active");
-            freeformTabBtn.classList.remove("active");
-            timetableArea.classList.add("show");
-            freeformArea.classList.remove("show");
-        });
+                        const label = document.createElement("div");
+                        label.className = "hourLabel";
+                        label.textContent = pad2(h);
 
-        /* ============================================================
-           시간 기록형 양식 - 00~23시 두 칸(왼쪽 00~11 / 오른쪽 12~23) 자동 생성
-           ============================================================ */
-        (function buildTimetable() {
-            const left = document.getElementById("timetableColLeft");
-            const right = document.getElementById("timetableColRight");
+                        const input = document.createElement("input");
+                        input.type = "text";
+                        input.name = "hour_" + pad2(h);
+                        input.placeholder = "";
 
-            function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+                        row.appendChild(label);
+                        row.appendChild(input);
 
-            for (let h = 0; h < 24; h++) {
-                const row = document.createElement("div");
-                row.className = "timetableRow";
+                        if (h < 12) left.appendChild(row);
+                        else right.appendChild(row);
+                    }
+                })();
 
-                const label = document.createElement("div");
-                label.className = "hourLabel";
-                label.textContent = pad2(h);
+                /* ============================================================
+                   연도 이동 (앞뒤로 넘기는 버튼) - 실제 데이터 로딩은 서버 연동 시 fetch 추가하면 됩니다
+                   ============================================================ */
+                let diaryYear = 2026;
+                const yearLabel = document.getElementById("diaryYearLabel");
+                document.getElementById("prevYearBtn").addEventListener("click", () => {
+                    diaryYear--;
+                    yearLabel.textContent = diaryYear;
+                });
+                document.getElementById("nextYearBtn").addEventListener("click", () => {
+                    diaryYear++;
+                    yearLabel.textContent = diaryYear;
+                });
 
-                const input = document.createElement("input");
-                input.type = "text";
-                input.name = "hour_" + pad2(h);
-                input.placeholder = "";
+                /* ============================================================
+                   월별 폴더 클릭 -> 해당 월 일기 리스트로 이동 (라우팅은 프로젝트에 맞게 수정하세요)
+                   ============================================================ */
+                document.querySelectorAll(".folderItem").forEach(folder => {
+                    folder.addEventListener("click", () => {
+                        const month = folder.getAttribute("data-month");
+                        console.log("이동할 월:", month);
+                        // 예: window.location.href = "/dairy/" + diaryYear + "/" + month;
+                    });
+                });
 
-                row.appendChild(label);
-                row.appendChild(input);
+                /* ============================================================
+                   날짜 클릭 입력 (지금은 prompt로 임시 처리, 실제 UI는 필요하면 캘린더 페이지에서
+                   만든 커스텀 피커 스타일을 재사용하셔도 좋아요)
+                   ============================================================ */
+                document.getElementById("diaryDateHint").addEventListener("click", function() {
+                    const value = prompt("날짜를 입력하세요 (예: 26.08.07)", "");
+                    if (value) this.textContent = value;
+                });
 
-                if (h < 12) left.appendChild(row); else right.appendChild(row);
-            }
-        })();
+                /* ============================================================
+                   저장 버튼 (실제 저장 로직은 백엔드 연동 시 fetch로 교체하세요)
+                   ============================================================ */
+                document.getElementById("diarySaveBtn").addEventListener("click", () => {
+                    const rating = document.getElementById("diaryRatingValue").value;
+                    const isFreeform = freeformArea.classList.contains("show");
+                    console.log("별점:", rating, "/ 양식:", isFreeform ? "자유형" : "시간기록형");
+                    alert("저장되었습니다. (실제 서버 저장 로직은 아직 연결 전이에요)");
+                });
 
-        /* ============================================================
-           연도 이동 (앞뒤로 넘기는 버튼) - 실제 데이터 로딩은 서버 연동 시 fetch 추가하면 됩니다
-           ============================================================ */
-        let diaryYear = 2026;
-        const yearLabel = document.getElementById("diaryYearLabel");
-        document.getElementById("prevYearBtn").addEventListener("click", () => {
-            diaryYear--; yearLabel.textContent = diaryYear;
-        });
-        document.getElementById("nextYearBtn").addEventListener("click", () => {
-            diaryYear++; yearLabel.textContent = diaryYear;
-        });
+            })();
 
-        /* ============================================================
-           월별 폴더 클릭 -> 해당 월 일기 리스트로 이동 (라우팅은 프로젝트에 맞게 수정하세요)
-           ============================================================ */
-        document.querySelectorAll(".folderItem").forEach(folder => {
-            folder.addEventListener("click", () => {
-                const month = folder.getAttribute("data-month");
-                console.log("이동할 월:", month);
-                // 예: window.location.href = "/dairy/" + diaryYear + "/" + month;
-            });
-        });
-
-        /* ============================================================
-           날짜 클릭 입력 (지금은 prompt로 임시 처리, 실제 UI는 필요하면 캘린더 페이지에서
-           만든 커스텀 피커 스타일을 재사용하셔도 좋아요)
-           ============================================================ */
-        document.getElementById("diaryDateHint").addEventListener("click", function () {
-            const value = prompt("날짜를 입력하세요 (예: 26.08.07)", "");
-            if (value) this.textContent = value;
-        });
-
-        /* ============================================================
-           저장 버튼 (실제 저장 로직은 백엔드 연동 시 fetch로 교체하세요)
-           ============================================================ */
-        document.getElementById("diarySaveBtn").addEventListener("click", () => {
-            const rating = document.getElementById("diaryRatingValue").value;
-            const isFreeform = freeformArea.classList.contains("show");
-            console.log("별점:", rating, "/ 양식:", isFreeform ? "자유형" : "시간기록형");
-            alert("저장되었습니다. (실제 서버 저장 로직은 아직 연결 전이에요)");
-        });
-
-    })();
-</script>
-</body>
+        </script>
+    </body>
 </html>

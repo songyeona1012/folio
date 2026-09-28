@@ -1,13 +1,13 @@
 package com.example.folio.repository;
 
 import com.example.folio.entity.Schedule;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-
+    boolean existsByRecurringIdAndDate(Long recurringId, LocalDate date);
+    List<Schedule> findByRecurringIdAndDateGreaterThanEqual(Long id, LocalDate date);
     // 특정 날짜의 일정 목록 (오른쪽 페이지 "금일 일정 목록"에 사용)
     List<Schedule> findByDate(LocalDate date);
 

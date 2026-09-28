@@ -23,8 +23,7 @@ public class AiController {
 
         private String text;
 
-        public AiRequest() {
-        }
+        public AiRequest() {}
 
         public String getText() {
             return text;

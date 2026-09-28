@@ -29,6 +29,7 @@
     gap: 10px;
     margin-bottom: 12px;
 }
+
 .yearNav button {
     border: none;
     background: transparent;
@@ -37,7 +38,11 @@
     cursor: pointer;
     padding: 2px 4px;
 }
-.yearNav button:hover { color: var(--orange); }
+
+.yearNav button:hover {
+    color: var(--orange);
+}
+
 .yearNav .yearLabel {
     font-size: 13px;
     font-weight: 700;
@@ -57,6 +62,7 @@
     border-bottom: 1px solid var(--line);
     margin-bottom: 4px;
 }
+
 .moodChart .bar {
     width: 11%;
     height: var(--height, 20%);
@@ -64,6 +70,7 @@
     border-radius: 2px 2px 0 0;
     background: linear-gradient(#fff, #faf7f2);
 }
+
 .moodLabels {
     display: flex;
     justify-content: space-around;
@@ -88,20 +95,25 @@
 /* 폴더 모양은 이미지 없이 CSS로만 그려요 (탭 + 몸통) */
 .folderItem .folderTab {
     position: absolute;
-    top: 0; left: 8%;
+    top: 0;
+    left: 8%;
     width: 40%;
     height: 14%;
     background: #f3d98a;
     border-radius: 4px 4px 0 0;
 }
+
 .folderItem .folderBody {
     position: absolute;
-    top: 10%; left: 0;
-    width: 100%; height: 90%;
+    top: 10%;
+    left: 0;
+    width: 100%;
+    height: 90%;
     background: linear-gradient(160deg, #fbe7a8, #f4d582);
     border-radius: 3px;
-    box-shadow: 0 3px 6px rgba(60,50,40,0.12);
+    box-shadow: 0 3px 6px rgba(60, 50, 40, 0.12);
 }
+
 .folderItem .folderNum {
     position: absolute;
     right: 6%;
@@ -112,9 +124,11 @@
     opacity: 0.85;
     z-index: 2;
 }
+
 .folderItem .folderCaption {
     position: absolute;
-    top: 2%; left: 10%;
+    top: 2%;
+    left: 10%;
     font-size: 6px;
     color: #8a6a26;
     z-index: 2;
@@ -127,7 +141,10 @@
     background-size: cover;
     background-position: center;
 }
-.folderItem.hasPhoto .folderNum { display: none; }
+
+.folderItem.hasPhoto .folderNum {
+    display: none;
+}
 
 /* ---------------- 오른쪽 페이지 ---------------- */
 .diaryHelpRow {
@@ -142,11 +159,15 @@
     cursor: pointer;
     width: max-content;
 }
+
 .diaryHelpRow .qMark {
-    width: 14px; height: 14px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     border: 1px solid #c9beb6;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 9px;
 }
 
@@ -157,13 +178,21 @@
     margin-bottom: 16px;
     flex-wrap: wrap;
 }
+
 .diaryAvatar {
-    width: 34px; height: 34px;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
     background: linear-gradient(135deg, #bdf0d8, #8fe0c0);
     flex-shrink: 0;
 }
-.diaryHeaderText { display: flex; flex-direction: column; gap: 3px; }
+
+.diaryHeaderText {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
 .diaryHeaderText .diaryHeadline {
     font-size: 12px;
     font-weight: 700;
@@ -175,6 +204,7 @@
     display: flex;
     gap: 2px;
 }
+
 .starRating .star {
     font-size: 16px;
     line-height: 1;
@@ -182,8 +212,14 @@
     cursor: pointer;
     transition: color 0.12s, transform 0.12s;
 }
-.starRating .star:hover { transform: scale(1.12); }
-.starRating .star.filled { color: #f0b429; }
+
+.starRating .star:hover {
+    transform: scale(1.12);
+}
+
+.starRating .star.filled {
+    color: #f0b429;
+}
 
 .diaryDateHint {
     font-family: 'Cormorant Garamond', serif;
@@ -193,7 +229,10 @@
     margin-left: auto;
     cursor: pointer;
 }
-.diaryDateHint:hover { color: var(--orange); }
+
+.diaryDateHint:hover {
+    color: var(--orange);
+}
 
 /* ---------------- 양식 전환 탭 ---------------- */
 .formTabRow {
@@ -201,6 +240,7 @@
     gap: 8px;
     margin-bottom: 14px;
 }
+
 .formTabBtn {
     flex: 1;
     border: 1px solid var(--line);
@@ -212,6 +252,7 @@
     font-family: 'Noto Sans KR', sans-serif;
     cursor: pointer;
 }
+
 .formTabBtn.active {
     border-color: #6fa3d8;
     color: #3c7bb8;
@@ -223,7 +264,11 @@
 .freeformArea {
     display: none;
 }
-.freeformArea.show { display: block; }
+
+.freeformArea.show {
+    display: block;
+}
+
 .freeformArea textarea {
     width: 100%;
     min-height: 320px;
@@ -240,19 +285,23 @@
 /* 줄노트(가로줄) 스타일: line-height와 background-size 줄 간격을 맞춰야 선 위에 글자가 얹혀요 */
 .freeformArea textarea.lined {
     line-height: 26px;
-    background-image: repeating-linear-gradient(
-            to bottom,
+    background-image: repeating-linear-gradient(to bottom,
             transparent 0,
             transparent 25px,
             var(--line) 25px,
-            var(--line) 26px
-    );
-    background-position: 0 12px; /* padding-top(12px)만큼 내려서 첫 줄부터 선에 맞춤 */
+            var(--line) 26px);
+    background-position: 0 12px;
+    /* padding-top(12px)만큼 내려서 첫 줄부터 선에 맞춤 */
 }
 
 /* ---------------- 시간 기록형 양식 ---------------- */
-.timetableArea { display: none; }
-.timetableArea.show { display: block; }
+.timetableArea {
+    display: none;
+}
+
+.timetableArea.show {
+    display: block;
+}
 
 .timetableGrid {
     display: grid;
@@ -261,7 +310,12 @@
     max-height: 300px;
     overflow-y: auto;
 }
-.timetableCol { display: flex; flex-direction: column; }
+
+.timetableCol {
+    display: flex;
+    flex-direction: column;
+}
+
 .timetableRow {
     display: grid;
     grid-template-columns: 26px 1fr;
@@ -270,11 +324,13 @@
     border-bottom: 1px dashed var(--line);
     padding: 4px 0;
 }
+
 .timetableRow .hourLabel {
     font-size: 9.5px;
     color: #a39b96;
     text-align: right;
 }
+
 .timetableRow input {
     border: none;
     background: transparent;
@@ -283,9 +339,10 @@
     font-family: inherit;
     padding: 3px 4px;
 }
+
 .timetableRow input:focus {
     outline: none;
-    background: rgba(233,105,44,0.06);
+    background: rgba(233, 105, 44, 0.06);
     border-radius: 4px;
 }
 
@@ -294,6 +351,7 @@
     text-align: center;
     margin-top: 16px;
 }
+
 .diarySaveBtn {
     border: none;
     background: var(--orange);
@@ -304,4 +362,7 @@
     font-weight: 500;
     cursor: pointer;
 }
-.diarySaveBtn:hover { opacity: 0.92; }
+
+.diarySaveBtn:hover {
+    opacity: 0.92;
+}
