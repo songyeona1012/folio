@@ -25,8 +25,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+    // OpenAI
+    implementation 'com.openai:openai-java:4.69.3'
     implementation 'com.google.genai:google-genai:1.72.0'
-
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'

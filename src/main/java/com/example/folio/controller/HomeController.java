@@ -18,9 +18,20 @@ public class HomeController {
     }
 
     @GetMapping("/")
-    public String login() {
+    public String intro(Model model) {
+        addUserInfo(model);
+        return "intro";
+    }
+
+
+    @GetMapping("/login")
+    public String login(Model model){
+        addUserInfo(model);
+        model.addAttribute("pageTitle", "Folio");
+
         return "login";
     }
+
 
     @GetMapping("/main")
     public String main(Model model) {

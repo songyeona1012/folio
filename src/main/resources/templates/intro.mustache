@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <title>폴리오</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="/css/sidebar.css">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Noto+Serif+KR:wght@300;400;500;600&display=swap"
+            rel="stylesheet">
+        <style>
+            :root {
+                box-sizing: border-box;
+                padding-top: env(safe-area-inset-top, 0px);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+
+                --bg: #faf9f6;
+                --ink: #1a1a1a;
+                --ink-soft: #8f8a82;
+                --line: #ddd7cc;
+                --orange: #e9692c;
+            }
+
+            html {
+                scroll-padding-top: env(safe-area-inset-top, 0px);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :root:not([data-theme="light"]) {
+                    --bg: #171613;
+                    --ink: #ECE7E0;
+                    --ink-soft: #948e84;
+                    --line: #38352c;
+                }
+            }
+
+            :root[data-theme="dark"] {
+                --bg: #171613;
+                --ink: #ECE7E0;
+                --ink-soft: #948e84;
+                --line: #38352c;
+            }
+
+            html,
+            body {
+                height: 100%;
+                margin: 0;
+                background: var(--bg);
+                color: var(--ink);
+                font-family: 'Noto Serif KR', serif;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .page {
+                min-height: 100%;
+                display: flex;
+                flex-direction: column;
+                max-width: 1440px;
+                margin: 0 auto;
+                padding: 48px 64px 40px;
+            }
+
+            header.top {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+
+            .wordmark {
+                font-family: 'Cormorant Garamond', serif;
+                font-style: italic;
+                font-weight: 400;
+                font-size: clamp(44px, 7vw, 88px);
+                line-height: 1;
+                margin: 0;
+            }
+
+            .signup-link {
+                background: none;
+                border: none;
+                font-family: 'Cormorant Garamond', serif;
+                font-style: italic;
+                font-size: 18px;
+                color: var(--ink);
+                cursor: pointer;
+                padding: 4px 0;
+            }
+
+            main.hero {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                gap: 28px;
+                padding: 40px 0;
+            }
+
+            .slogan {
+                font-family: 'Cormorant Garamond', serif;
+                font-style: italic;
+                font-weight: 400;
+                font-size: clamp(30px, 6vw, 70px);
+                line-height: 1.35;
+                margin: 0;
+            }
+
+            .slogan .l2 {
+                display: block;
+                margin-left: clamp(0px, 6vw, 90px);
+                margin-top: 6px;
+            }
+
+            .tagline {
+                font-family: 'Cormorant Garamond', serif;
+                font-style: italic;
+                font-size: clamp(16px, 2vw, 26px);
+                color: var(--ink);
+                margin: 0;
+            }
+
+            .login-pill {
+                margin-top: 10px;
+                background: transparent;
+                border: 1.5px solid var(--line);
+                border-radius: 30px;
+                padding: 15px 64px;
+                font-family: 'Noto Serif KR', serif;
+                font-size: 14px;
+                letter-spacing: 0.06em;
+                color: var(--ink);
+                cursor: pointer;
+                transition: border-color 0.2s, color 0.2s;
+            }
+
+            .login-pill:hover {
+                border-color: var(--orange);
+                color: var(--orange);
+            }
+
+            footer.scroll-note {
+                text-align: center;
+                font-family: 'Cormorant Garamond', serif;
+                font-style: italic;
+                font-size: clamp(13px, 1.6vw, 20px);
+                color: var(--ink-soft);
+                padding-top: 10px;
+            }
+
+            @media (max-width: 640px) {
+                .page {
+                    padding: 28px 24px 30px;
+                }
+
+                .slogan .l2 {
+                    margin-left: 20px;
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="page">
+            <header class="top">
+                <h1 class="wordmark">폴리오</h1>
+                <button class="signup-link" id="signupLink">회원가입</button>
+            </header>
+
+            <main class="hero">
+                <h2 class="slogan">이곳은 슬로건 자리<span class="l2">뭔가가 적혀져있지.</span>
+                </h2>
+                <p class="tagline">캘린더. 일기. 주기. 친구 ~</p>
+                <button class="login-pill" id="loginBtn">로그인</button>
+            </main>
+
+            <footer class="scroll-note">하단 스크롤 시에 노션 웹 처럼 내부 페이지 별 기능 설명 보여주기</footer>
+        </div>
+
+        <script>
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                window.location.href = "/login";
+            });
+            document.getElementById('signupLink').addEventListener('click', function() {
+                // 회원가입 기능은 아직 준비 중입니다
+            });
+
+        </script>
+    </body>
+</html>
