@@ -7,6 +7,7 @@
     --line: #e6ddda;
     --sun: #923a3a;
     --sat: #5c68b9;
+    --black: #000000;
 
     --tag-health-bg: rgba(114, 131, 151, 0.20);
     --tag-health-fg: #4c5c6b;
@@ -155,13 +156,13 @@ Folio 제목
 
     color: var(--orange);
 
-    font-size: 26px;
+    font-size: 29px;
 
     margin: 0;
 }
 
 .brand-row .rate {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--gold);
     white-space: nowrap;
 }
@@ -171,7 +172,7 @@ Folio 제목
 ========================================================= */
 
 .briefing {
-    font-size: 11.5px;
+    font-size: 12.5px;
 
     line-height: 1.6;
 
@@ -238,7 +239,7 @@ Folio 제목
 
     align-items: baseline;
 
-    gap: 8px;
+    gap: 9px;
 
     padding: 10px 8px 8px;
 
@@ -246,7 +247,7 @@ Folio 제목
 }
 
 .cal-head .year {
-    font-size: 13px;
+    font-size: 14px;
 
     border-bottom: 1px solid #342f2d;
 
@@ -256,7 +257,7 @@ Folio 제목
 }
 
 .cal-head .month {
-    font-size: 16px;
+    font-size: 18px;
 
     font-weight: 700;
 
@@ -272,8 +273,8 @@ Folio 제목
 }
 
 .cal-nav button {
-    width: 21px;
-    height: 21px;
+    width: 24px;
+    height: 24px;
 
     border-radius: 50%;
 
@@ -285,7 +286,7 @@ Folio 제목
 
     cursor: pointer;
 
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .cal-nav button:hover {
@@ -311,7 +312,7 @@ Folio 제목
 .weekdays span {
     text-align: center;
 
-    font-size: 10.5px;
+    font-size: 11.5px;
 
     font-weight: 700;
 
@@ -360,6 +361,8 @@ Folio 제목
     border-radius: 5px;
 
     user-select: none;
+
+    min-width: 0;
 }
 
 .day:hover:not(.other) {
@@ -367,12 +370,12 @@ Folio 제목
 }
 
 .day .num {
-    font-size: 11.5px;
+    font-size: 12.5px;
 
     font-weight: 400;
 
-    width: 19px;
-    height: 19px;
+    width: 21px;
+    height: 21px;
 
     margin-bottom: 2px;
 
@@ -413,9 +416,9 @@ Folio 제목
 .day .tag {
     margin-top: 3px;
 
-    font-size: 7px;
+    font-size: 8px;
 
-    line-height: 1.2;
+    line-height: 1.25;
 
     text-align: center;
 
@@ -423,7 +426,9 @@ Folio 제목
 
     border-radius: 3px;
 
-    max-width: 48px;
+    max-width: 54px;
+
+    box-sizing: border-box;
 
     overflow: hidden;
 
@@ -471,7 +476,7 @@ Folio 제목
     flex: 0 0 auto;
 
     margin-top: 0;
-    margin-bottom: 50px;
+    margin-bottom: 46px;
 }
 
 /* 자연어 입력창 */
@@ -479,7 +484,7 @@ Folio 제목
 .natural-schedule .add-pill {
     width: 100%;
 
-    min-height: 46px;
+    min-height: 48px;
 
     box-sizing: border-box;
 
@@ -489,13 +494,13 @@ Folio 제목
 
     border-radius: 24px;
 
-    padding: 12px 52px 12px 17px;
+    padding: 12px 54px 12px 18px;
 
-    font-size: 11px;
+    font-size: 12.5px;
 
     font-weight: 300;
 
-    color: var(--button-text);
+    color: var(--black);
 
     text-align: left;
 
@@ -526,7 +531,7 @@ Folio 제목
 
     border-color: var(--button-border);
 
-    color: var(--button-text);
+    color: var(--black);
 }
 
 .natural-schedule .add-pill:hover {
@@ -545,8 +550,8 @@ Folio 제목
     right: 8px !important;
     top: 50% !important;
 
-    width: 32px !important;
-    height: 32px !important;
+    width: 34px !important;
+    height: 34px !important;
 
     transform: translateY(-50%) !important;
 
@@ -562,7 +567,7 @@ Folio 제목
 
     background-position: center !important;
 
-    background-size: 24px 24px !important;
+    background-size: 26px 26px !important;
 
     color: transparent !important;
 
@@ -588,7 +593,7 @@ Folio 제목
 
     background-position: center !important;
 
-    background-size: 24px 24px !important;
+    background-size: 26px 26px !important;
 
     color: transparent !important;
 
@@ -603,6 +608,52 @@ Folio 제목
     opacity: 0.6;
 
     cursor: default;
+}
+
+/* 버튼 안의 <img>와 배경 이미지가 겹쳐 두 개로 보이던 문제 → 배경 이미지만 사용 */
+.natural-schedule .naturalScheduleBtn img {
+    display: none;
+}
+
+/* AI가 읽는 중: + 아이콘 대신 도는 원 표시 */
+.natural-schedule .naturalScheduleBtn.is-loading,
+.natural-schedule .naturalScheduleBtn.is-loading:hover,
+.natural-schedule .naturalScheduleBtn.is-loading:focus,
+.natural-schedule .naturalScheduleBtn.is-loading:active,
+.natural-schedule .naturalScheduleBtn.is-loading:disabled {
+    background-image: none !important;
+
+    opacity: 1;
+}
+
+.natural-schedule .naturalScheduleBtn.is-loading::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 18px;
+    height: 18px;
+
+    margin: -9px 0 0 -9px;
+
+    box-sizing: border-box;
+
+    border: 2.5px solid var(--button-border);
+
+    border-top-color: transparent;
+
+    border-radius: 50%;
+
+    animation: naturalSpin 0.7s linear infinite;
+}
+
+@keyframes naturalSpin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* =========================================================
@@ -622,10 +673,10 @@ Folio 제목
 .time-text::before {
     content: "";
 
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
 
-    flex: 0 0 15px;
+    flex: 0 0 16px;
 
     background-image: url('../img/clock.png');
 
@@ -659,13 +710,13 @@ Folio 제목
 }
 
 .section h4 {
-    font-size: 13px;
+    font-size: 14.5px;
 
     font-weight: 700;
 
     color: var(--gold);
 
-    margin: 0 0 6px;
+    margin: 0 0 7px;
 
     display: flex;
 
@@ -677,7 +728,7 @@ Folio 제목
 }
 
 .section h4 .reorder {
-    font-size: 13px;
+    font-size: 14.5px;
 
     color: #a39b96;
 
@@ -691,7 +742,7 @@ Folio 제목
 }
 
 .rightDashboard>.section:first-of-type h4 {
-    margin-bottom: 9px;
+    margin-bottom: 10px;
 }
 
 .rightDashboard>.section:nth-of-type(2) {
@@ -713,7 +764,7 @@ Folio 제목
 
     flex-direction: column;
 
-    gap: 7px;
+    gap: 8px;
 }
 
 .check-list li {
@@ -721,9 +772,9 @@ Folio 제목
 
     align-items: center;
 
-    gap: 7px;
+    gap: 8px;
 
-    font-size: 10.5px;
+    font-size: 11.5px;
 
     color: var(--gold);
 
@@ -731,8 +782,8 @@ Folio 제목
 }
 
 .check-list .chk {
-    width: 10px;
-    height: 10px;
+    width: 11px;
+    height: 11px;
 
     border: 0.7px solid rgba(98, 67, 37, 0.8);
 
@@ -758,7 +809,7 @@ Folio 제목
 ========================================================= */
 
 .health-row {
-    font-size: 10.5px;
+    font-size: 11.5px;
 
     color: var(--gold);
 
@@ -776,7 +827,7 @@ Folio 제목
 .health-row .muted {
     color: #a39b96;
 
-    font-size: 10px;
+    font-size: 11px;
 
     white-space: nowrap;
 }
@@ -806,19 +857,19 @@ Folio 제목
 
     align-items: center;
 
-    gap: 7px;
+    gap: 8px;
 
-    padding: 7px 0;
+    padding: 8px 0;
 
     border-bottom: 1px dashed var(--line);
 }
 
 .today-list .time {
-    font-size: 9.5px;
+    font-size: 10.5px;
 
     color: #a39b96;
 
-    width: 54px;
+    width: 62px;
 
     flex-shrink: 0;
 }
@@ -826,34 +877,90 @@ Folio 제목
 .today-list .title {
     flex: 1;
 
-    font-size: 10.5px;
+    min-width: 0;
+
+    font-size: 11.5px;
 
     color: var(--gold);
 }
 
 .today-list .chk2 {
-    width: 10px;
-    height: 10px;
+    --chk-color: var(--orange);
+
+    position: relative;
+
+    width: 13px;
+    height: 13px;
+
+    box-sizing: border-box;
 
     border-radius: 3px;
 
-    border: 0.7px solid rgba(98, 67, 37, 0.5);
+    border: 1.2px solid rgba(98, 67, 37, 0.5);
+
+    background: transparent;
 
     flex-shrink: 0;
 
     cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.12s ease;
 }
 
+/* 카테고리별 체크 색 (완료 전에는 테두리만 색으로 표시) */
 .today-list li.important .chk2 {
-    background: var(--tag-important-fg);
+    --chk-color: var(--tag-important-fg);
 
     border-color: var(--tag-important-fg);
 }
 
 .today-list li.health .chk2 {
-    background: var(--tag-health-fg);
+    --chk-color: var(--tag-health-fg);
 
     border-color: var(--tag-health-fg);
+}
+
+/* 마우스를 올리면 살짝 채워져서 누를 수 있다는 걸 보여줌 */
+.today-list .chk2:hover {
+    border-color: var(--chk-color);
+
+    background: rgba(233, 105, 44, 0.12);
+}
+
+.today-list .chk2:active {
+    transform: scale(0.88);
+}
+
+/* 완료: 색으로 채우고 체크 표시 */
+.today-list li.completed .chk2 {
+    background: var(--chk-color);
+
+    border-color: var(--chk-color);
+}
+
+.today-list li.completed .chk2::after {
+    content: "";
+
+    position: absolute;
+
+    left: 3.5px;
+    top: 0.5px;
+
+    width: 3px;
+    height: 6.5px;
+
+    border: solid #fff;
+
+    border-width: 0 1.6px 1.6px 0;
+
+    transform: rotate(45deg);
+}
+
+.today-list li.completed .time {
+    opacity: 0.5;
 }
 
 .today-list li.completed .title {
@@ -867,8 +974,8 @@ Folio 제목
 ========================================================= */
 
 .delete-schedule {
-    width: 17px;
-    height: 17px;
+    width: 18px;
+    height: 18px;
 
     flex-shrink: 0;
 
@@ -878,9 +985,9 @@ Folio 제목
 
     color: #b9aaa1;
 
-    font-size: 16px;
+    font-size: 17px;
 
-    line-height: 15px;
+    line-height: 16px;
 
     padding: 0;
 
@@ -926,15 +1033,15 @@ Folio 제목
 }
 
 .time-edit {
-    width: 60px;
+    width: 66px;
 
-    font-size: 10px;
+    font-size: 11px;
 
     border: 1px solid var(--orange-line);
 
     border-radius: 4px;
 
-    padding: 2px;
+    padding: 2px 3px;
 
     color: var(--gold);
 
@@ -945,12 +1052,14 @@ Folio 제목
     outline: none;
 
     flex-shrink: 0;
+
+    box-sizing: border-box;
 }
 
 .title-edit {
     width: 100%;
 
-    font-size: 10.5px;
+    font-size: 11.5px;
 
     border: 1px solid var(--orange-line);
 
@@ -965,6 +1074,8 @@ Folio 제목
     background: #fff;
 
     outline: none;
+
+    box-sizing: border-box;
 }
 
 /* =========================================================
@@ -994,14 +1105,14 @@ Folio 제목
 
     z-index: 20;
 
-    font-size: 13px;
+    font-size: 14px;
 }
 
-/* 메모 안의 모든 글자 13px 통일 */
+/* 메모 안의 모든 글자 14px 통일 */
 
 .memoPanel,
 .memoPanel * {
-    font-size: 13px !important;
+    font-size: 14px !important;
 }
 
 /* 메모 배경 */
@@ -1050,17 +1161,17 @@ Folio 제목
 
     align-items: flex-start;
 
-    margin-bottom: 7px;
+    margin-bottom: 8px;
 
     flex-shrink: 0;
 
     position: relative;
 }
 
-.memoDate {
+.memoPanel .memoDate {
     color: #624325;
 
-    font-size: 15px;
+    font-size: 16px !important;
 
     font-weight: 700;
 
@@ -1069,7 +1180,7 @@ Folio 제목
 
 /* 닫기 버튼 */
 
-.memoClose {
+.memoPanel .memoClose {
     position: absolute;
 
     right: 0;
@@ -1081,7 +1192,7 @@ Folio 제목
 
     color: #8e8179;
 
-    font-size: 21px;
+    font-size: 22px !important;
 
     line-height: 1;
 
@@ -1096,8 +1207,6 @@ Folio 제목
     grid-template-columns: 30% 70%;
 
     align-items: center;
-
-    font-size: 15px;
 }
 
 .memoColumnHeader div {
@@ -1151,11 +1260,11 @@ Folio 제목
 
     width: 100%;
 
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
 
-    flex: 0 0 28px;
+    flex: 0 0 30px;
 
     border-bottom: none;
 
@@ -1164,8 +1273,6 @@ Folio 제목
     background: transparent;
 
     box-sizing: border-box;
-
-    font-size: 13px !important;
 }
 
 /* 시간 */
@@ -1174,7 +1281,7 @@ Folio 제목
     min-width: 0;
 
     width: 100%;
-    height: 28px;
+    height: 30px;
 
     display: flex;
 
@@ -1186,9 +1293,9 @@ Folio 제목
 
     color: #85756c;
 
-    font-size: 13px !important;
-
     line-height: 1;
+
+    white-space: nowrap;
 
     box-sizing: border-box;
 }
@@ -1199,7 +1306,7 @@ Folio 제목
     min-width: 0;
 
     width: 100%;
-    height: 28px;
+    height: 30px;
 
     display: flex;
 
@@ -1214,15 +1321,11 @@ Folio 제목
     border-bottom: none;
 
     box-sizing: border-box;
-
-    font-size: 13px !important;
 }
 
 .memoSchedule,
 .memoPlaceholder {
     font-family: inherit;
-
-    font-size: 13px !important;
 
     font-weight: 400;
 
@@ -1251,8 +1354,6 @@ Folio 제목
     cursor: pointer;
 
     box-sizing: border-box;
-
-    font-size: 13px !important;
 }
 
 .memoEvent:hover .memoPlaceholder {
@@ -1263,56 +1364,54 @@ Folio 제목
 새 일정 입력
 ========================================================= */
 
-.memoNewTime {
-    width: 74px;
+.memoNewTime,
+.memoNewTitle {
+    position: relative;
 
-    height: 28px;
+    height: 30px;
 
     border: none;
-
-    border-bottom: none;
 
     background: transparent;
 
     color: #624325;
 
-    font-family: 'Noto Sans KR', sans-serif;
-
-    font-size: 13px !important;
+    font-family: inherit;
 
     font-weight: 400;
 
+    line-height: 1;
+
     outline: none;
 
-    padding: 0 3px;
+    padding: 0 4px;
+
+    margin: 0;
 
     box-sizing: border-box;
 }
 
+.memoNewTime {
+    width: 80px;
+}
+
 .memoNewTitle {
     width: 100%;
+}
 
-    height: 28px;
+/* 빈 줄에서 입력할 때만 안내 문구 위치(top: 4px)와 맞춤 */
+.memo-empty .memoNewTime,
+.memo-empty .memoNewTitle {
+    top: 4px;
+}
 
-    border: none;
-
-    border-bottom: none;
-
-    background: transparent;
-
+.memoNewTime::placeholder,
+.memoNewTitle::placeholder {
     color: #624325;
 
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: inherit;
 
-    font-size: 13px !important;
-
-    font-weight: 400;
-
-    outline: none;
-
-    padding: 0 3px;
-
-    box-sizing: border-box;
+    opacity: 1;
 }
 
 /* =========================================================
@@ -1323,8 +1422,6 @@ Folio 제목
     text-align: center;
 
     color: #a39b96;
-
-    font-size: 13px !important;
 
     padding: 30px 10px;
 }
@@ -1532,7 +1629,7 @@ Folio 제목
 
     color: #a39b96;
 
-    font-size: 11px;
+    font-size: 12px;
 
     padding: 12px 10px;
 }
@@ -1559,11 +1656,11 @@ Toast
 
     color: #faf9f7;
 
-    font-size: 14px;
+    font-size: 15px;
 
-    padding: 9px 18px;
+    padding: 10px 20px;
 
-    border-radius: 20px;
+    border-radius: 22px;
 
     opacity: 0;
 
@@ -1644,7 +1741,7 @@ Toast
 
     z-index: 61;
 
-    width: 176px;
+    width: 190px;
 
     background: #fffefb;
 
@@ -1693,7 +1790,7 @@ Toast
 
     color: var(--orange);
 
-    font-size: 14px;
+    font-size: 15.5px;
 
     text-align: center;
 
@@ -1719,9 +1816,9 @@ Toast
 
     border-radius: 20px;
 
-    padding: 5px 0;
+    padding: 6px 0;
 
-    font-size: 11.5px;
+    font-size: 12.5px;
 
     font-family: inherit;
 
@@ -1799,7 +1896,7 @@ Toast
 
     z-index: 1;
 
-    width: 56px;
+    width: 60px;
 
     height: 132px;
 
@@ -1838,7 +1935,7 @@ Toast
 
     justify-content: center;
 
-    font-size: 15px;
+    font-size: 16px;
 
     color: #c9beb6;
 
@@ -1855,7 +1952,7 @@ Toast
 
     font-weight: 700;
 
-    font-size: 17px;
+    font-size: 18px;
 }
 
 .tpColon {
@@ -1871,7 +1968,7 @@ Toast
 
     color: var(--gold);
 
-    font-size: 20px;
+    font-size: 21px;
 
     padding-bottom: 2px;
 }
@@ -1889,7 +1986,7 @@ Toast
 
     padding: 9px;
 
-    font-size: 13.5px;
+    font-size: 14.5px;
 
     font-weight: 500;
 
@@ -1937,7 +2034,7 @@ Toast
 .natural-modal {
     position: relative;
 
-    width: min(520px, calc(100vw - 40px));
+    width: min(540px, calc(100vw - 40px));
 
     box-sizing: border-box;
 
@@ -1966,7 +2063,7 @@ Toast
         "Noto Serif KR",
         serif;
 
-    font-size: 32px;
+    font-size: 34px;
 
     font-weight: 600;
 
@@ -1982,7 +2079,7 @@ Toast
 
     font-family: "Noto Serif KR", serif;
 
-    font-size: 13px;
+    font-size: 14px;
 
     text-align: center;
 }
@@ -1994,9 +2091,9 @@ Toast
 
     right: 18px;
 
-    width: 30px;
+    width: 32px;
 
-    height: 30px;
+    height: 32px;
 
     padding: 0;
 
@@ -2006,11 +2103,11 @@ Toast
 
     color: #8c7e76;
 
-    font-size: 25px;
+    font-size: 27px;
 
     font-weight: 300;
 
-    line-height: 30px;
+    line-height: 32px;
 
     cursor: pointer;
 
@@ -2034,7 +2131,7 @@ Toast
 
     width: 100%;
 
-    min-height: 125px;
+    min-height: 130px;
 
     box-sizing: border-box;
 
@@ -2054,7 +2151,7 @@ Toast
 
     font-family: "Noto Serif KR", serif;
 
-    font-size: 14px;
+    font-size: 15px;
 
     line-height: 1.7;
 
@@ -2087,7 +2184,7 @@ Toast
 
     font-family: "Noto Serif KR", serif;
 
-    font-size: 12px;
+    font-size: 13px;
 }
 
 .natural-example span {
@@ -2097,7 +2194,7 @@ Toast
 
     color: #a09289;
 
-    font-size: 11px;
+    font-size: 12px;
 }
 
 .natural-example p {
@@ -2111,7 +2208,7 @@ Toast
 
     width: 100%;
 
-    height: 48px;
+    height: 50px;
 
     margin-top: 22px;
 
@@ -2125,7 +2222,7 @@ Toast
 
     font-family: "Noto Serif KR", serif;
 
-    font-size: 14px;
+    font-size: 15px;
 
     cursor: pointer;
 
@@ -2174,6 +2271,6 @@ Toast
     }
 
     .natural-modal-title {
-        font-size: 28px;
+        font-size: 30px;
     }
 }

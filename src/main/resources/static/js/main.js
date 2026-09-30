@@ -295,7 +295,7 @@
 
         const rect = anchorEl.getBoundingClientRect();
 
-        const popWidth = 176;
+        const popWidth =  190;
 
         let left = rect.left;
 
@@ -374,7 +374,9 @@
                 time: ev.time,
                 completed: ev.completed
             })
-        }).catch(e =>
+        }).then(() =>
+            loadDashboardSummary()
+        ).catch(e =>
             console.log("서버 오프라인, 로컬에서만 반영됨")
         );
     }
@@ -400,7 +402,9 @@
         if (!String(ev.id).startsWith("local_")) {
             fetch("/api/schedules/" + ev.id, {
                 method: "DELETE"
-            }).catch(e =>
+            }).then(() =>
+                loadDashboardSummary()
+            ).catch(e =>
                 console.log("서버 오프라인, 로컬에서만 삭제됨")
             );
         }
@@ -411,11 +415,11 @@
 
     function loadMonthEvents() {
         fetch(
-                "/api/schedules?year=" +
-                YEAR +
-                "&month=" +
-                MONTH
-            )
+            "/api/schedules?year=" +
+            YEAR +
+            "&month=" +
+            MONTH
+        )
             .then(res => {
                 if (!res.ok) {
                     throw new Error("로드 실패");
@@ -455,10 +459,66 @@
                 });
 
                 refreshViews();
+                loadDashboardSummary();
             })
             .catch(() => {
                 refreshViews();
             });
+    }
+
+    // ==============================
+    // 대시보드 요약 (완료도 / 혼잡도 / 가장 가까운 일정 / 가장 가까운 건강 관리)
+    // ==============================
+
+    let summaryRequest = 0;
+
+    function loadDashboardSummary() {
+        const requestId = ++summaryRequest;
+
+        fetch(
+            "/api/schedules/summary?year=" +
+            YEAR +
+            "&month=" +
+            MONTH
+        )
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error("요약 로드 실패");
+                }
+
+                return res.json();
+            })
+            .then(summary => {
+                // 늦게 도착한 이전 응답은 무시
+                if (requestId !== summaryRequest) return;
+
+                renderDashboardSummary(summary);
+            })
+            .catch(e =>
+                console.log("대시보드 요약을 불러오지 못했어요", e)
+            );
+    }
+
+    function renderDashboardSummary(s) {
+        document.getElementById("rateLabel").textContent =
+            "일정 완료도 : " +
+            (s.completionRate == null ? "-" : s.completionRate + "%");
+
+        document.getElementById("congestLabel").textContent =
+            s.congestion || "-";
+
+        document.getElementById("nextEventLabel").textContent =
+            s.nextEvent || "예정된 일정이 없어요";
+
+        document.getElementById("healthTitle").textContent =
+            s.nextHealthTitle || "예정된 건강 관리가 없어요";
+
+        document.getElementById("healthDays").textContent =
+            s.nextHealthDays == null ?
+                "" :
+                "[ 다음 건강 일정 : " +
+                (s.nextHealthDays === 0 ? "오늘" : s.nextHealthDays + "일 뒤") +
+                " ]";
     }
 
     function refreshViews() {
@@ -595,8 +655,8 @@
                     };
 
                     document.getElementById(
-                            "todayTitle"
-                        ).textContent =
+                        "todayTitle"
+                    ).textContent =
                         "금일 일정 목록 [ " +
                         String(cell.y).slice(2) +
                         "." +
@@ -656,8 +716,8 @@
 
             timeSpan.textContent =
                 ev.time ?
-                formatTime(ev.time) :
-                "시간없음";
+                    formatTime(ev.time) :
+                    "시간없음";
 
             const titleSpan =
                 document.createElement("span");
@@ -883,8 +943,8 @@
         if (!memoList) return;
 
         document.getElementById(
-                "memoDateLabel"
-            ).textContent =
+            "memoDateLabel"
+        ).textContent =
             formatDate(
                 selectedDate.y,
                 selectedDate.m,
@@ -995,10 +1055,10 @@
                     e => {
                         if (
                             document
-                            .getElementById(
-                                "memoPanel"
-                            )
-                            .classList.contains(
+                                .getElementById(
+                                    "memoPanel"
+                                )
+                                .classList.contains(
                                 "highlight-mode"
                             )
                         ) {
@@ -1019,10 +1079,10 @@
 
                         if (
                             document
-                            .getElementById(
-                                "memoPanel"
-                            )
-                            .classList.contains(
+                                .getElementById(
+                                    "memoPanel"
+                                )
+                                .classList.contains(
                                 "highlight-mode"
                             )
                         ) {
@@ -1049,10 +1109,10 @@
 
                         if (
                             document
-                            .getElementById(
-                                "memoPanel"
-                            )
-                            .classList.contains(
+                                .getElementById(
+                                    "memoPanel"
+                                )
+                                .classList.contains(
                                 "highlight-mode"
                             )
                         ) {
@@ -1233,6 +1293,8 @@
         timeInput.className =
             "memoNewTime";
 
+        timeInput.placeholder = "시간 선택";
+
         attachTimePicker(
             timeInput,
             () => titleInput.focus()
@@ -1301,33 +1363,33 @@
             );
 
             fetch("/api/schedules", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        date: selectedDate.y +
-                            "-" +
-                            pad(
-                                selectedDate.m
-                            ) +
-                            "-" +
-                            pad(
-                                selectedDate.d
-                            ),
-                        time: time,
-                        category: "todo",
-                        private: false
-                    })
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: title,
+                    date: selectedDate.y +
+                        "-" +
+                        pad(
+                            selectedDate.m
+                        ) +
+                        "-" +
+                        pad(
+                            selectedDate.d
+                        ),
+                    time: time,
+                    category: "todo",
+                    private: false
                 })
+            })
                 .then(res =>
                     res.json()
                 )
-                .then(saved =>
-                    tempEv.id =
-                    saved.id
-                )
+                .then(saved => {
+                    tempEv.id = saved.id;
+                    loadDashboardSummary();
+                })
                 .catch(() => {});
         }
 
@@ -1429,17 +1491,17 @@
 
                 selectedPen =
                     penOrder[
-                        (
-                            penOrder.indexOf(
-                                selectedPen
-                            ) + 1
-                        ) %
-                        penOrder.length
-                    ];
+                    (
+                        penOrder.indexOf(
+                            selectedPen
+                        ) + 1
+                    ) %
+                    penOrder.length
+                        ];
 
                 document.getElementById(
-                        "penImage"
-                    ).src =
+                    "penImage"
+                ).src =
                     "/img/pen_" +
                     selectedPen +
                     ".png";
@@ -1449,8 +1511,8 @@
                         "memoPanel"
                     )
                     .classList.add(
-                        "highlight-mode"
-                    );
+                    "highlight-mode"
+                );
             }
         );
 
@@ -1506,8 +1568,8 @@
         ).textContent = YEAR;
 
         document.getElementById(
-                "monthLabel"
-            ).textContent =
+            "monthLabel"
+        ).textContent =
             monthNames[MONTH - 1];
     }
 
@@ -1542,9 +1604,9 @@
 
         toastTimer = setTimeout(
             () =>
-            t.classList.remove(
-                "show"
-            ),
+                t.classList.remove(
+                    "show"
+                ),
             1800
         );
     }
@@ -1570,7 +1632,10 @@
         }
 
         naturalScheduleBtn.disabled = true;
-        naturalScheduleBtn.textContent = "AI가 읽는 중...";
+        // textContent를 바꾸면 버튼 안 요소가 지워지고 글자가 +와 겹쳐 보여서,
+        // 클래스로 로딩 모양만 바꾸고 안내 문구는 title(마우스 올리면 보임)로 둡니다.
+        naturalScheduleBtn.classList.add("is-loading");
+        naturalScheduleBtn.title = "AI가 읽는 중...";
 
         try {
 
@@ -1603,7 +1668,7 @@
             }
 
             // 2. AI가 분석한 일정 → DB 저장
-            naturalScheduleBtn.textContent =
+            naturalScheduleBtn.title =
                 "일정 저장 중...";
 
             const saveResponse =
@@ -1670,8 +1735,8 @@
                     };
 
                     document.getElementById(
-                            "todayTitle"
-                        ).textContent =
+                        "todayTitle"
+                    ).textContent =
                         "금일 일정 목록 [ " +
                         String(y).slice(2) +
                         "." +
@@ -1708,8 +1773,10 @@
             naturalScheduleBtn.disabled =
                 false;
 
-            naturalScheduleBtn.textContent =
-                "등록";
+            naturalScheduleBtn.classList.remove("is-loading");
+
+            naturalScheduleBtn.title =
+                "일정 등록";
         }
     });
 

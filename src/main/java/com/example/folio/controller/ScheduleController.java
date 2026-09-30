@@ -4,6 +4,7 @@ import com.example.folio.dto.ScheduleDto;
 import com.example.folio.service.ScheduleService;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,6 +36,14 @@ public class ScheduleController {
     /* 특정 날짜 */ @GetMapping("/date")
     public ResponseEntity<List<ScheduleDto>> getByDate(@RequestParam("value") String date) {
         return ResponseEntity.ok(scheduleService.getByDate(LocalDate.parse(date)));
+    }
+
+    /* 달력 화면 요약 (완료도 / 혼잡도 / 가장 가까운 일정 / 가장 가까운 건강 관리) */ @GetMapping("/summary")
+    public ResponseEntity<Map<String, Object>> getSummary(@RequestParam int year, @RequestParam int month) {
+        if (month < 1 || month > 12) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(scheduleService.getSummary(year, month));
     }
 
     /* 완료 / 미완료 */ @PatchMapping("/{id}/complete")
