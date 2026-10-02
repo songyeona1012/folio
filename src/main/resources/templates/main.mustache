@@ -71,25 +71,24 @@
                             </div>
 
                             <div class="section">
-                                <h4>일상 <span class="reorder" title="순서 변경"></span>
-                                </h4>
-
-                                <ul class="check-list" id="dailyList">
-                                    <li>
-                                        <span class="chk"></span> 물 1L 마시기
-                                    </li>
-                                    <li>
-                                        <span class="chk"></span> 비타민 영양제 먹기
-                                    </li>
-                                </ul>
+                                <div class="management-category-heading">
+                                    <h4 id="dashboardCategoryTitle">일상</h4>
+                                    <details class="dashboardCategoryMenu">
+                                        <summary aria-label="관리 카테고리 선택" title="관리 카테고리 선택"><span></span></summary>
+                                        <div class="dashboardCategoryOptions">
+                                            <button type="button" data-dashboard-category="daily">일상</button>
+                                            <button type="button" data-dashboard-category="subscription">구독</button>
+                                            <button type="button" data-dashboard-category="relationship">교체</button>
+                                        </div>
+                                    </details>
+                                </div>
+                                <ul class="dashboardManagementList" id="dashboardManagementList" aria-label="선택한 카테고리 관리 일정"></ul>
                             </div>
-
                             <div class="section">
                                 <h4>가장 가까운 건강 관리</h4>
-
                                 <div class="health-row">
-                                    <span>치과 정기 스케일링</span>
-                                    <span class="muted">[ 다음 건강 일정 : 27일 뒤 ]</span>
+                                    <span id="nearestManagementTitle">예정된 건강 관리가 없어요</span>
+                                    <span class="muted" id="nearestManagementDays"></span>
                                 </div>
                             </div>
 

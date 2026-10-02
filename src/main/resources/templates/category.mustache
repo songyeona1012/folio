@@ -18,74 +18,36 @@
                         <header class="managementIntro">
                             <div class="managementHeading">
                                 <h1>관리 :</h1>
-                                <label class="dynamicToggle">유동적 화면
-                                    <input id="showEmpty" type="checkbox" checked role="switch">
-                                    <span>켜기</span>
-                                </label>
+                                {{> layout/fluidToggle}}
                             </div>
                             <p>주기적으로 돌아오는 일정을 모아서 관리합니다.</p>
                             <p class="tip" id="weeklyBrief">이번 주 일정을 확인하고 있어요.</p>
                         </header>
-                        <nav class="categoryLinks">
-                            <a href="/index">← 관리</a>
-                            <a href="/category?category=health">건강</a>
-                            <a href="/category?category=subscription">구독</a>
-                            <a href="/category?category=relationship">교제</a>
-                            <a href="/category?category=daily">일상</a>
-                        </nav>
                         <article class="largeMemo">
                             <img id="detailMemo" class="memoImage" src="/img/memo-health.png" alt="">
                             <img id="detailTape" class="categoryTape" src="/img/tape-blue.png" alt="">
                             <span id="detailCategory" class="categoryName">건강</span>
-                            <a class="detailIcon" href="/index" aria-label="관리 화면으로 돌아가기">☰</a>
-                            <div id="detailList" class="detailList"></div>
+                            <a class="detailIcon" href="/index" aria-label="관리 화면으로 돌아가기"></a>
+                            <form id="detailAddForm" class="detailAddForm">
+                                <div class="detailAddFields">
+                                    <label class="addName">관리 이름 :<input id="detailAddTitle" aria-label="새 관리 이름" required maxlength="100" autocomplete="off"></label>
+                                    <label class="addDate">시작일 :<input id="detailAddStart" aria-label="새 관리 시작일" type="date" required min="2000-01-01" max="2100-12-31"></label>
+                                    <label class="addCycle">주기 :<span><input id="detailAddInterval" aria-label="새 관리 주기" type="number" min="1" max="365" required><select id="detailAddUnit" aria-label="새 관리 주기 단위"><option value="MONTH">개월</option><option value="DAY">일</option><option value="WEEK">주</option><option value="YEAR">년</option></select></span></label>
+                                </div>
+                                <button id="detailAddSave" type="submit" aria-label="관리 일정 등록"></button>
+                            </form>
+                            <p id="detailAddError" class="detailAddError" role="alert"></p>
+                            <div id="detailList" class="detailList" aria-label="관리 일정 목록"></div>
                         </article>
-                        <button id="addRule" class="subtleButton">관리 일정 등록</button>
                     </section>
-                    <section class="rightPage editorPage">
-                        <form id="ruleForm" hidden>
-                            <div class="editorHeading">
-                                <h2 id="editorTitle">관리 일정</h2>
-                                <button type="button" id="closeEditor" aria-label="편집 닫기">×</button>
-                            </div>
-                            <p class="muted">시작일부터 설정한 주기마다 캘린더에 자동 등록됩니다.</p>
-                            <input id="ruleId" type="hidden">
-                            <label>일정 이름
-                                <input id="ruleTitle" required maxlength="100" placeholder="예: 치과 스케일링">
-                            </label>
-                            <label>카테고리<select id="ruleCategory">
-                                    <option value="health">건강</option>
-                                    <option value="subscription">구독</option>
-                                    <option value="relationship">교제</option>
-                                    <option value="daily">일상</option>
-                                </select>
-                            </label>
-                            <label>시작 날짜
-                                <input id="ruleStart" type="date" required min="2001-01-01" max="2100-12-31">
-                            </label>
-                            <div class="cycleFields">
-                                <label>반복 간격
-                                    <input id="ruleInterval" type="number" min="1" max="365" value="1"
-                                        required>
-                                </label>
-                                <label>단위<select id="ruleUnit">
-                                        <option value="DAY">일</option>
-                                        <option value="WEEK">주</option>
-                                        <option value="MONTH" selected>개월</option>
-                                        <option value="YEAR">년</option>
-                                    </select>
-                                </label>
-                            </div>
-                            <p class="muted">월말·윤년은 해당 월의 마지막 날에 등록됩니다. 수정·삭제 시 과거 일정과 완료 기록은 보존합니다.</p>
-                            <button id="saveRule" type="submit">저장</button>
-                            <a id="calendarLink" href="/main">캘린더 보기 →</a>
-                            <p id="formStatus" role="status"></p>
-                        </form>
-                    </section>
+                    {{> layout/managementAnalysis}}
+
                 </section>
             </main>
         </div>
         <p id="appStatus" class="appStatus" role="status" aria-live="polite"></p>
+        {{> layout/quickManagement}}
         <script src="/js/management.js" defer></script>
     </body>
+
 </html>

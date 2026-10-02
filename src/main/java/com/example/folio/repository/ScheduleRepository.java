@@ -7,10 +7,25 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
+    interface CompletionSummary {
+        Long getRuleId();
+        Long getTotal();
+        Long getDone();
+    }
+
+    @org.springframework.data.jpa.repository.Query("""
+        select s.recurringId as ruleId, count(s) as total,
+            sum(case when s.completed = true then 1 else 0 end) as done
+        from Schedule s where s.recurringId is not null and s.cancelled = false
+            and s.date <= :through group by s.recurringId
+        """)
+    List<CompletionSummary> summarizeCompletion(@org.springframework.data.repository.query.Param("through") LocalDate through);
+
     boolean existsByRecurringIdAndDate(Long recurringId, LocalDate date);
     List<Schedule> findByRecurringIdAndDateGreaterThanEqual(Long id, LocalDate date);
     // 특정 날짜의 일정 목록 (오른쪽 페이지 "금일 일정 목록"에 사용)
     List<Schedule> findByDate(LocalDate date);
+    List<Schedule> findByDateLessThanEqual(LocalDate date);
 
     // 한 달 범위의 일정 (달력 칸마다 태그 표시할 때 사용)
     List<Schedule> findByDateBetween(LocalDate start, LocalDate end);

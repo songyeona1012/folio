@@ -510,15 +510,6 @@
         document.getElementById("nextEventLabel").textContent =
             s.nextEvent || "예정된 일정이 없어요";
 
-        document.getElementById("healthTitle").textContent =
-            s.nextHealthTitle || "예정된 건강 관리가 없어요";
-
-        document.getElementById("healthDays").textContent =
-            s.nextHealthDays == null ?
-                "" :
-                "[ 다음 건강 일정 : " +
-                (s.nextHealthDays === 0 ? "오늘" : s.nextHealthDays + "일 뒤") +
-                " ]";
     }
 
     function refreshViews() {
@@ -1654,7 +1645,9 @@
 
             if (!aiResponse.ok) {
                 throw new Error(
-                    "AI 일정 해석에 실패했어요"
+                    aiResponse.status === 503
+                        ? "AI 기능을 사용하려면 실행 환경에 OPENAI_API_KEY를 설정해주세요. 직접 일정 등록은 계속 사용할 수 있어요."
+                        : "AI 일정 해석에 실패했어요"
                 );
             }
 
@@ -1792,6 +1785,61 @@
 
         }
     );
+    const dashboardCategories = {daily: '일상', subscription: '구독', relationship: '교체'};
+    let dashboardCategory = localStorage.getItem('folio.dashboardCategory') || 'daily';
+    if (!dashboardCategories[dashboardCategory]) dashboardCategory = 'daily';
+    let dashboardRules = [];
+    function renderDashboardManagement() {
+        document.getElementById('dashboardCategoryTitle').textContent = dashboardCategories[dashboardCategory];
+        const list = document.getElementById('dashboardManagementList');
+        list.replaceChildren();
+        const todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0);
+        const upcoming = dashboardRules.filter(rule => rule.category === 'health' && rule.nextDate && new Date(rule.nextDate + 'T00:00:00') >= todayDate);
+        upcoming.sort((a, b) => a.nextDate.localeCompare(b.nextDate));
+        const nearest = upcoming[0];
+        document.getElementById('nearestManagementTitle').textContent = nearest ? nearest.title : '예정된 건강 관리가 없어요';
+        const days = nearest ? Math.round((new Date(nearest.nextDate + 'T00:00:00') - todayDate) / 86400000) : null;
+        document.getElementById('nearestManagementDays').textContent = nearest ? '[ 다음 건강 일정 : ' + (days === 0 ? '오늘' : days + '일 뒤') + ' ]' : '';
+        const matching = dashboardRules.filter(rule => rule.category === dashboardCategory);
+        matching.sort((a, b) => String(a.nextDate || '').localeCompare(String(b.nextDate || '')));
+        for (const rule of matching) {
+            const li = document.createElement('li');
+            li.textContent = rule.title;
+            list.append(li);
+        }
+        if (!matching.length) {
+            const li = document.createElement('li');
+            li.className = 'muted';
+            li.textContent = '등록된 관리 일정이 없어요.';
+            list.append(li);
+        }
+        document.querySelectorAll('[data-dashboard-category]').forEach(button => {
+            button.setAttribute('aria-pressed', String(button.dataset.dashboardCategory === dashboardCategory));
+        });
+    }
+    document.querySelectorAll('[data-dashboard-category]').forEach(button => {
+        button.addEventListener('click', () => {
+            dashboardCategory = button.dataset.dashboardCategory;
+            localStorage.setItem('folio.dashboardCategory', dashboardCategory);
+            renderDashboardManagement();
+            document.querySelector('.dashboardCategoryMenu').open = false;
+        });
+    });
+    document.addEventListener('click', event => {
+        const menu = document.querySelector('.dashboardCategoryMenu');
+        if (!menu.contains(event.target)) menu.open = false;
+    });
+    renderDashboardManagement();
+    fetch('/api/management/rules').then(response => {
+        if (!response.ok) throw new Error('관리 일정 로드 실패');
+        return response.json();
+    }).then(data => {
+        dashboardRules = data;
+        renderDashboardManagement();
+    }).catch(() => {
+        document.getElementById('dashboardManagementList').textContent = '관리 일정을 불러오지 못했어요.';
+    });
     updateMonthLabel();
     renderGrid();
     loadMonthEvents();

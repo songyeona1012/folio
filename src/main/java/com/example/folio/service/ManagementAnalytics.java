@@ -67,6 +67,49 @@ public class ManagementAnalytics {
         this.ai = ai;
     }
 
+    public record CompletionPoint(String date, Map<String, Integer> rates, boolean forecast) {}
+    public record CompletionChart(String start, String end, List<CompletionPoint> points,
+        int scheduleCount, int completedCount, Integer completionRate, String method) {}
+
+    public CompletionChart completionChart(String period, LocalDate anchor) {
+        Range range = range(period, anchor);
+        LocalDate today = LocalDate.now();
+        List<String> categories = List.of("health", "subscription", "relationship", "daily");
+        LocalDate through = range.end().isAfter(today) ? today : range.end();
+        var history = schedules.findByDateLessThanEqual(through).stream()
+            .filter(s -> s.getRecurringId() != null && !s.isCancelled() && categories.contains(s.getCategory()))
+            .sorted(Comparator.comparing(Schedule::getDate)).toList();
+        Map<String, Integer> totals = new HashMap<>(), done = new HashMap<>();
+        List<CompletionPoint> points = new ArrayList<>();
+        int cursor = 0;
+        for (LocalDate date = range.start(); !date.isAfter(range.end());
+            date = "year".equals(period) ? date.plusMonths(1) : date.plusDays(1)) {
+            LocalDate cutoff = "year".equals(period) ? date.with(TemporalAdjusters.lastDayOfMonth()) : date;
+            if (cutoff.isAfter(today)) cutoff = today;
+            boolean forecast = date.isAfter(today);
+            Map<String, Integer> rates = new LinkedHashMap<>();
+            if (!forecast) {
+                while (cursor < history.size() && !history.get(cursor).getDate().isAfter(cutoff)) {
+                    Schedule item = history.get(cursor++);
+                    totals.merge(item.getCategory(), 1, Integer::sum);
+                    if (item.isCompleted()) done.merge(item.getCategory(), 1, Integer::sum);
+                }
+            }
+            for (String key : categories) {
+                int total = totals.getOrDefault(key, 0);
+                rates.put(key, forecast || total == 0 ? null :
+                    (int) Math.round(100.0 * done.getOrDefault(key, 0) / total));
+            }
+            points.add(new CompletionPoint(date.toString(), rates, forecast));
+        }
+        int total = history.size();
+        int completed = (int) history.stream().filter(Schedule::isCompleted).count();
+        return new CompletionChart(range.start().toString(), range.end().toString(), points,
+            total, completed, total == 0 ? null : (int) Math.round(100.0 * completed / total),
+            "카테고리별 누적 완료율(%) = 해당 날짜까지 완료한 관리 일정 ÷ 해당 날짜까지 도래한 관리 일정 × 100. " +
+            "조회 기간 이전의 기록도 포함하며, 취소·미래 일정과 일반 일정은 제외합니다. 기록이 없으면 선을 표시하지 않습니다.");
+    }
+
     public record Range(LocalDate start, LocalDate end) {}
 
     public record Point(
@@ -265,13 +308,7 @@ public class ManagementAnalytics {
                       .map(p -> p.date + " (" + p.schedules + "건)")
                       .reduce((a, b) -> a + ", " + b)
                       .orElse("");
-        double congestion = (events.size() * 1.0) / daily.size();
-        String level = congestion < 2 ? "여유" : congestion < 4 ? "보통" : "바쁨";
-        String briefing = "이 기간의 하루 평균 일정은 %.1f건, 혼잡도는 ‘%s’입니다. %s".formatted(
-            congestion,
-            level,
-            level.equals("바쁨") ? "하루 이상 휴식 시간을 확보해보세요." : "일정 사이에 여유를 이어가보세요."
-        );
+        String briefing = completionBriefing(period, anchor).briefing();
         List<Evidence> evidence = entries
             .stream()
             .filter(d -> positive(d) + negative(d) > 0)
@@ -320,113 +357,73 @@ public class ManagementAnalytics {
         return avg.isPresent() ? Math.round(avg.getAsDouble() * 10.0) / 10.0 : null;
     }
 
+    public record CompletionBriefing(int total, int completed, Integer rate, String briefing, String facts) {}
+
+    public CompletionBriefing completionBriefing(String period, LocalDate anchor) {
+        Range range = range(period, anchor);
+        LocalDate today = LocalDate.now();
+        Map<String, String> categories = new LinkedHashMap<>();
+        categories.put("health", "건강"); categories.put("subscription", "구독");
+        categories.put("relationship", "교체"); categories.put("daily", "일상");
+        var events = scheduleRange(range.start(), range.end()).stream()
+            .filter(event -> event.getRecurringId() != null && !event.getDate().isAfter(today)
+                && categories.containsKey(event.getCategory())).toList();
+        int total = events.size();
+        int completed = (int) events.stream().filter(Schedule::isCompleted).count();
+        Integer rate = total == 0 ? null : (int) Math.round(100.0 * completed / total);
+        String encouragement = total == 0
+            ? "완료 기록이 쌓이면 관리 상태를 확인할 수 있어요. 작은 관리 일정부터 시작해보세요."
+            : rate >= 80 ? "꾸준히 관리하고 있어요. 지금의 좋은 흐름을 이어가세요!"
+            : rate >= 50 ? "하나씩 관리해 나가고 있어요. 남은 일정 중 한 가지를 골라 마무리해보세요."
+            : completed > 0 ? "완료한 일정이 좋은 시작이에요. 다음에 실천할 한 가지를 정해보세요."
+            : "아직 완료 기록이 없어요. 부담이 작은 일정 한 가지부터 시작해보세요.";
+        String briefing = total == 0
+            ? "이 기간에 도래한 관리 일정이 없어 완료율을 평가할 수 없어요. " + encouragement
+            : "이 기간에 도래한 관리 일정 " + total + "건 중 " + completed + "건을 완료했어요(완료율 " + rate + "%). " + encouragement;
+        StringBuilder facts = new StringBuilder("관리 완료 기록 기준 v2\n기간: ")
+            .append(range.start()).append(" ~ ").append(range.end())
+            .append("\n관리 대상: 도래한 일정 ").append(total).append("건, 완료 ")
+            .append(completed).append("건, 미완료 ").append(total - completed)
+            .append("건, 완료율 ").append(rate == null ? "평가할 기록 없음" : rate + "%")
+            .append("\n취소·미래 일정과 일반 달력 일정은 제외합니다.");
+        categories.forEach((key, label) -> {
+            var categoryEvents = events.stream().filter(event -> key.equals(event.getCategory())).toList();
+            long done = categoryEvents.stream().filter(Schedule::isCompleted).count();
+            facts.append("\n").append(label).append(": 도래 ").append(categoryEvents.size())
+                .append("건, 완료 ").append(done).append("건, 완료율 ")
+                .append(categoryEvents.isEmpty() ? "평가할 기록 없음" : Math.round(100.0 * done / categoryEvents.size()) + "%");
+        });
+        return new CompletionBriefing(total, completed, rate, briefing, facts.toString());
+    }
+
     public synchronized ManagementReport report(String period, LocalDate anchor, boolean retry) {
-        Summary s = summary(period, anchor);
-        String facts =
-            "일기·별점 연동 전: 일기 내용과 감정에 대한 추론을 하지 마세요. 일정 기반 분석만 가능합니다.\n기간: " +
-            s.start +
-            " ~ " +
-            s.end +
-            "\n" +
-            s.briefing +
-            "\n일정 " +
-            s.scheduleCount +
-            "건, 이전 기간 " +
-            s.previousSchedules +
-            "건. " +
-            (s.previousSchedules == 0
-                ? "이전 일정이 없어 증감률 계산 불가."
-                : "일정 증감률 " +
-                  Math.round(((s.scheduleCount - s.previousSchedules) * 100.0) / s.previousSchedules) +
-                  "%.") +
-            "\n오늘까지 완료 " +
-            s.completedCount +
-            "건, 달성률 " +
-            (s.completionRate == null ? "자료 없음" : s.completionRate + "%") +
-            "\n집중 날짜: " +
-            s.concentration +
-            "\n일기 " +
-            s.diaryCount +
-            "일, 별점 평균 " +
-            s.ratingAverage +
-            ", 긍정 표현 " +
-            s.positive +
-            ", 부정 표현 " +
-            s.negative +
-            ", 이전 기간 부정 표현 " +
-            s.previousNegative +
-            "\n압박감 평균 " +
-            (s.average == null ? "자료 없음" : s.average + " / 100") +
-            "\n" +
-            METHOD;
-        for (Schedule event : scheduleRange(LocalDate.parse(s.start), LocalDate.parse(s.end))
-            .stream()
-            .limit(30)
-            .toList())
-            facts +=
-                "\n일정: " +
-                event.getDate() +
-                " " +
-                event.getTitle() +
-                " (" +
-                (event.isCompleted() ? "완료" : "미완료") +
-                ")";
-        for (Evidence e : s.evidence) facts += "\n일기 근거 [" + e.date + "]: “" + e.excerpt + "”";
-        // Include full records in the hash: editing a title or completion must invalidate the report.
-        String raw =
-            scheduleRange(LocalDate.parse(s.start), LocalDate.parse(s.end))
-                .stream()
-                .map(e -> e.getId() + ":" + e.getTitle() + ":" + e.getDate() + ":" + e.isCompleted())
-                .sorted()
-                .reduce("", (a, b) -> a + b) +
-            diaries
-                .findByDateBetweenOrderByDateAsc(LocalDate.parse(s.start), LocalDate.parse(s.end))
-                .stream()
-                .map(d -> d.date + entryText(d) + d.rating)
-                .reduce("", (a, b) -> a + b);
+        Range range = range(period, anchor);
+        CompletionBriefing summary = completionBriefing(period, anchor);
+        String facts = summary.facts();
+        String raw = scheduleRange(range.start(), range.end()).stream()
+            .filter(event -> event.getRecurringId() != null)
+            .map(event -> event.getId() + ":" + event.getTitle() + ":" + event.getCategory() + ":" + event.getDate() + ":" + event.isCompleted())
+            .sorted().reduce("", (left, right) -> left + "\n" + right);
         String hash;
         try {
-            hash = HexFormat.of().formatHex(
-                MessageDigest.getInstance("SHA-256").digest((facts + raw).getBytes(StandardCharsets.UTF_8))
-            );
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-        String id = period + "-" + s.start;
-        ManagementReport r = reports.findById(id).orElseGet(ManagementReport::new);
-        if (hash.equals(r.fingerprint) && (!retry || "AI".equals(r.source))) return r;
-        String narrative =
-            s.scheduleCount == 0 && s.diaryCount == 0
-                ? null
-                : ai.narrate(
-                      (period.equals("week")
-                          ? "첫 문장은 이번 주 일정 혼잡도 평균과 짧은 제안을 담은 브리핑으로 작성하세요.\n"
-                          : "") + facts
-                  );
-        r.id = id;
-        r.period = period;
-        r.startDate = s.start;
-        r.endDate = s.end;
-        r.fingerprint = hash;
-        r.source = narrative == null ? "BASIC" : "AI";
-        r.content =
-            narrative == null
-                ? facts +
-                  "\n\n" +
-                  (s.scheduleCount == 0 && s.diaryCount == 0
-                      ? "기록을 추가하면 분석을 시작할 수 있어요."
-                      : "다음 주에는 하루 이상 휴식 시간을 확보해보세요.")
-                : narrative + "\n\n[산출 근거]\n" + facts;
-        r.briefing =
-            narrative == null
-                ? s.briefing
-                : narrative
-                      .lines()
-                      .filter(line -> !line.isBlank())
-                      .findFirst()
-                      .orElse(s.briefing);
-        r.briefing = r.briefing.substring(0, Math.min(r.briefing.length(), 1000));
-        r.generatedAt = LocalDateTime.now().toString();
-        return reports.save(r);
+            hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                .digest((facts + raw).getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) { throw new IllegalStateException(e); }
+        String id = period + "-" + range.start();
+        ManagementReport report = reports.findById(id).orElseGet(ManagementReport::new);
+        if (hash.equals(report.fingerprint) && (!retry || "AI".equals(report.source))) return report;
+        String narrative = summary.total() == 0 ? null : ai.narrate(facts);
+        report.id = id;
+        report.period = period;
+        report.startDate = range.start().toString();
+        report.endDate = range.end().toString();
+        report.fingerprint = hash;
+        report.source = narrative == null ? "BASIC" : "AI";
+        report.content = (narrative == null ? summary.briefing() : narrative) + "\n\n[산출 근거]\n" + facts;
+        report.briefing = narrative == null ? summary.briefing() : narrative.lines()
+            .filter(line -> !line.isBlank()).findFirst().orElse(summary.briefing());
+        report.briefing = report.briefing.substring(0, Math.min(report.briefing.length(), 1000));
+        report.generatedAt = LocalDateTime.now().toString();
+        return reports.save(report);
     }
 }

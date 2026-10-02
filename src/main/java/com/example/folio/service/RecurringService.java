@@ -33,10 +33,15 @@ public class RecurringService {
         int intervalValue,
         String intervalUnit,
         LocalDate nextDate,
-        double cycleDays
+        double cycleDays,
+        Integer completionRate
     ) {}
 
     public List<RuleView> list() {
+        Map<Long, Integer> completion = new HashMap<>();
+        schedules.summarizeCompletion(LocalDate.now()).forEach(summary ->
+            completion.put(summary.getRuleId(), (int) Math.round(100.0 * summary.getDone() / summary.getTotal()))
+        );
         return rules
             .findAll()
             .stream()
@@ -49,7 +54,8 @@ public class RecurringService {
                     r.intervalValue,
                     r.intervalUnit,
                     next(r, LocalDate.now()),
-                    cycle(r)
+                    cycle(r),
+                    completion.get(r.id)
                 )
             )
             .sorted(Comparator.comparingDouble(RuleView::cycleDays).thenComparing(RuleView::nextDate))

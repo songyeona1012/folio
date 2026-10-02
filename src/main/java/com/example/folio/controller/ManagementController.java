@@ -50,6 +50,14 @@ public class ManagementController {
         return analytics.summary(period, date);
     }
 
+    @GetMapping("/completion-chart")
+    public ManagementAnalytics.CompletionChart completionChart(
+        @RequestParam(defaultValue = "week") String period,
+        @RequestParam LocalDate date
+    ) {
+        return analytics.completionChart(period, date);
+    }
+
     @PostMapping("/reports")
     public ManagementReport report(
         @RequestParam String period,

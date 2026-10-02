@@ -8,6 +8,8 @@ import com.openai.models.responses.ResponseCreateParams;
 import java.time.LocalDate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import tools.jackson.databind.json.JsonMapper;
 
 @Service
@@ -22,28 +24,29 @@ public class AiService {
         @Value("${openai.api.key:}") String apiKey,
         JsonMapper jsonMapper
     ) {
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException(
-                "OPENAI_API_KEY 환경변수가 설정되지 않았습니다."
-            );
-        }
-
-        this.client = OpenAIOkHttpClient.builder()
-            .apiKey(apiKey)
-            .build();
+        // AI is optional; ordinary calendar and management features work without a key.
+        this.client = apiKey == null || apiKey.isBlank()
+            ? null
+            : OpenAIOkHttpClient.builder().apiKey(apiKey).build();
 
         this.jsonMapper = jsonMapper;
     }
 
     public String narrate(String evidence) {
+        if (client == null) return null;
         try {
             ResponseCreateParams params = ResponseCreateParams.builder()
                 .model(MODEL)
                 .input(
-                    "당신은 한국어 일정 기록 도우미입니다. " +
-                        "아래 데이터만 근거로 600자 이내 보고서를 작성하세요. " +
-                        "수치나 인용문을 만들어내지 마세요. " +
-                        "데이터가 없는 항목은 없다고 쓰고 미래 일정은 계획임을 구분하세요.\n\n" +
+                    "당신은 한국어 관리 일정 도우미입니다. " +
+                        "아래의 실제 관리 일정 완료 횟수와 완료율만 근거로 600자 이내 브리핑을 작성하세요. " +
+                        "첫 문장은 도래한 관리 일정 수, 완료 횟수, 완료율을 포함해 관리되고 있는 정도를 요약하세요. " +
+                        "이어서 기록에 맞는 따뜻한 응원이나 실천 가능한 짧은 조언을 제공하세요. " +
+                        "건강·구독·교체·일상별 기록이 있으면 구체적인 완료 횟수에 근거해 설명하세요. " +
+                        "일정 혼잡도, 바쁨, 압박감, 감정·별점 평가는 하지 마세요. " +
+                        "완료율로 성격이나 건강 상태를 단정하거나 사용자에게 죄책감을 주지 마세요. " +
+                        "완료율을 평가할 기록이 없는 카테고리는 미흡하다고 평가하지 마세요. " +
+                        "수치와 인용문을 만들어내지 말고 미래 일정은 성과에 포함하지 마세요.\n\n" +
                         evidence
                 )
                 .build();
@@ -70,6 +73,13 @@ public class AiService {
     }
 
     public ScheduleDto parseSchedule(String text) {
+        if (client == null) {
+            throw new ResponseStatusException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "AI 일정 분석을 사용하려면 OPENAI_API_KEY 환경변수를 설정해주세요."
+            );
+        }
+
 
         String today = LocalDate.now().toString();
 

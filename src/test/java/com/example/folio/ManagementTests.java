@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
         "spring.datasource.url=jdbc:h2:mem:management-test;DB_CLOSE_DELAY=-1",
         "spring.jpa.hibernate.ddl-auto=create-drop",
         "gemini.api.key=",
+        "openai.api.key=",
     }
 )
 class ManagementTests {
@@ -142,7 +143,9 @@ class ManagementTests {
         assertEquals("BASIC", updated.source);
         String at = updated.generatedAt;
         assertEquals(at, analytics.report("month", date, false).generatedAt);
-        assertTrue(updated.content.contains("일기·별점 연동 전"));
+        assertTrue(updated.content.contains("관리 완료 기록 기준"));
+        assertFalse(updated.content.contains("혼잡도"));
+        assertFalse(updated.content.contains("압박감"));
     }
 
     @Test
@@ -154,5 +157,66 @@ class ManagementTests {
         assertEquals(100, analytics.summary("week", day).completionRate());
         recurring.delete(r.id);
         assertEquals(1, analytics.summary("week", day).scheduleCount());
+    }
+    @Test
+    void lifetimeCompletionExcludesFutureAndCancelledOccurrences() {
+        var day = LocalDate.now();
+        var rule = recurring.save(null, input(day.minusDays(2), "DAY", 1));
+        var first = schedules.findByDate(day.minusDays(2)).getFirst();
+        first.setCompleted(true);
+        schedules.save(first);
+        var cancelled = schedules.findByDate(day.minusDays(1)).getFirst();
+        cancelled.setCancelled(true);
+        schedules.save(cancelled);
+        assertEquals(50, recurring.list().stream().filter(r -> r.id().equals(rule.id)).findFirst().orElseThrow().completionRate());
+        var future = recurring.save(null, input(day.plusDays(5), "MONTH", 1));
+        assertNull(recurring.list().stream().filter(r -> r.id().equals(future.id)).findFirst().orElseThrow().completionRate());
+    }
+    @Test
+    void categoryChartUsesCumulativeHistoryAndExcludesFutureAndCancelled() {
+        var today = LocalDate.now();
+        var past = recurring.save(null, input(today.minusDays(10), "MONTH", 1));
+        var completed = schedules.findByDate(today.minusDays(10)).getFirst();
+        completed.setCompleted(true); schedules.save(completed);
+        recurring.save(null, input(today, "MONTH", 1));
+        var cancelledRule = recurring.save(null, input(today.minusDays(2), "MONTH", 1));
+        var cancelled = schedules.findByDate(today.minusDays(2)).getFirst();
+        cancelled.setCancelled(true); schedules.save(cancelled);
+        var chart = analytics.completionChart("month", today);
+        var point = chart.points().stream().filter(p -> p.date().equals(today.toString())).findFirst().orElseThrow();
+        assertEquals(50, point.rates().get("health"));
+        assertNull(point.rates().get("subscription"));
+        assertEquals(2, chart.scheduleCount());
+        assertEquals(1, chart.completedCount());
+        chart.points().stream().filter(p -> p.forecast()).forEach(p -> assertTrue(p.rates().values().stream().allMatch(java.util.Objects::isNull)));
+        assertEquals(12, analytics.completionChart("year", today).points().size());
+    }
+    @Test
+    void completionBriefingUsesOnlyDueManagementAndOffersEncouragement() {
+        var day = LocalDate.now();
+        recurring.save(null, input(day, "MONTH", 1));
+        recurring.save(null, input(day.plusDays(1), "MONTH", 1));
+        var event = schedules.findByDate(day).getFirst();
+        event.setCompleted(true); schedules.save(event);
+        schedules.save(new Schedule("일반 일정", day, null, "health", false));
+        var briefing = analytics.completionBriefing("week", day);
+        assertEquals(1, briefing.total());
+        assertEquals(1, briefing.completed());
+        assertEquals(100, briefing.rate());
+        assertTrue(briefing.briefing().contains("좋은 흐름"));
+        assertFalse(briefing.facts().contains("혼잡도"));
+        assertFalse(briefing.facts().contains("압박감"));
+        var report = analytics.report("week", day, false);
+        assertEquals(briefing.briefing(), report.briefing);
+    }
+
+    @Test
+    void noDueManagementDoesNotInventPoorPerformance() {
+        var day = LocalDate.now();
+        recurring.save(null, input(day.plusDays(1), "MONTH", 1));
+        var briefing = analytics.completionBriefing("week", day);
+        assertNull(briefing.rate());
+        assertEquals(0, briefing.total());
+        assertTrue(briefing.briefing().contains("평가할 수 없어요"));
     }
 }
