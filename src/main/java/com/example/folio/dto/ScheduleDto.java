@@ -5,6 +5,9 @@ package com.example.folio.dto;
 public class ScheduleDto {
 
     private Long id;
+    private Long recurringId;
+    public Long getRecurringId() { return recurringId; }
+    public void setRecurringId(Long recurringId) { this.recurringId = recurringId; }
     private String title;
     private String date; // yyyy-MM-dd
     private String time; // HH:mm, 없으면 null

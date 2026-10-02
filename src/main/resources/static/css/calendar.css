@@ -884,7 +884,7 @@ Folio 제목
     color: var(--gold);
 }
 
-.today-list .chk2 {
+.today-list .chk2, .dashboardManagementList .chk2, .dashboardManagementList .chk2, .dashboardManagementList .chk2 {
     --chk-color: var(--orange);
 
     position: relative;
@@ -911,37 +911,37 @@ Folio 제목
 }
 
 /* 카테고리별 체크 색 (완료 전에는 테두리만 색으로 표시) */
-.today-list li.important .chk2 {
+.today-list li.important .chk2, .dashboardManagementList li.important .chk2 {
     --chk-color: var(--tag-important-fg);
 
     border-color: var(--tag-important-fg);
 }
 
-.today-list li.health .chk2 {
+.today-list li.health .chk2, .dashboardManagementList li.health .chk2 {
     --chk-color: var(--tag-health-fg);
 
     border-color: var(--tag-health-fg);
 }
 
 /* 마우스를 올리면 살짝 채워져서 누를 수 있다는 걸 보여줌 */
-.today-list .chk2:hover {
+.today-list .chk2:hover, .dashboardManagementList .chk2:hover {
     border-color: var(--chk-color);
 
     background: rgba(233, 105, 44, 0.12);
 }
 
-.today-list .chk2:active {
+.today-list .chk2:active, .dashboardManagementList .chk2:active {
     transform: scale(0.88);
 }
 
 /* 완료: 색으로 채우고 체크 표시 */
-.today-list li.completed .chk2 {
+.today-list li.completed .chk2, .dashboardManagementList li.completed .chk2 {
     background: var(--chk-color);
 
     border-color: var(--chk-color);
 }
 
-.today-list li.completed .chk2::after {
+.today-list li.completed .chk2::after, .dashboardManagementList li.completed .chk2::after {
     content: "";
 
     position: absolute;
@@ -2286,3 +2286,16 @@ Toast
 .dashboardCategoryOptions button[aria-pressed="true"] { background:#f0d7c8; }
 .dashboardManagementList { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; max-height:150px; overflow-y:auto; font-size:11.5px; color:var(--gold); }
 .dashboardManagementList .muted { color:#ABA6A6; }
+
+.dashboardCategoryOptions { top:50%; left:calc(100% + 8px); right:auto; transform:translateY(-50%); display:flex; align-items:center; min-width:190px; padding:4px 6px; white-space:nowrap; background:#fffdf9; }
+.dashboardCategoryOptions button { width:auto; padding:5px 10px; }
+.dashboardCategoryOptions button + button { border-left:1px solid #b6afa8; }
+.dashboardManagementList li { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-right:8px; }
+
+.dashboardManagementList .chk2 { appearance:none; margin:0; }
+.dashboardManagementList .chk2:hover { border-color:var(--orange); background:rgba(233,105,44,.12); }
+.dashboardManagementList .chk2:active { transform:scale(.88); }
+.dashboardManagementList li.completed .chk2 { background:var(--orange); border-color:var(--orange); }
+.dashboardManagementList li.completed .chk2::after { content:''; position:absolute; left:3.5px; top:.5px; width:3px; height:6.5px; border:solid #fff; border-width:0 1.6px 1.6px 0; transform:rotate(45deg); }
+.dashboardManagementList li.completed > span { opacity:.4; text-decoration:line-through; }
+.dashboardManagementList .chk2:disabled { opacity:.4; cursor:wait; }

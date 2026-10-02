@@ -1789,6 +1789,7 @@
     let dashboardCategory = localStorage.getItem('folio.dashboardCategory') || 'daily';
     if (!dashboardCategories[dashboardCategory]) dashboardCategory = 'daily';
     let dashboardRules = [];
+    const dashboardOccurrences = new Map();
     function renderDashboardManagement() {
         document.getElementById('dashboardCategoryTitle').textContent = dashboardCategories[dashboardCategory];
         const list = document.getElementById('dashboardManagementList');
@@ -1805,7 +1806,34 @@
         matching.sort((a, b) => String(a.nextDate || '').localeCompare(String(b.nextDate || '')));
         for (const rule of matching) {
             const li = document.createElement('li');
-            li.textContent = rule.title;
+            const title = document.createElement('span');
+            title.textContent = rule.title;
+            const check = document.createElement('input');
+            check.type = 'checkbox';
+            check.className = 'dashboardComplete chk2';
+            check.setAttribute('aria-label', rule.title + ' 완료');
+            const occurrence = dashboardOccurrences.get(String(rule.id));
+            check.checked = !!(occurrence && occurrence.completed);
+            check.disabled = !occurrence;
+            li.classList.toggle('completed', check.checked);
+            check.addEventListener('change', async () => {
+                check.disabled = true;
+                try {
+                    const response = await fetch('/api/schedules/' + occurrence.id, {
+                        method: 'PATCH', headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({completed: check.checked})
+                    });
+                    if (!response.ok) throw new Error('완료 상태 저장 실패');
+                    occurrence.completed = check.checked;
+                    li.classList.toggle('completed', check.checked);
+                    loadMonthEvents();
+                    showToast(check.checked ? '관리 일정을 완료했어요' : '완료를 취소했어요');
+                } catch (error) {
+                    check.checked = occurrence.completed;
+                    showToast('완료 상태를 저장하지 못했어요');
+                } finally { check.disabled = false; }
+            });
+            li.append(title, check);
             list.append(li);
         }
         if (!matching.length) {
@@ -1834,8 +1862,18 @@
     fetch('/api/management/rules').then(response => {
         if (!response.ok) throw new Error('관리 일정 로드 실패');
         return response.json();
-    }).then(data => {
+    }).then(async data => {
         dashboardRules = data;
+        renderDashboardManagement();
+        await Promise.all([...new Set(data.filter(rule => rule.category !== 'health' && rule.nextDate).map(rule => rule.nextDate))].map(async date => {
+            const response = await fetch('/api/schedules/date?value=' + encodeURIComponent(date));
+            if (!response.ok) throw new Error('관리 일정 로드 실패');
+            const occurrences = await response.json();
+            occurrences.forEach(occurrence => {
+                const rule = data.find(rule => String(rule.id) === String(occurrence.recurringId) && rule.nextDate === date);
+                if (rule) dashboardOccurrences.set(String(rule.id), occurrence);
+            });
+        }));
         renderDashboardManagement();
     }).catch(() => {
         document.getElementById('dashboardManagementList').textContent = '관리 일정을 불러오지 못했어요.';

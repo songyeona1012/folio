@@ -117,6 +117,7 @@ public class ScheduleService {
         ScheduleDto dto = new ScheduleDto();
 
         dto.setId(schedule.getId());
+        dto.setRecurringId(schedule.getRecurringId());
 
         dto.setTitle(schedule.getTitle());
 
