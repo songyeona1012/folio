@@ -1,0 +1,1459 @@
+/* =========================================================
+   goal.css — 목표 페이지
+   0. 공통   1. 왼쪽 페이지(목록)   2. 오른쪽 페이지(종이)
+   3. 공부 양식   4. 진도표 추가 메뉴   5. AI 자율 작성
+   - 배경 이미지에 입력창을 겹치지 않고 전부 CSS로 그립니다.
+   - 화면이 좁아지면 글자/칸 크기가 같이 줄어들도록 clamp()와 컨테이너 쿼리(cqw)를 씁니다.
+   ========================================================= */
+
+/* ---------- 0. 공통 ---------- */
+.goal-page,
+.goal-paper,
+.pm,
+.pe {
+    --pm-sub-w: 142px;             /* 만들기/수정 팝업의 최소 너비 (미리보기가 크면 자동으로 넓어진다) */
+    --goal-brown-900: #5c3716;
+    --goal-brown-700: #7a5532;
+    --goal-brown-500: #a58a70;
+    --goal-accent: #e9692c;
+    --goal-line: #3b3b3b;
+    --goal-gray: #d9d9d9;
+    --goal-blue: #e1e7f6;          /* 표 이름 칸 / D-day 테두리 / 리뷰 날짜 칸 */
+    --goal-scroll-w: 14px;         /* 스크롤바 두께 */
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.goal-page *,
+.goal-paper *,
+.pm *,
+.pe * {
+    box-sizing: border-box;
+}
+
+.goal-page [hidden],
+.goal-paper [hidden],
+.pm[hidden],
+.pe[hidden] {
+    display: none !important;
+}
+
+.goal-page button,
+.goal-paper button,
+.pm button,
+.pm input,
+.pe button,
+.pe input {
+    font-family: inherit;
+}
+
+/* 종이가 화면 오른쪽 끝까지 나오고, 모션 중에는 잠깐 더 나가므로 가로 스크롤이 생기지 않게 자른다 */
+html,
+body {
+    overflow-x: clip;
+}
+
+/* 웃는 얼굴 아이콘 (#icon-face) */
+.face {
+    fill: currentColor;
+    color: #2d2a28;
+}
+
+/* ----- 스크롤바: 화살표 없는 가는 선 + 흰 캡슐 손잡이 (시안 디테일) -----
+   Chrome 121+ 는 scrollbar-width/scrollbar-color 가 auto 가 아니면
+   ::-webkit-scrollbar 를 무시하므로, 둘 다 auto 로 두고 webkit 쪽을 꾸민다. */
+.goal-list-scroll,
+.item-scroll,
+.ai-scroll,
+.progress-body {
+    --goal-thumb: #fff;
+    --goal-thumb-line: #ddd3c8;
+    --goal-track: #e4ddd5;
+    --goal-grip: #cfc6bc;
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+}
+
+.goal-list-scroll::-webkit-scrollbar,
+.item-scroll::-webkit-scrollbar,
+.ai-scroll::-webkit-scrollbar,
+.progress-body::-webkit-scrollbar {
+    width: var(--goal-scroll-w);
+    height: var(--goal-scroll-w);
+}
+
+.goal-list-scroll::-webkit-scrollbar-track,
+.item-scroll::-webkit-scrollbar-track,
+.ai-scroll::-webkit-scrollbar-track {
+    background: linear-gradient(to right,
+    transparent calc(50% - 0.5px), var(--goal-track) calc(50% - 0.5px),
+    var(--goal-track) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+}
+
+.progress-body::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.progress-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.goal-list-scroll::-webkit-scrollbar-button,
+.item-scroll::-webkit-scrollbar-button,
+.ai-scroll::-webkit-scrollbar-button,
+.progress-body::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.goal-list-scroll::-webkit-scrollbar-thumb,
+.item-scroll::-webkit-scrollbar-thumb,
+.ai-scroll::-webkit-scrollbar-thumb {
+    min-height: 32px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background-color: var(--goal-thumb);
+    background-clip: padding-box;
+    background-image:
+        linear-gradient(var(--goal-grip), var(--goal-grip)),
+        linear-gradient(var(--goal-grip), var(--goal-grip));
+    background-size: 4px 1px, 4px 1px;
+    background-position: center calc(50% - 2px), center calc(50% + 2px);
+    background-repeat: no-repeat;
+    box-shadow: inset 0 0 0 1px var(--goal-thumb-line);
+}
+
+.progress-body::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background-color: var(--goal-thumb-line);
+    background-clip: padding-box;
+}
+
+/* Firefox */
+@supports not selector(::-webkit-scrollbar) {
+    .goal-list-scroll,
+    .item-scroll,
+    .ai-scroll,
+    .progress-body {
+        scrollbar-width: thin;
+        scrollbar-color: #d8d0c8 transparent;
+    }
+}
+
+/* 체크박스 공통: 목록(22px)과 리뷰(18px)가 같은 모양을 쓴다 */
+.goal-select-checkbox,
+.item-select {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.goal-select-checkbox:checked,
+.item-select:checked {
+    background-color: #8a5a3c;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 80%;
+}
+
+.goal-select-checkbox:focus-visible,
+.item-select:focus-visible,
+.goal-card:focus-visible,
+.mode-new-goal:focus-visible,
+.progress-add-btn:focus-visible,
+.progress-grid:focus-visible,
+.progress-name:focus-visible,
+.pm button:focus-visible,
+.pe button:focus-visible {
+    outline: 2px dashed var(--goal-accent);
+    outline-offset: 2px;
+}
+
+
+/* ---------- 1. 왼쪽 페이지 ---------- */
+.goal-page {
+    container: goalpage / inline-size;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    color: var(--goal-brown-700);
+}
+
+.goal-heading {
+    flex: 0 0 auto;
+}
+
+.goal-heading h1 {
+    margin: 0 0 14px;
+    font-size: clamp(30px, 2.6vw, 44px);
+    line-height: 1.1;
+    color: var(--goal-brown-900);
+}
+
+.goal-heading p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--goal-brown-900);
+    word-break: keep-all;
+}
+
+/* 작성 방식 바 + "선택" 머리글 + 카드 줄 + 아래 "선택 삭제" 가 같은 칸 구성을 써서 세로줄이 맞는다 */
+.goal-toolbar,
+.goal-card-row,
+.goal-list-footer {
+    --goal-check-col: clamp(56px, 6vw, 92px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--goal-check-col);
+    align-items: center;
+}
+
+/* 목록에 스크롤바가 생겨도 줄이 어긋나지 않게, 같은 두께만큼 비워 둔다 */
+.goal-toolbar,
+.goal-list-footer {
+    padding-right: var(--goal-scroll-w);
+}
+
+.goal-toolbar {
+    flex: 0 0 auto;
+    margin-top: 36px;
+}
+
+/* 시안: [공부 ◉] ............ [AI 자율 작성 ○] [새 목표 생성] */
+.goal-mode-bar {
+    display: flex;
+    flex-wrap: wrap; /* 아주 좁으면 버튼이 바 안에서 아랫줄로 내려간다 */
+    align-items: center;
+    gap: 6px 18px;
+    width: 100%;
+    max-width: 506px;
+    min-height: 42px;
+    margin: 0 auto;
+    padding: 6px 7px 6px 20px;
+    border-radius: 21px;
+    background: #f0eeec;
+}
+
+.mode-option:first-of-type {
+    margin-right: auto;
+}
+
+.mode-option {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--goal-brown-700);
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.mode-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.mode-radio {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 1px solid #9b8e84;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.mode-option input:checked + .mode-radio {
+    border-color: var(--goal-accent);
+    background: radial-gradient(circle, var(--goal-accent) 0 3.5px, #fff 4px);
+}
+
+.mode-option input:focus-visible + .mode-radio {
+    outline: 2px dashed var(--goal-accent);
+    outline-offset: 2px;
+}
+
+.mode-new-goal {
+    flex: 0 0 auto;
+    height: 29px;
+    padding: 0 22px;
+    border: 0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(90, 60, 30, 0.08);
+    font-size: 12px;
+    white-space: nowrap;
+    color: var(--goal-brown-700);
+    cursor: pointer;
+}
+
+.mode-new-goal:hover {
+    background: #fbf8f4;
+}
+
+.goal-list-label {
+    justify-self: center;
+    font-size: 12px;
+    color: #8c7461;
+}
+
+/* 목록: 선택 카드의 번지는 테두리가 잘리지 않도록 위·왼쪽·아래에 여백을 두고 바깥으로 당겨 쓴다 */
+.goal-list-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 4px 0 0 -14px;
+    padding: 14px 0 14px 14px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+}
+
+.goal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+}
+
+.goal-empty {
+    margin: 24px 0;
+    font-size: 13px;
+    line-height: 1.8;
+    text-align: center;
+    white-space: pre-line;
+    color: var(--goal-brown-500);
+}
+
+/* 카드 (노랑/분홍은 목표를 만들 때 무작위로 정해져 저장된다. data-color) */
+.goal-card-row,
+.goal-card-row[data-color="yellow"] {
+    --card-bg: #fffbe6;
+    --card-side: #fff5d2;
+}
+
+.goal-card-row[data-color="pink"] {
+    --card-bg: #fff8f6;
+    --card-side: #fff0ee;
+}
+
+.goal-card {
+    display: grid;
+    grid-template-columns: clamp(88px, 24.5%, 132px) minmax(0, 1fr);
+    align-items: center;
+    width: 100%;
+    height: 95px;
+    padding: 0;
+    border: 0;
+    background: var(--card-bg);
+    box-shadow: 0 2px 5px rgba(90, 60, 30, 0.14);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    transition: box-shadow 0.18s ease;
+}
+
+/* 선택된 카드: 가장자리가 흐릿하게 번지는 주황색 */
+.goal-card[aria-pressed="true"] {
+    box-shadow:
+        0 0 0 1px rgba(255, 140, 78, 0.5),
+        0 0 7px 1px rgba(255, 126, 56, 0.65),
+        0 0 18px 3px rgba(255, 140, 78, 0.35);
+}
+
+.goal-card-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    background: var(--card-side);
+}
+
+.goal-card-avatar {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 60px;
+    border: 1px solid #ece6df;
+    background: #fff;
+    overflow: hidden;
+}
+
+.goal-card-avatar .face {
+    width: 34px;
+    height: 34px;
+}
+
+.goal-card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    padding: 0 12px 0 18px;
+}
+
+.goal-card-title {
+    overflow: hidden;
+    font-size: 17px;
+    color: #5a3a1c;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.goal-card-dates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 20px;
+}
+
+.goal-card-dates,
+.goal-card-updated {
+    font-size: 11px;
+    color: #a08a74;
+}
+
+.goal-card-updated {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.goal-select-checkbox {
+    justify-self: center;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid #8a5a3c;
+}
+
+.goal-list-footer {
+    flex: 0 0 auto;
+    margin-top: 6px;
+}
+
+#deleteSelectedGoalsBtn {
+    grid-column: 2;
+    justify-self: center;
+    padding: 4px 0;
+    border: 0;
+    background: transparent;
+    font-size: 11px;
+    color: #8c7461;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+#deleteSelectedGoalsBtn:disabled {
+    color: #b7ada3;
+    cursor: default;
+}
+
+/* 왼쪽 페이지가 좁을 때(노트북 화면 등): 바와 카드 글자를 조금 줄이고 "선택" 칸을 좁힌다 */
+@container goalpage (max-width: 520px) {
+    .goal-toolbar,
+    .goal-card-row,
+    .goal-list-footer {
+        --goal-check-col: 64px;
+    }
+
+    .goal-mode-bar {
+        gap: 6px 14px;
+        padding: 6px 6px 6px 18px;
+    }
+
+    .mode-option {
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .mode-new-goal {
+        padding: 0 14px;
+        font-size: 11px;
+    }
+
+    .goal-card-title {
+        font-size: 15px;
+    }
+}
+
+
+/* ---------- 2. 오른쪽 페이지 (둥근 종이) ---------- */
+.goal-paper {
+    container: goalpaper / inline-size;
+    --goal-pad-l: clamp(16px, 7.2cqw, 56px);      /* 제목 줄 왼쪽 여백 */
+    --goal-pad-r: clamp(24px, 9.6cqw, 74px);      /* 제목 줄 오른쪽 여백 (종이가 화면 끝까지 나오므로 조금 더 넓다) */
+    --goal-inner-l: calc(var(--goal-pad-l) + 14px); /* 표·리뷰 등 본문은 제목 줄보다 조금 안쪽 */
+    --goal-inner-r: calc(var(--goal-pad-r) + 14px);
+    --goal-bleed: 0px;                            /* 종이가 오른쪽 페이지 밖으로 나오는 길이. goal.js가 화면 오른쪽 끝에 맞춰 채운다 */
+    --goal-slide-from: 44px;                      /* 목표를 클릭하면 이만큼 오른쪽에서 시작해 왼쪽으로 들어온다 */
+    --goal-scroll-gap: 18px;                      /* 스크롤바를 종이 오른쪽 끝에서 띄우는 거리 */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% + var(--goal-bleed));
+    height: 100%;
+    min-height: 0;
+    margin-right: calc(-1 * var(--goal-bleed));
+    overflow-x: hidden;
+    overflow-y: auto; /* 아주 낮은 화면에서만 쓰이는 보험. 평소엔 아래쪽 영역만 스크롤된다 */
+    border-radius: 40px 0 0 40px; /* 오른쪽은 화면 밖으로 이어지는 것처럼 */
+    background: #fcfcfc;
+    box-shadow: 0 6px 28px rgba(90, 60, 30, 0.14);
+    color: #222;
+}
+
+/* 목표를 클릭하면 종이가 오른쪽(책 밖)에서 왼쪽으로 부드럽게 밀려 들어온다 */
+@keyframes goal-paper-in {
+    from {
+        opacity: 0.25;
+        transform: translateX(var(--goal-slide-from));
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.goal-paper.is-entering {
+    animation: goal-paper-in 0.38s cubic-bezier(0.22, 0.7, 0.2, 1) both;
+}
+
+/* 운영체제에서 "애니메이션 효과"를 끈 사람에게는 모션을 생략한다 (항상 보이게 하려면 이 블록을 지우세요) */
+@media (prefers-reduced-motion: reduce) {
+    .goal-paper.is-entering,
+    .pf-field.is-shaking {
+        animation: none;
+    }
+}
+
+.save-status {
+    position: absolute;
+    top: 14px;
+    right: var(--goal-pad-r);
+    font-size: 11px;
+    color: #b9b0a6;
+    pointer-events: none;
+}
+
+.save-status[data-state="error"] {
+    color: #c0502a;
+}
+
+.goal-title-input {
+    display: block;
+    flex: 0 0 auto;
+    width: calc(100% - var(--goal-pad-l) - var(--goal-pad-r));
+    margin: clamp(26px, 9cqw, 56px) var(--goal-pad-r) 0 var(--goal-pad-l);
+    padding: 8px 4px 14px;
+    border: 0;
+    border-bottom: 1px solid #909090;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: clamp(20px, 4.2cqw, 30px);
+    color: #2f2a26;
+}
+
+.goal-title-input::placeholder {
+    color: #d8d8d8;
+}
+
+.goal-title-input:focus-visible {
+    border-bottom-color: var(--goal-accent);
+}
+
+.goal-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+
+/* ---------- 3. 공부 양식 ---------- */
+.goal-panel[data-mode-panel="form"] {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-top {
+    display: grid;
+    flex: 0 0 auto;
+    grid-template-columns: minmax(0, 1fr) clamp(96px, 21.5cqw, 163px);
+    gap: clamp(8px, 2.1cqw, 16px);
+    align-items: stretch;
+    margin: clamp(16px, 3.3cqw, 25px) var(--goal-inner-r) 0 var(--goal-inner-l);
+}
+
+/* 표: 이름 칸은 가장 긴 이름에 맞춰 자동으로 정해져서 글씨가 잘리지 않는다 */
+.goal-table {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-auto-rows: 1fr;
+    border-top: 1px solid var(--goal-line);
+    border-left: 1px solid var(--goal-line);
+}
+
+.goal-table-label,
+.goal-table-cell {
+    min-width: 0;
+    min-height: 32px;
+    border-right: 1px solid var(--goal-line);
+    border-bottom: 1px solid var(--goal-line);
+}
+
+.goal-table-label {
+    display: grid;
+    align-content: center;
+    padding: 0 clamp(8px, 1.9cqw, 14px);
+    background: var(--goal-blue);
+    font-size: clamp(12.5px, 2.1cqw, 16px);
+    color: #111;
+    text-align: justify;
+    text-align-last: justify;
+    white-space: nowrap;
+}
+
+.goal-table-cell {
+    display: flex;
+    align-items: center;
+    background: #fff;
+}
+
+/* 표 안의 글씨는 모두 가운데 정렬 */
+.goal-table-cell input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    min-height: 30px;
+    padding: 0 8px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: clamp(12.5px, 1.95cqw, 15px);
+    font-weight: 600;
+    text-align: center;
+    text-overflow: ellipsis;
+    color: #1f1f1f;
+}
+
+.goal-table-cell input::placeholder {
+    font-weight: 400;
+}
+
+.goal-table-cell input:focus-visible {
+    background: #fffdf3;
+}
+
+/* 기간: 00.00.00 ~ 00.00.00 (숫자만 입력하면 점이 자동으로 들어간다) */
+.goal-date-cell {
+    justify-content: center;
+    gap: 4px;
+    padding: 0 4px;
+}
+
+.goal-date-cell input {
+    flex: 1 1 0;
+    padding: 0;
+    letter-spacing: 0.12em;
+}
+
+.goal-date-cell input::placeholder {
+    color: #c9c9c9;
+}
+
+.goal-date-cell span {
+    flex: 0 0 auto;
+    color: #333;
+}
+
+/* D-day 상자 */
+.dday-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 8px 6px;
+    border: 6px solid var(--goal-blue);
+    background: #fff;
+    text-align: center;
+}
+
+.dday-count {
+    font-size: clamp(20px, 5.1cqw, 36px);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: #111;
+}
+
+.dday-hint {
+    margin: 0;
+    font-size: clamp(8.5px, 1.4cqw, 10px);
+    line-height: 1.55;
+    white-space: pre-line;
+    word-break: keep-all;
+    color: #b7b7b7;
+}
+
+/* "진행도 3 / 45" */
+.dday-hint.is-progress {
+    font-size: clamp(11px, 1.9cqw, 14px);
+    color: #555;
+}
+
+/* 제목 줄 (스크롤해도 고정): [진도표 추가]  |  오늘의 공부 한 줄 리뷰 */
+.item-heads,
+.item-cols {
+    --goal-col-gap: clamp(12px, calc(8cqw - 12px), 60px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    column-gap: var(--goal-col-gap);
+}
+
+.item-heads {
+    flex: 0 0 auto;
+    align-items: baseline;
+    margin: clamp(18px, 3cqw, 26px) var(--goal-inner-r) 0 var(--goal-inner-l);
+}
+
+.item-section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 2px 8px;
+    min-width: 0;
+}
+
+.item-section-head h2 {
+    margin: 0;
+    font-size: clamp(13px, 2.1cqw, 16px);
+    font-weight: 700;
+    white-space: nowrap;
+    color: #111;
+}
+
+/* "진도표 추가"는 텍스트 버튼 */
+.progress-add-btn {
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    font-size: 11px;
+    color: #b3b3b3;
+    cursor: pointer;
+}
+
+.progress-add-btn:hover,
+.progress-add-btn[aria-expanded="true"] {
+    color: #6d5844;
+}
+
+.clear-selected {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 10px;
+    white-space: nowrap;
+    color: #6d5844;
+    cursor: pointer;
+}
+
+.clear-selected:disabled {
+    color: #b0b0b0;
+    cursor: default;
+}
+
+/* 제목 줄 바로 아래부터 스크롤: 스크롤바는 종이의 오른쪽 가장자리 근처에 붙는다 */
+.item-scroll {
+    flex: 1 1 auto;
+    min-height: 120px;
+    margin: 12px var(--goal-scroll-gap) 0 0;
+    padding: 2px calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 22px var(--goal-inner-l);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.item-cols {
+    align-items: start;
+}
+
+.item-col {
+    min-width: 0;
+}
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.add-item-btn {
+    display: block;
+    width: min(163px, 100%);
+    height: 27px;
+    margin: 14px auto 0;
+    border: 1px solid #8c8c8c;
+    border-radius: 5px;
+    background: var(--goal-gray);
+    font-size: 18px;
+    line-height: 1;
+    color: #333;
+    cursor: pointer;
+}
+
+.add-item-btn:hover {
+    background: #cfcfcf;
+}
+
+/* ----- 진도표 ----- */
+.progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding-top: 6px; /* 순서를 바꿀 때 나타나는 파란 선이 잘리지 않도록 */
+}
+
+.progress-block {
+    position: relative;
+}
+
+/* 표 이름을 길게 누르고 있는 동안에만 나타나는 파란 표시선 (손을 떼면 사라진다) */
+.progress-block.is-reordering {
+    outline: 2px solid #2f78e8;
+    outline-offset: 7px;
+    border-radius: 5px;
+}
+
+body.is-reordering-progress,
+body.is-reordering-progress * {
+    cursor: grabbing !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* 표 이름: 짧게 클릭하면 바로 고칠 수 있고, 길게 누른 채 움직이면 순서가 바뀐다 */
+.progress-name,
+.progress-name-input {
+    display: block;
+    width: 100%;
+    margin: 0 0 6px;
+    padding: 2px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: clamp(12.5px, 1.9cqw, 14.5px);
+    line-height: 1.4;
+    color: #333;
+}
+
+.progress-name {
+    min-height: 1.4em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+.progress-name:empty::before {
+    content: attr(data-placeholder);
+    color: #c4c4c4;
+}
+
+.progress-name:hover {
+    color: #000;
+}
+
+.progress-name-input:focus {
+    box-shadow: inset 0 -1px 0 var(--goal-accent);
+}
+
+.progress-body {
+    min-width: 0;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+/* 표를 클릭하면 수정 패널이 열린다 */
+.progress-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(14px, 24px));
+    justify-content: start;
+    width: fit-content;   /* 자리가 모자라면 칸이 줄어든다 (칸 최소 14px). 그래도 모자라면 가로 스크롤 */
+    max-width: 100%;
+    border-top: 1px solid #8f8f8f;
+    border-left: 1px solid #8f8f8f;
+    cursor: pointer;
+}
+
+.progress-cell {
+    display: grid;
+    place-items: center;
+    height: 22px;
+    border-right: 1px solid #8f8f8f;
+    border-bottom: 1px solid #8f8f8f;
+    background: #f6f6f6;
+    font-size: var(--cell-font, 10px);
+    color: #555;
+}
+
+.progress-grid:hover .progress-cell:not(.is-done):not(.is-empty) {
+    background: #eeeeee;
+}
+
+/* 완료한 칸: 오늘의 공부 한 줄 리뷰를 쓴 횟수만큼 앞 번호부터 초록색 */
+.progress-cell.is-done {
+    background: #d8eedb;
+    color: #2f5a38;
+}
+
+/* 행 × 열이 수의 개수보다 클 때 남는 자리는 비워 둔다 */
+.progress-cell.is-empty {
+    border-color: transparent;
+    background: transparent;
+}
+
+/* ----- 오늘의 공부 한 줄 리뷰 ----- */
+.note-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18px;
+    column-gap: 8px;
+    align-items: end;
+}
+
+/* 글 줄과 체크박스를 잇는 짧은 선 (시안) */
+.note-row::after {
+    content: "";
+    position: absolute;
+    right: 18px;
+    bottom: 16px;
+    width: 8px;
+    height: 1px;
+    background: var(--goal-line);
+}
+
+.note-box {
+    min-width: 0;
+    border: 1px solid var(--goal-line);
+    background: #fff;
+}
+
+.review-date {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 6px;
+    border-bottom: 1px solid var(--goal-line);
+    background: var(--goal-blue);
+    font-size: 11px;
+    color: #333;
+}
+
+/* 수정 중(날짜 세 칸 중 하나라도 포커스)이면 구역 전체가 표시된다. 구역 밖을 클릭하면 끝난다 */
+.review-date:focus-within {
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+.rd-part {
+    width: 1.35em;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    text-align: center;
+    color: #333;
+}
+
+.rd-part::placeholder {
+    color: #b3bbd2;
+}
+
+.review-date span {
+    margin: 0 4px 0 1px;
+}
+
+.review-text {
+    display: block;
+    width: 100%;
+    height: 34px;
+    padding: 0 8px;
+    border: 0;
+    outline: 0;
+    background: #fff;
+    font: inherit;
+    font-size: 12px;
+    color: #222;
+}
+
+.review-text::placeholder {
+    color: #cfcfcf;
+}
+
+.review-text:focus {
+    background: #fffdf3;
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+.note-row .item-select {
+    width: 18px;
+    height: 18px;
+    margin-bottom: 8px; /* 글 줄(34px)의 가운데에 맞춘다 */
+    border: 1px solid #555;
+}
+
+
+/* ---------- 4. 진도표 추가 메뉴 / 수정 패널 (인텔리제이 메뉴처럼) ---------- */
+.pm {
+    position: fixed;
+    z-index: 1000;
+    width: clamp(232px, 22vw, 296px);
+    color: #333;
+}
+
+.pm-panel {
+    padding: 6px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.pm-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    font: inherit;
+    text-align: left;
+    color: inherit;
+    cursor: pointer;
+}
+
+.pm-item strong {
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.pm-desc {
+    font-size: 9px;
+    line-height: 1.4;
+    color: #9a9a9a;
+}
+
+.pm-arrow {
+    width: 9px;
+    height: 11px;
+    color: #9a9a9a;
+}
+
+.pm-arrow path {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.1;
+    stroke-linejoin: round;
+}
+
+.pm-item:hover,
+.pm-item.is-active {
+    background: #f3f3f3;
+}
+
+.pm-item:hover .pm-arrow path,
+.pm-item.is-active .pm-arrow path {
+    fill: currentColor;
+}
+
+.pm-item.is-disabled {
+    cursor: default;
+}
+
+.pm-item.is-disabled strong {
+    color: #9d9d9d;
+}
+
+.pm-soon {
+    font-size: 9px;
+    white-space: nowrap;
+    color: #b3b3b3;
+}
+
+/* 숫자형 팝업과 수정 패널: 같은 카드 모양. 바탕 크기는 안의 내용(미리보기)에 맞춰 자동으로 늘어난다 */
+.pm-sub,
+.pe {
+    width: max-content;
+    min-width: var(--pm-sub-w);
+    max-width: 232px;
+    padding: 4px 0 10px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    color: #333;
+}
+
+/* 숫자형 팝업: 메뉴 오른쪽에 살짝 겹쳐서 붙는다 (자리가 없으면 왼쪽) */
+.pm-sub {
+    position: absolute;
+    top: 6px;
+    left: calc(100% - 4px);
+    display: none;
+}
+
+.pm.has-sub .pm-sub {
+    display: block;
+}
+
+.pm.is-flip .pm-sub {
+    right: calc(100% - 4px);
+    left: auto;
+}
+
+/* 수정 패널: 클릭한 표의 왼쪽에 뜬다 */
+.pe {
+    position: fixed;
+    z-index: 1000;
+}
+
+/* 닫기(✕): 팝업 바깥쪽에 붙는다. 만들기 팝업에서는 숫자가 입력됐을 때만 나타난다 */
+.pm-close,
+.pe-close {
+    position: absolute;
+    top: 6px;
+    right: -26px;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 15px;
+    line-height: 22px;
+    text-align: center;
+    color: #8a8a8a;
+    cursor: pointer;
+}
+
+.pm-close {
+    display: none;
+}
+
+.pm.is-pinned .pm-close {
+    display: block;
+}
+
+.pm.is-flip .pm-close,
+.pe.is-flip .pe-close {
+    right: auto;
+    left: -26px;
+}
+
+.pm-close:hover,
+.pe-close:hover {
+    color: #c0502a;
+}
+
+/* ----- 입력 양식 (만들기/수정 공용) ----- */
+.pf-name {
+    margin: 0;
+    padding: 8px 12px 7px;
+    border-bottom: 1px solid #ececec;
+    font-size: 10px;
+    white-space: nowrap;
+    color: #888;
+}
+
+.pf-name strong {
+    margin-left: 2px;
+    font-size: 11px;
+    color: #222;
+}
+
+.pf-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 12px;
+    border-bottom: 1px solid #ececec;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.pf-field {
+    width: 52px;
+    height: 22px;
+    padding: 0 4px;
+    border: 1px solid #333;
+    border-radius: 0;
+    outline: 0;
+    background: #fff;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-align: center;
+    color: #222;
+}
+
+.pf-field::placeholder {
+    color: #cfcfcf;
+}
+
+.pf-field:focus {
+    box-shadow: 0 0 0 2px rgba(233, 105, 44, 0.3);
+}
+
+/* 오류(불가능한 수)이거나, 수정 패널에서 원래 값과 달라진 칸은 붉은 글씨 */
+.pf-field.is-invalid,
+.pf-field.is-changed {
+    color: #d03b2a;
+}
+
+/* 불가능한 수를 쓰면 좌우로 살짝 진동한다 */
+@keyframes pf-shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-4px);
+    }
+
+    40% {
+        transform: translateX(4px);
+    }
+
+    60% {
+        transform: translateX(-3px);
+    }
+
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+.pf-field.is-shaking {
+    animation: pf-shake 0.34s ease-in-out;
+}
+
+.pf-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 9px;
+}
+
+.pf-submit {
+    padding: 3px 12px;
+    border: 1px solid #c6d5f3;
+    border-radius: 6px;
+    background: #e4ecfc;
+    font-size: 9px;
+    color: #2c4680;
+    cursor: pointer;
+}
+
+.pf-submit:hover:not(:disabled) {
+    background: #d6e2fa;
+}
+
+/* 오류가 없고 숫자가 다 써졌을 때만 활성화된다 */
+.pf-submit:disabled {
+    border-color: #e6e6e6;
+    background: #f1f1f1;
+    color: #b9b9b9;
+    cursor: default;
+}
+
+.pf-delete {
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    font-size: 8px;
+    color: #9d9d9d;
+    cursor: pointer;
+}
+
+.pf-delete:hover {
+    color: #c0502a;
+}
+
+.pf-error {
+    margin: 6px 10px 0;
+    font-size: 8px;
+    line-height: 1.4;
+    text-align: center;
+    color: #d03b2a;
+}
+
+.pf-preview {
+    margin: 9px 0 0;
+    text-align: center;
+}
+
+.pf-preview-grid {
+    display: inline-grid;
+    grid-template-columns: repeat(var(--pc, 1), var(--cell, 8px));
+    gap: 1px;
+    max-width: 100%;
+}
+
+.pf-preview-grid i {
+    display: block;
+    width: var(--cell, 8px);
+    height: var(--cell, 8px);
+    background: #cfcfcf;
+}
+
+.pf-preview-grid i.off {
+    background: #efefef;
+}
+
+.pf-preview-label {
+    display: block;
+    margin-top: 5px;
+    font-size: 8px;
+    color: #b0b0b0;
+}
+
+
+/* ---------- 5. AI 자율 작성 ---------- */
+.goal-panel[data-mode-panel="ai"] {
+    margin-right: var(--goal-scroll-gap);
+    padding: 0 calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 24px var(--goal-inner-l);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.ai-chat {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-top: 28px;
+}
+
+.chat-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.chat-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.chat-row.is-user {
+    justify-content: flex-end;
+}
+
+.chat-face {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.chat-face .face {
+    width: 26px;
+    height: 26px;
+}
+
+.bot-face {
+    background: #ffe9a8;
+    box-shadow: 0 0 12px 3px rgba(255, 218, 110, 0.6);
+}
+
+.user-face {
+    background: #dcdafc;
+    box-shadow: 0 0 12px 3px rgba(150, 140, 255, 0.35);
+}
+
+.chat-bubble {
+    min-width: 0;
+    max-width: min(440px, 100%);
+    padding: 9px 14px;
+    border: 1px solid #cfcfd8;
+    border-radius: 12px;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #6b4a2b;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.chat-prompt {
+    width: min(310px, 100%);
+    min-height: 46px;
+    max-height: 160px;
+    padding: 9px 12px;
+    border: 1px solid #c8c8c8;
+    border-radius: 10px;
+    outline: 0;
+    background: #fff;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #333;
+    resize: none;
+}
+
+.chat-prompt::placeholder {
+    color: #b5b5b5;
+}
+
+.chat-prompt:focus-visible {
+    border-color: #a58a70;
+}
+
+.ai-help-text {
+    margin: 56px 0 0;
+    font-size: 12px;
+    line-height: 1.8;
+    color: #c3c3c3;
+}
+
+/* 도움말 아래 빈 공간 전체가 자유 메모 영역 */
+.free-memo {
+    display: block;
+    width: 100%;
+    min-height: 320px;
+    margin-top: 8px;
+    padding: 8px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #444;
+    resize: vertical;
+}
+
+.free-memo:focus-visible {
+    box-shadow: inset 0 0 0 1px #eee6dc;
+}

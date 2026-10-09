@@ -1,0 +1,2301 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap');
+
+:root {
+    --orange: #e9692c;
+    --orange-line: #e79e7b;
+    --gold: #624325;
+    --line: #e6ddda;
+    --sun: #923a3a;
+    --sat: #5c68b9;
+    --black: #000000;
+
+    --tag-health-bg: rgba(114, 131, 151, 0.20);
+    --tag-health-fg: #4c5c6b;
+
+    --tag-important-bg: rgba(215, 105, 80, 0.20);
+    --tag-important-fg: #ad4b31;
+
+    --tag-todo-bg: rgba(140, 190, 110, 0.24);
+    --tag-todo-fg: #4f7a3c;
+
+    --shadow: rgba(60, 50, 40, 0.16);
+
+    /* 버튼/메모 공통 따뜻한 색 */
+    --button-bg: #FAFAFA;
+    --button-bg-hover: #FAFAFA;
+    --button-border: #E79E7B;
+    --button-text: #E79E7B;
+}
+
+/* =========================================================
+오른쪽 페이지 기본
+========================================================= */
+
+.rightPage {
+    display: flex;
+    flex-direction: column;
+    padding-top: 3.2%;
+    overflow: visible;
+}
+
+/* =========================================================
+🔖 책갈피
+========================================================= */
+
+.bookmark {
+    position: absolute;
+    z-index: 4;
+
+    display: block;
+
+    width: 8%;
+    height: 4.8%;
+
+    overflow: visible;
+
+    cursor: pointer;
+    text-decoration: none;
+
+    transition: transform 0.15s ease;
+}
+
+.bookmark img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    max-width: none;
+    max-height: none;
+
+    object-fit: fill;
+
+    opacity: 1;
+    filter: none;
+    mix-blend-mode: normal;
+}
+
+/* 왼쪽 */
+
+.pos-l1 {
+    left: 10%;
+    top: 0.8%;
+}
+
+.pos-l2 {
+    left: 19%;
+    top: 0.8%;
+}
+
+.pos-l3 {
+    left: 28%;
+    top: 0.8%;
+}
+
+.pos-l4 {
+    left: 37%;
+    top: 0.8%;
+}
+
+/* 오른쪽 */
+
+.pos-r1 {
+    right: 37%;
+    top: 0.8%;
+}
+
+.pos-r2 {
+    right: 28%;
+    top: 0.8%;
+}
+
+.pos-r3 {
+    right: 19%;
+    top: 0.8%;
+}
+
+.pos-r4 {
+    right: 10%;
+    top: 0.8%;
+}
+
+.bookmark:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================================================
+왼쪽 페이지
+========================================================= */
+
+.leftPage {
+    padding-top: 3.2%;
+    padding-bottom: 1.5%;
+}
+
+/* =========================================================
+Folio 제목
+========================================================= */
+
+.brand-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+
+    border-bottom: 1px solid var(--line);
+
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+
+    flex-shrink: 0;
+}
+
+.brand-row h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 600;
+
+    color: var(--orange);
+
+    font-size: 29px;
+
+    margin: 0;
+}
+
+.brand-row .rate {
+    font-size: 14px;
+    color: var(--gold);
+    white-space: nowrap;
+}
+
+/* =========================================================
+혼잡도 / 가까운 일정
+========================================================= */
+
+.briefing {
+    font-size: 12.5px;
+
+    line-height: 1.6;
+
+    color: var(--gold);
+
+    opacity: 0.9;
+
+    margin-bottom: 8px;
+
+    flex-shrink: 0;
+}
+
+.briefing strong {
+    font-weight: 700;
+}
+
+/* =========================================================
+📌 달력 포스트잇
+========================================================= */
+
+.postit {
+    position: relative;
+
+    overflow: hidden;
+
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 112%;
+
+    margin-left: -6%;
+    margin-right: -6%;
+
+    margin-top: -8px;
+    margin-bottom: -18px;
+
+    background-image: url('../img/postit.png');
+
+    background-position: center;
+    background-repeat: no-repeat;
+
+    background-size: 100% 100%;
+
+    border: none;
+    border-radius: 0;
+
+    box-shadow: none;
+
+    padding-top: 25px;
+    padding-left: 7%;
+    padding-right: 7%;
+    padding-bottom: 25px;
+}
+
+/* =========================================================
+달력 상단
+========================================================= */
+
+.cal-head {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 9px;
+
+    padding: 10px 8px 8px;
+
+    flex-shrink: 0;
+}
+
+.cal-head .year {
+    font-size: 14px;
+
+    border-bottom: 1px solid #342f2d;
+
+    padding-bottom: 2px;
+
+    font-weight: 400;
+}
+
+.cal-head .month {
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #342f2d;
+}
+
+.cal-nav {
+    margin-left: auto;
+
+    display: flex;
+
+    gap: 4px;
+}
+
+.cal-nav button {
+    width: 24px;
+    height: 24px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--gold);
+
+    cursor: pointer;
+
+    font-size: 16px;
+}
+
+.cal-nav button:hover {
+    color: var(--orange);
+}
+
+/* =========================================================
+요일
+========================================================= */
+
+.weekdays {
+    display: grid;
+
+    grid-template-columns: repeat(7, 1fr);
+
+    padding: 4px 8px 7px;
+
+    border-bottom: 1px solid var(--line);
+
+    flex-shrink: 0;
+}
+
+.weekdays span {
+    text-align: center;
+
+    font-size: 11.5px;
+
+    font-weight: 700;
+
+    padding: 2px 0;
+
+    color: #342f2d;
+}
+
+.weekdays span:first-child {
+    color: var(--sun);
+}
+
+.weekdays span:last-child {
+    color: var(--sat);
+}
+
+/* =========================================================
+날짜 그리드
+========================================================= */
+
+.grid {
+    display: grid;
+
+    grid-template-columns: repeat(7, 1fr);
+
+    padding: 10px 8px 12px;
+
+    flex: 1;
+
+    min-height: 0;
+}
+
+.day {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding-top: 5px;
+
+    cursor: pointer;
+
+    border-radius: 5px;
+
+    user-select: none;
+
+    min-width: 0;
+}
+
+.day:hover:not(.other) {
+    background: rgba(233, 105, 44, 0.07);
+}
+
+.day .num {
+    font-size: 12.5px;
+
+    font-weight: 400;
+
+    width: 21px;
+    height: 21px;
+
+    margin-bottom: 2px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #342f2d;
+}
+
+.day.other .num {
+    color: #d7c9c0;
+}
+
+.day.sun .num {
+    color: var(--sun);
+}
+
+.day.sat .num {
+    color: var(--sat);
+}
+
+.day.today .num {
+    background: var(--orange);
+
+    color: #fff;
+
+    font-weight: 700;
+}
+
+.day.selected {
+    outline: 1px solid var(--orange-line);
+}
+
+.day .tag {
+    margin-top: 3px;
+
+    font-size: 8px;
+
+    line-height: 1.25;
+
+    text-align: center;
+
+    padding: 2px 4px;
+
+    border-radius: 3px;
+
+    max-width: 54px;
+
+    box-sizing: border-box;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+.tag.health {
+    background: var(--tag-health-bg);
+    color: var(--tag-health-fg);
+}
+
+.tag.important {
+    background: var(--tag-important-bg);
+    color: var(--tag-important-fg);
+}
+
+.tag.todo {
+    background: var(--tag-todo-bg);
+    color: var(--tag-todo-fg);
+}
+
+/* =========================================================
+오른쪽 대시보드
+========================================================= */
+
+.rightDashboard {
+    display: flex;
+
+    flex-direction: column;
+}
+
+/* =========================================================
+자연어 일정 등록
+========================================================= */
+
+.natural-schedule {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    flex: 0 0 auto;
+
+    margin-top: 0;
+    margin-bottom: 46px;
+}
+
+/* 자연어 입력창 */
+
+.natural-schedule .add-pill {
+    width: 100%;
+
+    min-height: 48px;
+
+    box-sizing: border-box;
+
+    background: var(--button-bg);
+
+    border: 2.5px solid var(--button-border);
+
+    border-radius: 24px;
+
+    padding: 12px 54px 12px 18px;
+
+    font-size: 12.5px;
+
+    font-weight: 300;
+
+    color: var(--black);
+
+    text-align: left;
+
+    outline: none;
+
+    font-family: 'Noto Sans KR', sans-serif;
+
+    margin: 0;
+
+    cursor: text;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.natural-schedule .add-pill::placeholder {
+    color: var(--button-text);
+
+    opacity: 1;
+}
+
+.natural-schedule .add-pill:focus,
+.natural-schedule .add-pill:active {
+    outline: none;
+
+    background: var(--button-bg);
+
+    border-color: var(--button-border);
+
+    color: var(--black);
+}
+
+.natural-schedule .add-pill:hover {
+    background: var(--button-bg-hover);
+
+    border-color: var(--orange);
+}
+
+/* =========================================================
+자연어 일정 등록 버튼
+========================================================= */
+
+.natural-schedule .naturalScheduleBtn {
+    position: absolute !important;
+
+    right: 8px !important;
+    top: 50% !important;
+
+    width: 34px !important;
+    height: 34px !important;
+
+    transform: translateY(-50%) !important;
+
+    padding: 0 !important;
+
+    border: none !important;
+
+    background-color: transparent !important;
+
+    background-image: url('../img/add.png') !important;
+
+    background-repeat: no-repeat !important;
+
+    background-position: center !important;
+
+    background-size: 26px 26px !important;
+
+    color: transparent !important;
+
+    cursor: pointer;
+
+    outline: none !important;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    display: block;
+}
+
+.natural-schedule .naturalScheduleBtn:hover,
+.natural-schedule .naturalScheduleBtn:focus,
+.natural-schedule .naturalScheduleBtn:active {
+    background-color: transparent !important;
+
+    background-image: url('../img/add.png') !important;
+
+    background-repeat: no-repeat !important;
+
+    background-position: center !important;
+
+    background-size: 26px 26px !important;
+
+    color: transparent !important;
+
+    outline: none !important;
+
+    box-shadow: none;
+
+    transform: translateY(-50%) !important;
+}
+
+.natural-schedule .naturalScheduleBtn:disabled {
+    opacity: 0.6;
+
+    cursor: default;
+}
+
+/* 버튼 안의 <img>와 배경 이미지가 겹쳐 두 개로 보이던 문제 → 배경 이미지만 사용 */
+.natural-schedule .naturalScheduleBtn img {
+    display: none;
+}
+
+/* AI가 읽는 중: + 아이콘 대신 도는 원 표시 */
+.natural-schedule .naturalScheduleBtn.is-loading,
+.natural-schedule .naturalScheduleBtn.is-loading:hover,
+.natural-schedule .naturalScheduleBtn.is-loading:focus,
+.natural-schedule .naturalScheduleBtn.is-loading:active,
+.natural-schedule .naturalScheduleBtn.is-loading:disabled {
+    background-image: none !important;
+
+    opacity: 1;
+}
+
+.natural-schedule .naturalScheduleBtn.is-loading::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 18px;
+    height: 18px;
+
+    margin: -9px 0 0 -9px;
+
+    box-sizing: border-box;
+
+    border: 2.5px solid var(--button-border);
+
+    border-top-color: transparent;
+
+    border-radius: 50%;
+
+    animation: naturalSpin 0.7s linear infinite;
+}
+
+@keyframes naturalSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================================
+시간 아이콘
+========================================================= */
+
+.time-text {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    cursor: pointer;
+}
+
+.time-text::before {
+    content: "";
+
+    width: 16px;
+    height: 16px;
+
+    flex: 0 0 16px;
+
+    background-image: url('../img/clock.png');
+
+    background-repeat: no-repeat;
+
+    background-position: center;
+
+    background-size: contain;
+}
+
+/* =========================================================
+우측 섹션
+========================================================= */
+
+.section {
+    margin-bottom: 18px;
+
+    flex-shrink: 0;
+}
+
+.section.grow {
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    margin-top: 5px;
+}
+
+.section h4 {
+    font-size: 14.5px;
+
+    font-weight: 700;
+
+    color: var(--gold);
+
+    margin: 0 0 7px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    flex-shrink: 0;
+}
+
+.section h4 .reorder {
+    font-size: 14.5px;
+
+    color: #a39b96;
+
+    font-weight: 400;
+
+    cursor: pointer;
+}
+
+.rightDashboard>.section:first-of-type {
+    margin-top: 8px;
+}
+
+.rightDashboard>.section:first-of-type h4 {
+    margin-bottom: 10px;
+}
+
+.rightDashboard>.section:nth-of-type(2) {
+    margin-top: 4px;
+}
+
+/* =========================================================
+일상 체크리스트
+========================================================= */
+
+.check-list {
+    list-style: none;
+
+    margin: 0;
+
+    padding: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.check-list li {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 11.5px;
+
+    color: var(--gold);
+
+    cursor: pointer;
+}
+
+.check-list .chk {
+    width: 11px;
+    height: 11px;
+
+    border: 0.7px solid rgba(98, 67, 37, 0.8);
+
+    border-radius: 2px;
+
+    flex-shrink: 0;
+}
+
+.check-list li.done .chk {
+    background: var(--orange);
+
+    border-color: var(--orange);
+}
+
+.check-list li.done {
+    opacity: 0.5;
+
+    text-decoration: line-through;
+}
+
+/* =========================================================
+건강
+========================================================= */
+
+.health-row {
+    font-size: 11.5px;
+
+    color: var(--gold);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 8px;
+
+    border-top: 1px solid var(--line);
+
+    padding-top: 10px;
+}
+
+.health-row .muted {
+    color: #a39b96;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+금일 일정
+========================================================= */
+
+.today-list {
+    list-style: none;
+
+    margin: 0;
+
+    padding: 0;
+
+    overflow-y: auto;
+
+    border-top: 1px solid var(--line);
+
+    flex: 1;
+
+    min-height: 0;
+}
+
+.today-list li {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px 0;
+
+    border-bottom: 1px dashed var(--line);
+}
+
+.today-list .time {
+    font-size: 10.5px;
+
+    color: #a39b96;
+
+    width: 62px;
+
+    flex-shrink: 0;
+}
+
+.today-list .title {
+    flex: 1;
+
+    min-width: 0;
+
+    font-size: 11.5px;
+
+    color: var(--gold);
+}
+
+.today-list .chk2, .dashboardManagementList .chk2, .dashboardManagementList .chk2, .dashboardManagementList .chk2 {
+    --chk-color: var(--orange);
+
+    position: relative;
+
+    width: 13px;
+    height: 13px;
+
+    box-sizing: border-box;
+
+    border-radius: 3px;
+
+    border: 1.2px solid rgba(98, 67, 37, 0.5);
+
+    background: transparent;
+
+    flex-shrink: 0;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.12s ease;
+}
+
+/* 카테고리별 체크 색 (완료 전에는 테두리만 색으로 표시) */
+.today-list li.important .chk2, .dashboardManagementList li.important .chk2 {
+    --chk-color: var(--tag-important-fg);
+
+    border-color: var(--tag-important-fg);
+}
+
+.today-list li.health .chk2, .dashboardManagementList li.health .chk2 {
+    --chk-color: var(--tag-health-fg);
+
+    border-color: var(--tag-health-fg);
+}
+
+/* 마우스를 올리면 살짝 채워져서 누를 수 있다는 걸 보여줌 */
+.today-list .chk2:hover, .dashboardManagementList .chk2:hover {
+    border-color: var(--chk-color);
+
+    background: rgba(233, 105, 44, 0.12);
+}
+
+.today-list .chk2:active, .dashboardManagementList .chk2:active {
+    transform: scale(0.88);
+}
+
+/* 완료: 색으로 채우고 체크 표시 */
+.today-list li.completed .chk2, .dashboardManagementList li.completed .chk2 {
+    background: var(--chk-color);
+
+    border-color: var(--chk-color);
+}
+
+.today-list li.completed .chk2::after, .dashboardManagementList li.completed .chk2::after {
+    content: "";
+
+    position: absolute;
+
+    left: 3.5px;
+    top: 0.5px;
+
+    width: 3px;
+    height: 6.5px;
+
+    border: solid #fff;
+
+    border-width: 0 1.6px 1.6px 0;
+
+    transform: rotate(45deg);
+}
+
+.today-list li.completed .time {
+    opacity: 0.5;
+}
+
+.today-list li.completed .title {
+    opacity: 0.4;
+
+    text-decoration: line-through;
+}
+
+/* =========================================================
+일정 삭제 버튼
+========================================================= */
+
+.delete-schedule {
+    width: 18px;
+    height: 18px;
+
+    flex-shrink: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #b9aaa1;
+
+    font-size: 17px;
+
+    line-height: 16px;
+
+    padding: 0;
+
+    margin-left: 1px;
+
+    cursor: pointer;
+
+    border-radius: 50%;
+
+    transition:
+        color 0.15s ease,
+        background 0.15s ease;
+}
+
+.delete-schedule:hover {
+    color: var(--orange);
+
+    background: rgba(233, 105, 44, 0.08);
+}
+
+/* =========================================================
+인라인 수정
+========================================================= */
+
+.hover-edit {
+    display: inline-block;
+
+    cursor: pointer;
+
+    border-radius: 3px;
+
+    transition:
+        background-color 0.2s ease;
+
+    padding: 1px 2px;
+
+    margin-left: -2px;
+}
+
+.hover-edit:hover {
+    background-color:
+        rgba(233, 105, 44, 0.10);
+}
+
+.time-edit {
+    width: 66px;
+
+    font-size: 11px;
+
+    border: 1px solid var(--orange-line);
+
+    border-radius: 4px;
+
+    padding: 2px 3px;
+
+    color: var(--gold);
+
+    font-family: inherit;
+
+    background: #fff;
+
+    outline: none;
+
+    flex-shrink: 0;
+
+    box-sizing: border-box;
+}
+
+.title-edit {
+    width: 100%;
+
+    font-size: 11.5px;
+
+    border: 1px solid var(--orange-line);
+
+    border-radius: 4px;
+
+    padding: 3px 5px;
+
+    color: var(--gold);
+
+    font-family: inherit;
+
+    background: #fff;
+
+    outline: none;
+
+    box-sizing: border-box;
+}
+
+/* =========================================================
+📒 메모장
+========================================================= */
+
+.memoPanel {
+    position: absolute;
+
+    width: 90%;
+    height: calc(100% + 7%);
+
+    min-height: 0;
+
+    display: none;
+
+    overflow: visible;
+
+    background: inherit;
+
+    margin-bottom: -13%;
+    bottom: -13%;
+
+    transform: none;
+
+    left: 5%;
+
+    z-index: 20;
+
+    font-size: 14px;
+}
+
+/* 메모 안의 모든 글자 14px 통일 */
+
+.memoPanel,
+.memoPanel * {
+    font-size: 14px !important;
+}
+
+/* 메모 배경 */
+
+.memoBackground {
+    position: absolute;
+
+    z-index: 0;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    pointer-events: none;
+}
+
+/* 메모 내부 */
+
+.memoInner {
+    position: absolute;
+
+    z-index: 2;
+
+    inset: 0;
+
+    padding: 7% 9% 8%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-height: 0;
+}
+
+/* =========================================================
+메모 날짜
+========================================================= */
+
+.memoHeader {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: flex-start;
+
+    margin-bottom: 8px;
+
+    flex-shrink: 0;
+
+    position: relative;
+}
+
+.memoPanel .memoDate {
+    color: #624325;
+
+    font-size: 16px !important;
+
+    font-weight: 700;
+
+    text-align: center;
+}
+
+/* 닫기 버튼 */
+
+.memoPanel .memoClose {
+    position: absolute;
+
+    right: 0;
+    top: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #8e8179;
+
+    font-size: 22px !important;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    padding: 0;
+}
+
+.memoColumnHeader {
+    display: grid;
+
+    grid-template-columns: 30% 70%;
+
+    align-items: center;
+}
+
+.memoColumnHeader div {
+    position: relative;
+
+    top: 1px;
+}
+
+.memoColumnHeader div:first-child {
+    padding-left: 3px;
+}
+
+.memoColumnHeader div:last-child {
+    padding-left: 4px;
+}
+
+/* =========================================================
+📝 메모 줄
+========================================================= */
+
+.memoList {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    padding-right: 3px;
+
+    box-sizing: border-box;
+
+    background: none;
+}
+
+/* 일정 한 줄 */
+
+.memoEvent {
+    display: grid;
+
+    grid-template-columns: 25% 75%;
+
+    align-items: center;
+
+    width: 100%;
+
+    height: 30px;
+    min-height: 30px;
+    max-height: 30px;
+
+    flex: 0 0 30px;
+
+    border-bottom: none;
+
+    cursor: pointer;
+
+    background: transparent;
+
+    box-sizing: border-box;
+}
+
+/* 시간 */
+
+.memoTime {
+    min-width: 0;
+
+    width: 100%;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    padding-left: 3px;
+
+    padding-right: 6px;
+
+    color: #85756c;
+
+    line-height: 1;
+
+    white-space: nowrap;
+
+    box-sizing: border-box;
+}
+
+/* 일정 제목 */
+
+.memoSchedule {
+    min-width: 0;
+
+    width: 100%;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    color: #624325;
+
+    padding-left: 4px;
+
+    line-height: 1;
+
+    border-bottom: none;
+
+    box-sizing: border-box;
+}
+
+.memoSchedule,
+.memoPlaceholder {
+    font-family: inherit;
+
+    font-weight: 400;
+
+    line-height: 1;
+}
+
+/* =========================================================
+빈 일정 안내
+========================================================= */
+
+.memoPlaceholder {
+    position: relative;
+
+    top: 4px;
+
+    color: #624325;
+
+    font-family: inherit;
+
+    font-weight: 400;
+
+    line-height: 1;
+
+    padding: 0px 4px;
+
+    cursor: pointer;
+
+    box-sizing: border-box;
+}
+
+.memoEvent:hover .memoPlaceholder {
+    color: #624325;
+}
+
+/* =========================================================
+새 일정 입력
+========================================================= */
+
+.memoNewTime,
+.memoNewTitle {
+    position: relative;
+
+    height: 30px;
+
+    border: none;
+
+    background: transparent;
+
+    color: #624325;
+
+    font-family: inherit;
+
+    font-weight: 400;
+
+    line-height: 1;
+
+    outline: none;
+
+    padding: 0 4px;
+
+    margin: 0;
+
+    box-sizing: border-box;
+}
+
+.memoNewTime {
+    width: 80px;
+}
+
+.memoNewTitle {
+    width: 100%;
+}
+
+/* 빈 줄에서 입력할 때만 안내 문구 위치(top: 4px)와 맞춤 */
+.memo-empty .memoNewTime,
+.memo-empty .memoNewTitle {
+    top: 4px;
+}
+
+.memoNewTime::placeholder,
+.memoNewTitle::placeholder {
+    color: #624325;
+
+    font-family: inherit;
+
+    opacity: 1;
+}
+
+/* =========================================================
+일정이 없을 때
+========================================================= */
+
+.memoEmpty {
+    text-align: center;
+
+    color: #a39b96;
+
+    padding: 30px 10px;
+}
+
+/* =========================================================
+📝 메모장 등장 애니메이션
+========================================================= */
+
+.memoPanel.memo-opening {
+    animation:
+        memoRise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes memoRise {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(70px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+    }
+}
+
+/* =========================================================
+🖍 형광펜
+========================================================= */
+
+.penTool {
+    position: absolute;
+
+    z-index: 30;
+
+    right: -3%;
+    bottom: -3%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    opacity: 0;
+
+    transform: none;
+}
+
+/*
+* 기존 42 x 82에서 3배
+* 126 x 246
+*/
+
+.penButton {
+    border: none;
+
+    background: transparent;
+
+    padding: 0;
+
+    cursor: pointer;
+
+    width: 189px;
+    height: 369px;
+
+    transform: rotate(-12deg);
+}
+
+.penButton img {
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+}
+
+/* =========================================================
+메모 등장 → 형광펜 등장
+========================================================= */
+
+.memoPanel.memo-opening .penTool {
+    animation:
+        penSlideIn 0.65s 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes penSlideIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translate(90px, 90px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translate(0, 0);
+    }
+}
+
+/* =========================================================
+펜 선택 팔레트
+========================================================= */
+
+.penPalette {
+    position: absolute;
+
+    right: 105px;
+
+    bottom: 25px;
+
+    display: none;
+
+    align-items: center;
+
+    gap: 4px;
+
+    padding: 6px;
+
+    background:
+        rgba(255, 255, 255, 0.93);
+
+    border:
+        1px solid #e6ddda;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 8px 20px rgba(60, 50, 40, 0.15);
+}
+
+.penPalette.show {
+    display: flex;
+}
+
+/* 펜 선택 하나 */
+
+.penChoice {
+    width: 30px;
+
+    height: 55px;
+
+    border: none;
+
+    background: transparent;
+
+    padding: 0;
+
+    cursor: pointer;
+}
+
+.penChoice img {
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+/* =========================================================
+형광펜 모드
+========================================================= */
+
+.memoPanel.highlight-mode .memoEvent {
+    cursor: crosshair;
+}
+
+.memoPanel.highlight-mode .memoEvent:hover {
+    background:
+        rgba(233, 105, 44, 0.05);
+}
+
+/* =========================================================
+메모 스크롤바
+========================================================= */
+
+.memoList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.memoList::-webkit-scrollbar-thumb {
+    background:
+        rgba(110, 81, 64, 0.25);
+
+    border-radius: 10px;
+}
+
+/* =========================================================
+비어 있는 일정
+========================================================= */
+
+.empty-note {
+    text-align: center;
+
+    color: #a39b96;
+
+    font-size: 12px;
+
+    padding: 12px 10px;
+}
+
+/* =========================================================
+일정 추가 모달
+========================================================= */
+
+/* =========================================================
+Toast
+========================================================= */
+
+.toast {
+    position: fixed;
+
+    top: 20px;
+
+    left: 50%;
+
+    transform:
+        translateX(-50%) translateY(-10px);
+
+    background: #514945;
+
+    color: #faf9f7;
+
+    font-size: 15px;
+
+    padding: 10px 20px;
+
+    border-radius: 22px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        all 0.25s ease;
+
+    z-index: 40;
+
+    white-space: nowrap;
+
+    font-family:
+        'Noto Sans KR',
+        sans-serif;
+}
+
+.toast.show {
+    opacity: 1;
+
+    transform:
+        translateX(-50%) translateY(0);
+}
+
+/* =========================================================
+1300px 이상
+========================================================= */
+
+@media (min-width: 1300px) {
+
+    .postit {
+        width: 112%;
+    }
+
+}
+
+/* =========================================================
+인라인 편집 포커스
+========================================================= */
+
+.time-edit:focus,
+.title-edit:focus,
+.memoNewTime:focus,
+.memoNewTitle:focus {
+    border-bottom-color:
+        var(--orange);
+
+    box-shadow:
+        0 1px 0 rgba(233, 105, 44, 0.25);
+}
+
+/* =========================================================
+🕓 커스텀 시간 선택 팝오버
+========================================================= */
+
+.time-picker-input {
+    cursor: pointer;
+
+    caret-color: transparent;
+}
+
+.time-picker-input::selection {
+    background: transparent;
+}
+
+.timePickerBackdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 60;
+
+    background: transparent;
+}
+
+.timePickerPopover {
+    position: fixed;
+
+    z-index: 61;
+
+    width: 190px;
+
+    background: #fffefb;
+
+    border: 1px solid var(--button-border);
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 40px -14px var(--shadow);
+
+    padding: 14px 14px 12px;
+
+    font-family:
+        'Noto Sans KR',
+        sans-serif;
+
+    animation:
+        tpPop 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tpPop {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(6px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+    }
+}
+
+.tpHeader {
+    font-family:
+        'Cormorant Garamond',
+        serif;
+
+    font-style: italic;
+
+    font-weight: 600;
+
+    color: var(--orange);
+
+    font-size: 15.5px;
+
+    text-align: center;
+
+    margin-bottom: 8px;
+}
+
+.tpAmPmRow {
+    display: flex;
+
+    gap: 6px;
+
+    margin-bottom: 10px;
+}
+
+.tpAmPmBtn {
+    flex: 1;
+
+    border: 1px solid var(--button-border);
+
+    background: var(--button-bg);
+
+    color: var(--button-text);
+
+    border-radius: 20px;
+
+    padding: 6px 0;
+
+    font-size: 12.5px;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s,
+        color 0.15s,
+        border-color 0.15s;
+}
+
+.tpAmPmBtn:hover {
+    background: var(--button-bg-hover);
+}
+
+.tpAmPmBtn.sel {
+    background: var(--button-bg);
+
+    border-color: var(--button-border);
+
+    color: var(--button-text);
+
+    font-weight: 700;
+}
+
+.tpWheelRow {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4px;
+
+    position: relative;
+
+    height: 132px;
+
+    margin-bottom: 12px;
+}
+
+.tpWheelRow::before {
+    content: "";
+
+    position: absolute;
+
+    left: 4px;
+    right: 4px;
+
+    top: 50%;
+
+    height: 30px;
+
+    transform:
+        translateY(-15px);
+
+    background:
+        rgba(233, 105, 44, 0.08);
+
+    border-top:
+        1px solid var(--orange-line);
+
+    border-bottom:
+        1px solid var(--orange-line);
+
+    border-radius: 8px;
+
+    pointer-events: none;
+
+    z-index: 0;
+}
+
+.tpColumn {
+    position: relative;
+
+    z-index: 1;
+
+    width: 60px;
+
+    height: 132px;
+
+    overflow-y: scroll;
+
+    scroll-snap-type: y mandatory;
+
+    scrollbar-width: none;
+
+    -ms-overflow-style: none;
+}
+
+.tpColumn::-webkit-scrollbar {
+    display: none;
+}
+
+.tpColumn::before,
+.tpColumn::after {
+    content: "";
+
+    display: block;
+
+    height: 51px;
+
+    flex-shrink: 0;
+}
+
+.tpItem {
+    scroll-snap-align: center;
+
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 16px;
+
+    color: #c9beb6;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s,
+        font-size 0.15s,
+        font-weight 0.15s;
+}
+
+.tpItem.sel {
+    color: var(--gold);
+
+    font-weight: 700;
+
+    font-size: 18px;
+}
+
+.tpColon {
+    position: relative;
+
+    z-index: 1;
+
+    font-family:
+        'Cormorant Garamond',
+        serif;
+
+    font-style: italic;
+
+    color: var(--gold);
+
+    font-size: 21px;
+
+    padding-bottom: 2px;
+}
+
+.tpConfirm {
+    width: 100%;
+
+    border: 1px solid var(--button-border);
+
+    background: var(--button-bg);
+
+    color: var(--button-text);
+
+    border-radius: 12px;
+
+    padding: 9px;
+
+    font-size: 14.5px;
+
+    font-weight: 500;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.tpConfirm:hover {
+    background: var(--button-bg-hover);
+
+    opacity: 1;
+}
+
+/* =========================
+자연어 일정 입력 모달
+========================= */
+
+.natural-modal-backdrop {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: rgba(50, 42, 38, 0.28);
+
+    backdrop-filter: blur(3px);
+}
+
+.natural-modal-backdrop.show {
+    display: flex;
+}
+
+.natural-modal {
+    position: relative;
+
+    width: min(540px, calc(100vw - 40px));
+
+    box-sizing: border-box;
+
+    padding: 38px 38px 34px;
+
+    background: #f8f3eb;
+
+    border: 1px solid #d8ccc2;
+
+    border-radius: 4px;
+
+    box-shadow:
+        0 18px 50px rgba(55, 45, 40, 0.18),
+        0 3px 10px rgba(55, 45, 40, 0.08);
+
+    animation: naturalModalOpen 0.22s ease-out;
+}
+
+.natural-modal-title {
+    margin-bottom: 7px;
+
+    color: #4b403b;
+
+    font-family:
+        "Cormorant Garamond",
+        "Noto Serif KR",
+        serif;
+
+    font-size: 34px;
+
+    font-weight: 600;
+
+    font-style: italic;
+
+    text-align: center;
+}
+
+.natural-modal-subtitle {
+    margin-bottom: 24px;
+
+    color: #8b7d75;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 14px;
+
+    text-align: center;
+}
+
+.natural-modal-close {
+    position: absolute;
+
+    top: 15px;
+
+    right: 18px;
+
+    width: 32px;
+
+    height: 32px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #8c7e76;
+
+    font-size: 27px;
+
+    font-weight: 300;
+
+    line-height: 32px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.natural-modal-close:hover {
+    color: #4f443f;
+
+    transform: rotate(5deg);
+}
+
+.natural-input-wrap {
+    position: relative;
+}
+
+.natural-input {
+    display: block;
+
+    width: 100%;
+
+    min-height: 130px;
+
+    box-sizing: border-box;
+
+    resize: none;
+
+    padding: 17px 18px;
+
+    border: 1px solid #d8ccc2;
+
+    border-radius: 3px;
+
+    outline: none;
+
+    background: #fffdf9;
+
+    color: #4b403b;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.natural-input::placeholder {
+    color: #b5aaa3;
+}
+
+.natural-input:focus {
+    border-color: #a99a90;
+
+    box-shadow:
+        0 0 0 3px rgba(169, 154, 144, 0.10);
+}
+
+.natural-example {
+    margin-top: 13px;
+
+    padding: 11px 14px;
+
+    background: #eee6dc;
+
+    border-left: 3px solid #c6b6a8;
+
+    color: #7d7068;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 13px;
+}
+
+.natural-example span {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #a09289;
+
+    font-size: 12px;
+}
+
+.natural-example p {
+    margin: 0;
+
+    color: #756860;
+}
+
+.natural-submit {
+    display: block;
+
+    width: 100%;
+
+    height: 50px;
+
+    margin-top: 22px;
+
+    border: 1px solid #a99b91;
+
+    border-radius: 3px;
+
+    background: #766960;
+
+    color: #fffaf4;
+
+    font-family: "Noto Serif KR", serif;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        transform 0.12s ease,
+        opacity 0.18s ease;
+}
+
+.natural-submit:hover {
+    background: #62564f;
+}
+
+.natural-submit:active {
+    transform: translateY(1px);
+}
+
+.natural-submit:disabled {
+    opacity: 0.55;
+
+    cursor: default;
+}
+
+@keyframes naturalModalOpen {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+
+    .natural-modal {
+        width: calc(100vw - 28px);
+
+        padding: 32px 24px 25px;
+    }
+
+    .natural-modal-title {
+        font-size: 30px;
+    }
+}
+
+.management-category-heading { display:flex; align-items:center; gap:25px; border-bottom:1px solid var(--line); width:max-content; min-width:100px; margin-bottom:12px; }
+.management-category-heading h4 { margin:0 0 5px; }
+.dashboardCategoryMenu { position:relative; margin-bottom:5px; }
+.dashboardCategoryMenu summary { list-style:none; cursor:pointer; padding:5px; }
+.dashboardCategoryMenu summary::-webkit-details-marker { display:none; }
+.dashboardCategoryMenu summary span { display:block; width:12px; height:10px; background:repeating-linear-gradient(to bottom,#878181 0 2px,transparent 2px 4px); }
+.dashboardCategoryOptions { position:absolute; top:100%; right:0; z-index:20; min-width:100px; padding:5px; background:#fffdf9; border:1px solid var(--line); border-radius:5px; box-shadow:0 3px 10px #0002; }
+.dashboardCategoryOptions button { display:block; width:100%; padding:7px 12px; border:0; background:transparent; text-align:left; color:var(--gold); font-family:inherit; cursor:pointer; }
+.dashboardCategoryOptions button[aria-pressed="true"] { background:#f0d7c8; }
+.dashboardManagementList { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; max-height:150px; overflow-y:auto; font-size:11.5px; color:var(--gold); }
+.dashboardManagementList .muted { color:#ABA6A6; }
+
+.dashboardCategoryOptions { top:50%; left:calc(100% + 8px); right:auto; transform:translateY(-50%); display:flex; align-items:center; min-width:190px; padding:4px 6px; white-space:nowrap; background:#fffdf9; }
+.dashboardCategoryOptions button { width:auto; padding:5px 10px; }
+.dashboardCategoryOptions button + button { border-left:1px solid #b6afa8; }
+.dashboardManagementList li { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-right:8px; }
+
+.dashboardManagementList .chk2 { appearance:none; margin:0; }
+.dashboardManagementList .chk2:hover { border-color:var(--orange); background:rgba(233,105,44,.12); }
+.dashboardManagementList .chk2:active { transform:scale(.88); }
+.dashboardManagementList li.completed .chk2 { background:var(--orange); border-color:var(--orange); }
+.dashboardManagementList li.completed .chk2::after { content:''; position:absolute; left:3.5px; top:.5px; width:3px; height:6.5px; border:solid #fff; border-width:0 1.6px 1.6px 0; transform:rotate(45deg); }
+.dashboardManagementList li.completed > span { opacity:.4; text-decoration:line-through; }
+.dashboardManagementList .chk2:disabled { opacity:.4; cursor:wait; }

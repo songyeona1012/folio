@@ -1,0 +1,20 @@
+<dialog id="quickDialog" class="quickDialog" aria-labelledby="quickHeading">
+    <form id="quickForm" class="quickForm">
+        <h2 id="quickHeading" class="visuallyHidden">새로운 건강 주기 추가</h2>
+        <button type="button" id="quickClose" class="quickClose" aria-label="빠른 추가 닫기">×</button>
+        <label class="visuallyHidden" for="quickTitle">관리 이름</label>
+        <input id="quickTitle" class="quickTitle" required maxlength="100" autocomplete="off">
+        <label class="visuallyHidden" for="quickStart">시작일</label>
+        <input id="quickStart" class="quickStart" type="date" required min="2000-01-01" max="2100-12-31">
+        <label class="visuallyHidden" for="quickInterval">주기</label>
+        <input id="quickInterval" class="quickInterval" type="number" min="1" max="365" step="1" required>
+        <fieldset class="quickUnits">
+            <legend class="visuallyHidden">주기 단위</legend>
+            <label><input type="radio" name="quickUnit" value="YEAR" required>년</label>
+            <label><input type="radio" name="quickUnit" value="MONTH" required>월</label>
+            <label><input type="radio" name="quickUnit" value="DAY" required>일</label>
+        </fieldset>
+        <button id="quickSave" class="quickSave" type="submit"><img id="quickSaveImage" alt="건강 주기 추가 완료"></button>
+        <p id="quickError" class="quickError" role="alert"></p>
+    </form>
+</dialog>

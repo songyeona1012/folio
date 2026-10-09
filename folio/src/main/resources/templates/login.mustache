@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>폴리오 - 첫 화면</title>
+
+    <!-- main과 동일한 공통 레이아웃 -->
+    <link rel="stylesheet" href="/css/manage.css">
+    <link rel="stylesheet" href="/css/calendar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+
+    <!-- 로그인 전용 -->
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+
+<div class="appShell">
+    <!-- main과 동일한 사이드바 -->
+    {{> layout/sidebar}}
+    <main class="mainArea loginMain">
+        <!-- main과 동일한 상단 영역 -->
+        <div class="topBar"></div>
+        <!--
+            펼쳐진 notebook과 완전히 동일한 영역
+        -->
+        <section class="loginScene">
+
+            <!-- ====================================
+                 최종적으로 보여줄 펼쳐진 책
+            ===================================== -->
+            <div class="openBook">
+                <img
+                    src="/img/notebook.png"
+                    alt="펼쳐진 Folio"
+                >
+            </div>
+            <!-- ====================================
+                 닫힌 책
+            ===================================== -->
+
+            <div class="closedBook">
+                <div class="closedBookPage">
+                    <img
+                        src="/img/login_note.png"
+                        alt="Folio"
+                        class="closedBookImage"
+                    >
+                    <!-- 로그인 입력 -->
+                    <div class="login-area">
+
+                        <!-- 사진 속 '저자명'은 그대로 둔다 -->
+                        <div class="author-row">
+
+                            <input
+                                type="text"
+                                id="username"
+                                class="username-input"
+                                autocomplete="username"
+                                aria-label="아이디"
+                            >
+
+                        </div>
+
+
+                        <!-- 패스워드 -->
+                        <input
+                            type="password"
+                            id="password"
+                            class="password-input"
+                            placeholder="패스워드"
+                            autocomplete="current-password"
+                        >
+
+
+                        <button
+                            type="button"
+                            id="loginButton"
+                            class="login-button"
+                        >
+                            로그인
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="/js/login.js"></script>
+
+</body>
+</html>

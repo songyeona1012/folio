@@ -1,0 +1,737 @@
+.managementApp {
+    font-size: 13px;
+}
+
+.managementApp button,
+.managementApp input,
+.managementApp select {
+    font: inherit;
+    color: inherit;
+}
+
+.managementApp button {
+    cursor: pointer;
+    border: 1px solid #d9c9b8;
+    border-radius: 7px;
+    background: #fffdf8;
+    padding: 7px 11px;
+}
+
+.managementApp button:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+.managementApp a {
+    color: #786250;
+}
+
+.managementApp button:focus-visible,
+.managementApp a:focus-visible,
+.managementApp input:focus-visible {
+    outline: 2px solid #9b7957;
+    outline-offset: 3px;
+}
+
+.managementApp .leftPage,
+.managementApp .rightPage {
+    top: 6%;
+    bottom: 7%;
+    padding: 3.5% 3% 2%;
+    min-height: 0;
+}
+
+.managementApp .leftPage {
+    left: 3%;
+    width: 47%;
+}
+
+.managementApp .rightPage {
+    right: 3%;
+    width: 47%;
+}
+
+.managementApp .managementIntro {
+    font-size: 11px;
+    line-height: 1.65;
+    flex-shrink: 0;
+}
+
+.managementApp .managementIntro h1 {
+    font-size: 19px;
+}
+
+.managementHeading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.dynamicToggle {
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.dynamicToggle input {
+    accent-color: #cc9272;
+}
+
+.categoryLinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 11px;
+    margin: 10px 0;
+}
+
+.categoryLinks a {
+    text-decoration: none;
+}
+
+.categoryLinks a[aria-current] {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.managementApp .categoryGrid {
+    gap: 12px;
+    min-height: 0;
+    margin-top: 5px;
+    grid-auto-rows: minmax(0, 1fr);
+}
+
+.managementApp .categoryCard {
+    aspect-ratio: auto;
+    height: 100%;
+    max-height: none;
+    min-height: 120px;
+}
+
+.managementApp .categoryTape {
+    left: 9%;
+    width: 47%;
+    height: 30px;
+    top: 0;
+    pointer-events: none;
+}
+
+.managementApp .categoryName {
+    top: 7px;
+    left: 9%;
+    width: 47%;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.managementApp .tapeBlue {
+    top: -5px;
+    height: 39px;
+    width: 49%;
+}
+
+.managementApp .detailIcon {
+    display: block;
+    top: 8%;
+    right: 12%;
+    width: 16px;
+    height: 16px;
+    z-index: 5;
+    line-height: 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.memoRows {
+    position: absolute;
+    z-index: 2;
+    top: 38px;
+    left: 12%;
+    right: 12%;
+    bottom: 14%;
+    overflow: auto;
+    font-size: 11px;
+}
+
+.memoRow {
+    padding: 6px 0;
+    border-bottom: 1px solid #d9d8cc;
+}
+
+.memoRow strong {
+    display: block;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+}
+
+.memoRow small {
+    display: block;
+    color: #8c8476;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.largeMemo {
+    position: relative;
+    flex: 1;
+    min-height: 180px;
+}
+
+.largeMemo .categoryTape {
+    width: 26%;
+    left: 8%;
+}
+
+.largeMemo .categoryName {
+    width: 26%;
+    left: 8%;
+}
+
+.largeMemo .detailIcon {
+    top: 5%;
+    right: 8%;
+}
+
+.detailList {
+    position: absolute;
+    z-index: 2;
+    top: 45px;
+    bottom: 12%;
+    left: 10%;
+    right: 10%;
+    overflow: auto;
+}
+
+.detailRow {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.managementApp .detailOpen {
+    flex: 1;
+    text-align: left;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    min-width: 0;
+}
+
+.detailOpen strong {
+    display: block;
+    font-weight: 400;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.detailOpen small {
+    display: block;
+    font-size: 10px;
+    color: #8d887c;
+    line-height: 1.9;
+    margin-top: 6px;
+}
+
+.managementApp .removeRule {
+    border: 0;
+    border-radius: 50%;
+    background: transparent url('/img/management-delete.png') center / contain no-repeat;
+    width: 21px;
+    height: 21px;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.subtleButton {
+    align-self: flex-start;
+    margin-top: 5px;
+    font-size: 11px !important;
+}
+
+.managementApp .editorPage {
+    overflow: auto;
+}
+
+.editorHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.editorHeading h2 {
+    font-size: 19px;
+}
+
+.editorPage label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 16px 0;
+}
+
+.editorPage input,
+.editorPage select,
+.dateLabel input {
+    border: 1px solid #d6caba;
+    border-radius: 5px;
+    padding: 8px;
+    background: #fffdf8;
+    min-width: 0;
+}
+
+.cycleFields {
+    display: flex;
+    gap: 12px;
+}
+
+.cycleFields label {
+    width: 50%;
+}
+
+#calendarLink {
+    display: inline-block;
+    margin-left: 18px;
+}
+
+.analysisPage {
+    overflow: auto !important;
+    gap: 8px;
+}
+
+.analysisHeader h2 {
+    font-size: 18px;
+    margin: 0 0 6px;
+}
+
+.analysisHeader span,
+.muted {
+    font-size: 11px;
+    color: #958779;
+    line-height: 1.7;
+}
+
+.managementApp .periodSelector {
+    align-self: flex-end;
+    flex-shrink: 0;
+}
+
+.managementApp .periodSelector button {
+    border: 0;
+    border-radius: 0;
+    font-size: 11px;
+}
+
+.managementApp .periodSelector .active {
+    background: #f0d7c8;
+}
+
+.dateLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+}
+
+#rangeLabel,
+#chartSummary {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+/* The overview uses an SVG line chart; reports keep their existing layout. */
+.relaxedWord {
+    color: #2ea132;
+}
+
+.managementApp .analysisHeader h2 {
+    text-align: center;
+    font-size: 16px;
+    margin: 18px 0 12px;
+}
+
+.chartToolbar {
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 9px;
+}
+
+.managementApp .chartToolbar .periodSelector {
+    display: flex;
+    border: 1px solid #cdbdad;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.managementApp .chartToolbar button {
+    padding: 3px 10px;
+    font-size: 10px;
+}
+
+.pressureChart {
+    position: relative;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.pressureChart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.pressureChart text {
+    fill: #837465;
+    font-family: inherit;
+    font-size: 10px;
+}
+
+.chartEmpty {
+    position: absolute;
+    top: 45%;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+}
+
+.chartLegend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 10px;
+}
+
+.chartLegend span::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 2px;
+    background: var(--series-color);
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.chartOptions {
+    font-size: 10px;
+    color: #958779;
+    margin: 8px 0;
+    line-height: 1.8;
+}
+
+.chartOptions summary {
+    cursor: pointer;
+}
+
+.reportNotice {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 16px;
+    flex-shrink: 0;
+}
+
+.reportSmile {
+    display: block;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffe8a0 25%, #ffe8a077 50%, transparent 73%);
+}
+
+.reportSmile svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #493716;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+}
+
+.managementApp #reportNotice {
+    border-color: #bda791;
+    border-radius: 14px;
+    background: transparent;
+    padding: 6px 15px;
+    font-size: 11px;
+    text-align: left;
+    line-height: 1.6;
+}
+
+.reportChoice {
+    display: flex;
+    gap: 8px;
+    padding-left: 52px;
+}
+
+.managementApp .reportChoice button {
+    min-width: 58px;
+    font-size: 11px;
+}
+
+.closeReport {
+    float: right;
+    font-size: 10px;
+}
+
+.reportSection:focus {
+    outline: none;
+}
+
+.methodDetails {
+    font-size: 11px;
+    line-height: 1.75;
+}
+
+.methodDetails summary {
+    cursor: pointer;
+}
+
+.reportSection {
+    margin-top: 8px;
+}
+
+.reportSection h3 {
+    font-size: 14px;
+}
+
+.reportButtons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.reportButtons button {
+    font-size: 11px;
+}
+
+#reportResult {
+    white-space: pre-wrap;
+    font-size: 12px;
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+.reportSource {
+    display: block;
+    background: #ede9df;
+    padding: 4px 8px;
+    margin-bottom: 7px;
+    font-size: 10px;
+}
+
+.appStatus {
+    position: fixed;
+    z-index: 30;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 70vw;
+    background: #6e5140;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px #0002;
+}
+
+.appStatus:empty {
+    display: none;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media(max-height:750px) {
+    .managementApp .notebook {
+        height: calc(100vh - 55px);
+    }
+
+    .managementApp .managementIntro {
+        font-size: 10px;
+    }
+
+    .managementApp .categoryCard {
+        min-height: 100px;
+    }
+
+    .memoRows {
+        top: 33px;
+    }
+
+    .managementApp .tip {
+        margin-top: 5px;
+    }
+}
+
+@media(max-width:1100px) {
+
+    .managementApp .leftPage,
+    .managementApp .rightPage {
+        padding-left: 2%;
+        padding-right: 2%;
+    }
+
+    .managementApp .managementIntro {
+        font-size: 10px;
+    }
+}
+
+/* Separate rail and handle images retain native wheel, touch and drag scrolling. */
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage) {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+    scrollbar-gutter: stable;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+    background: transparent;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-track {
+    background: url('/img/scroll-rail.png') center / 1px 100% no-repeat;
+    margin-block: 3px;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-thumb {
+    min-height: 34px;
+    background: url('/img/scroll-thumb.png') center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.managementApp :is(.memoRows, .detailList, .analysisPage, .editorPage)::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Quick entry keeps the supplied paper artwork and overlays real form controls. */
+.managementApp .quickTapeButton {
+    position: absolute; z-index: 5; top: -3px; left: 9%; width: 49%; height: 36px;
+    border: 0; border-radius: 0; padding: 0; background: transparent;
+}
+.managementApp .quickTapeButton:hover { background: #ffffff25; }
+.visuallyHidden {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+.quickDialog {
+    padding: 0; border: 1px solid #dddcd7; width: min(440px, calc(100vw - 28px));
+    max-width: none; max-height: calc(100dvh - 28px); overflow: auto;
+    color: #191919; background: #fafafa; box-shadow: 4px 5px 9px #0005;
+}
+.quickDialog::backdrop { background: #eeedea66; backdrop-filter: blur(1.5px); }
+.quickForm { position: relative; width: 100%; aspect-ratio: 1760 / 1058; background-size: 100% 100%; }
+.managementApp .quickForm > input {
+    position: absolute; box-sizing: border-box; border: 0; border-radius: 0;
+    background: transparent; padding: 3px 8px; font-size: clamp(10px, 2.6vw, 13px);
+    color: #292929; min-width: 0;
+}
+.quickTitle { left: 24.55%; top: 24.8%; width: 67%; height: 13.8%; }
+.quickStart { left: 24.55%; top: 39%; width: 67%; height: 13.8%; }
+.quickInterval { left: 24.55%; top: 53.5%; width: 23%; height: 14.5%; }
+.quickUnits {
+    position: absolute; left: 65%; top: 53.5%; width: 26.6%; height: 14.5%;
+    margin: 0; padding: 0; border: 0; display: flex; align-items: center; justify-content: center; gap: 5px;
+}
+.quickUnits label { display: flex; align-items: center; gap: 2px; font-size: 10px; white-space: nowrap; }
+.quickUnits input {
+    appearance: none; width: 12px; height: 12px; margin: 0; border: 1px solid #aaa; border-radius: 0;
+    background: #fafafa; cursor: pointer;
+}
+.quickUnits input:checked { background: #797568; box-shadow: inset 0 0 0 2px #fafafa; }
+.managementApp .quickSave {
+    position: absolute; left: 32.4%; top: 80%; width: 31%; padding: 0;
+    background: transparent; border: 0; border-radius: 2px;
+}
+.quickSave img { display: block; width: 100%; height: auto; }
+.managementApp .quickClose {
+    position: absolute; right: 5px; top: 2px; z-index: 1; border: 0;
+    background: transparent; padding: 2px 5px; color: #8d8982; font-size: 17px;
+}
+.quickError { position: relative; top: 100%; margin: 0; padding: 8px 16px; background: #fafafa; color: #a03d3d; font-size: 11px; }
+.quickError:empty { display: none; }
+
+/* Detailed memo: inline entry and editing leave the right page for analytics. */
+.managementApp[data-view="detail"] .largeMemo { margin-top: 24px; min-height: 280px; }
+.managementApp[data-view="detail"] .largeMemo .categoryTape { top: -9px; left: 7%; width: 25%; height: 30px; }
+.managementApp[data-view="detail"] .largeMemo .categoryName { top: 0; left: 7%; width: 25%; font-size: 12px; }
+.managementApp[data-view="detail"] .largeMemo .detailIcon { top: 9px; right: 6%; }
+.detailAddForm { position: absolute; z-index: 3; top: 42px; left: 6%; right: 7%; display: flex; align-items: center; gap: 9px; }
+.detailAddFields { display: grid; grid-template-columns: 1.45fr 1.15fr .85fr; align-items: center; gap: 6px; flex: 1; min-width: 0; padding: 9px 10px; border-radius: 18px; background: #ffffffe0; }
+.detailAddFields label { display: flex; flex-direction: column; gap: 3px; min-width: 0; color: #80694f; font-size: 10px; white-space: nowrap; }
+.managementApp .detailAddFields input, .managementApp .detailAddFields select { min-width: 0; width: 100%; border: 0; padding: 1px 0; background: transparent; font-size: 10px; border-radius: 0; color: #5d5d52; }
+.addCycle > span { display: flex; }
+.managementApp .addCycle input { width: 32px; }
+.managementApp #detailAddSave { width: 25px; height: 25px; flex-shrink: 0; padding: 0; border: 0; border-radius: 7px; background: url('/img/management-add.png') center / contain no-repeat; }
+.detailAddError { position: absolute; z-index: 3; top: 94px; left: 8%; right: 10%; margin: 0; font-size: 10px; color: #a53c3c; }
+.managementApp[data-view="detail"] .detailList { top: 119px; bottom: 12%; left: 9%; right: 6%; padding-right: 6%; }
+.managementApp[data-view="detail"] .detailRow { padding: 6px 0; gap: 10px; align-items: center; }
+.managementApp[data-view="detail"] .detailOpen strong { font-size: 13px; line-height: 1.4; color: #181b16; margin-bottom: 4px; }
+.detailMetadata { display: grid; grid-template-columns: 1.2fr .7fr 1.2fr 1.1fr; gap: 7px; text-align: left; color: #8a8c80; font-size: 10px; line-height: 1.4; }
+.detailDatum { display: flex; flex-direction: column; gap: 4px; min-width: 0; white-space: nowrap; }
+.managementApp[data-view="detail"] .removeRule { width: 15px; height: 15px; }
+.inlineRule { flex: 1; min-width: 0; }
+.managementApp .inlineRule input, .managementApp .inlineRule select { background: #ffffffb8; border: 0; border-bottom: 1px solid #a6b699; border-radius: 0; min-width: 0; width: 100%; padding: 2px 0; color: #555b4b; font-size: 10px; }
+.managementApp .inlineRule .inlineTitle { font-size: 15px; margin-bottom: 8px; }
+.inlineCycle { display: flex; gap: 2px; }
+.inlineError { margin: 5px 0 0; font-size: 10px; color: #a53c3c; white-space: normal; }
+.inlineError:empty { display: none; }
+@media (max-width: 650px) {
+    .detailAddFields { grid-template-columns: 1fr 1fr; }
+    .detailAddFields .addName { grid-column: 1 / -1; }
+    .managementApp[data-view="detail"] .detailList { top: 150px; }
+    .detailAddError { top: 125px; }
+    .detailMetadata { grid-template-columns: 1fr 1fr; row-gap: 9px; }
+}
+
+/* Fluid layout changes paper height; every category remains available in both modes. */
+.dynamicToggle { flex-direction: column; align-items: center; gap: 4px; }
+.fluidChoices { display: flex; border: 1px solid #bda791; border-radius: 16px; padding: 3px; }
+.managementApp .fluidChoices button { padding: 2px 8px; font-size: 10px; border: 0; border-radius: 12px; background: transparent; }
+.managementApp .fluidChoices button[aria-pressed="true"] { background: #f0d7c8; }
+.managementApp .categoryGrid { grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+.categoryColumn { min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 18px; }
+.managementApp .categoryColumn .categoryCard { flex: 1; min-height: 120px; width: 100%; }
+.memoTable { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 10px; color: #252720; }
+.memoTable th { color: #ABA6A6; font-weight: 400; text-align: left; padding: 2px 2px 8px; }
+.memoTable th:first-child { width: 47%; }
+.memoTable th:nth-child(2) { width: 21%; }
+.memoTable th:nth-child(3) { width: 32%; }
+.memoTable td { padding: 5px 2px; vertical-align: top; overflow-wrap: anywhere; line-height: 1.5; }
+.memoTable td:not(:first-child) { white-space: nowrap; font-size: 9px; }
+.memoEmpty { color: #8c8476; font-size: 10px; }
+.managementApp[data-fluid="true"] .leftPage { overflow-y: auto; overflow-x: hidden; }
+.managementApp[data-fluid="true"] .categoryGrid { flex: none; grid-template-rows: auto; }
+.managementApp[data-fluid="true"] .categoryColumn .categoryCard { flex: none; height: auto; max-height: none; min-height: 145px; padding: 42px 0 36px; aspect-ratio: auto; }
+.managementApp[data-fluid="true"] .memoRows { position: relative; top: auto; bottom: auto; left: auto; right: auto; margin: 0 11%; overflow: visible; scrollbar-gutter: auto; }
+.managementApp[data-fluid="true"] .largeMemo { flex: none; height: auto; min-height: 260px; padding-bottom: 52px; }
+.managementApp[data-fluid="true"] .detailList { position: relative; top: auto; bottom: auto; left: auto; right: auto; margin: 119px 9% 0; padding-right: 0; overflow: visible; scrollbar-gutter: auto; }
+/* Keep the detail form and tape safely inside the visible paper. */
+.managementApp .detailAddForm { left: 10%; right: 10%; width: auto; min-width: 0; max-width: none; gap: 8px; }
+.managementApp .detailAddFields { width: 0; flex: 1 1 0; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, .85fr); padding: 8px 9px; }
+.managementApp .detailAddFields input { max-width: 100%; }
+.managementApp .addCycle input { width: 25px; flex: 0 1 25px; }
+.managementApp .addCycle select { flex: 1; }
+.managementApp[data-view="detail"] .largeMemo .categoryTape { left: 11%; top: -8px; width: 25%; height: 34px; transform: none; }
+.managementApp[data-view="detail"] .largeMemo .categoryName { left: 11%; top: 2px; width: 25%; }
+.managementApp .detailIcon { width: 15px; height: 12px; font-size: 0; line-height: 0; background: repeating-linear-gradient(to bottom, #878181 0 2px, transparent 2px 5px); border-radius: 1px; }
+.managementApp[data-view="detail"] .largeMemo .detailIcon { top: 13px; right: 9%; width: 16px; height: 12px; }
+
+.managementApp .memoEmpty { padding: 8px 0; margin: 0; text-align: left; }
+.managementApp[data-fluid="true"] .categoryColumn .categoryCard { padding-top: 38px; padding-bottom: 24px; }
+.managementApp[data-fluid="true"] .memoTable { font-size: 9px; }
+.managementApp[data-fluid="true"] .memoTable td { padding-top: 3px; padding-bottom: 3px; line-height: 1.4; }
+.managementApp[data-fluid="true"] .leftPage { scrollbar-width: thin; scrollbar-color: #ded9cf transparent; }

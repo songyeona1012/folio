@@ -1,0 +1,136 @@
+.sideBar {
+    position: relative;
+    z-index: 2;
+    width: 155px;
+    height: 100vh;
+    flex: 0 0 155px;
+    background: #fffdfc;
+    border: 1px solid #d7c9c0;
+
+    /* 아주 살짝 오른쪽으로 기울이기 */
+    transform: rotate(0.6deg);
+    transform-origin: center center;
+}
+
+/* =========================
+   사이드바 상단 제목
+========================= */
+
+.pageTitle {
+    position: absolute;
+    top: -29px;
+    left: 2px;
+    width: 520px;
+    color: #aaa39f;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+/* =========================
+   프로필
+========================= */
+
+.userProfile {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+    min-width: 0;
+    padding: 23px 18px 15px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+.profileImage {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 2px;
+    background: #e9d6c8;
+    font-size: 35px;
+}
+
+.userInfo {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.userInfo strong,
+.userInfo span {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.userInfo strong {
+    color: #514945;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.userInfo span {
+    color: #a39b96;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* =========================
+   구분선
+========================= */
+
+.sideLine {
+    height: 1px;
+    margin: 0 14px 10px;
+    background: #e6ddda;
+}
+
+/* =========================
+   메뉴
+========================= */
+
+.sideMenu {
+    display: grid;
+    gap: 14px;
+    padding: 0 22px;
+    font-size: 15px;
+}
+
+.sideMenu a {
+    width: max-content;
+    padding: 2px 5px;
+    color: #72635a;
+    text-decoration: none;
+}
+
+.sideMenu .selected {
+    background: #f2d9cf;
+}
+
+/* =========================
+   팀 이름
+========================= */
+
+.teamName {
+    position: absolute;
+    bottom: 16px;
+    left: 20px;
+    margin: 0;
+    color: #d17753;
+    font: italic 7px Georgia, serif;
+}
+
+/* =========================
+   1300px 이상
+========================= */
+
+@media (min-width: 1300px) {
+
+    .sideBar {
+        width: 155px;
+        flex-basis: 155px;
+    }
+}

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>폴리오 - 목표</title>
+
+    <link rel="stylesheet" href="/css/manage.css">
+    <link rel="stylesheet" href="/css/calendar.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/goal.css">
+
+    <script src="/js/goal.js" defer></script>
+</head>
+
+<body>
+<!-- 공용 아이콘: 웃는 얼굴 (목록 카드, 채팅 말풍선에서 사용) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="icon-face" viewBox="0 0 40 40">
+        <circle cx="13.5" cy="16" r="1.9"/>
+        <circle cx="26.5" cy="16" r="1.9"/>
+        <path d="M11.5 23.5c2 4.2 5.2 6 8.5 6s6.5-1.8 8.5-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+</svg>
+
+<div class="appShell">
+
+    {{> layout/sidebar}}
+
+    <main class="mainArea">
+        <div class="topBar"></div>
+
+        <section class="notebook">
+
+            {{> layout/bookLayout}}
+
+            <!-- ========== 왼쪽 페이지: 목표 목록 ========== -->
+            <section class="leftPage">
+                <div class="goal-page">
+
+                    <header class="goal-heading">
+                        <h1>목표 :</h1>
+                        <p>달성하고 싶은 목표가 있나요? 목표를 설정하고 도달 까지의 과정을 확인하며 기록해 보세요.</p>
+                    </header>
+
+                    <div class="goal-toolbar">
+                        <div class="goal-mode-bar" role="radiogroup" aria-label="작성 방식 선택">
+                            <label class="mode-option">
+                                <span>공부</span>
+                                <input type="radio" name="goalMode" value="form" checked>
+                                <i class="mode-radio" aria-hidden="true"></i>
+                            </label>
+                            <label class="mode-option">
+                                <span>AI 자율 작성</span>
+                                <input type="radio" name="goalMode" value="ai">
+                                <i class="mode-radio" aria-hidden="true"></i>
+                            </label>
+                            <button type="button" class="mode-new-goal" id="newGoalBtn">새 목표 생성</button>
+                        </div>
+                        <span class="goal-list-label">선택</span>
+                    </div>
+
+                    <div class="goal-list-scroll">
+                        <div class="goal-list" id="goalList" aria-live="polite"></div>
+                    </div>
+
+                    <div class="goal-list-footer">
+                        <button type="button" id="deleteSelectedGoalsBtn" disabled>선택 삭제</button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- ========== 오른쪽 페이지: 에디터 ========== -->
+            <section class="rightPage">
+                <form id="goalForm" class="goal-paper" novalidate>
+
+                    <!-- 저장 버튼은 없고, 수정하면 자동으로 저장된다 -->
+                    <span class="save-status" id="saveStatus" role="status" aria-live="polite"></span>
+
+                    <!-- 제목은 두 작성 방식이 함께 쓴다 -->
+                    <input type="text" name="title" class="goal-title-input" placeholder="클릭하여 목표명 작성"
+                           aria-label="목표명" maxlength="60" autocomplete="off">
+
+                    <!-- ───── 공부 ───── -->
+                    <div class="goal-panel" data-mode-panel="form">
+
+                        <div class="form-top">
+                            <div class="goal-table">
+                                <label class="goal-table-label" for="startDate">기간</label>
+                                <div class="goal-table-cell goal-date-cell">
+                                    <input type="text" id="startDate" name="startDate" class="date-mask" inputmode="numeric"
+                                           placeholder="00.00.00" maxlength="8" autocomplete="off" aria-label="시작일 (연.월.일 숫자 6자리)">
+                                    <span aria-hidden="true">~</span>
+                                    <input type="text" id="endDate" name="endDate" class="date-mask" inputmode="numeric"
+                                           placeholder="00.00.00" maxlength="8" autocomplete="off" aria-label="종료일 (연.월.일 숫자 6자리)">
+                                </div>
+
+                                <label class="goal-table-label" for="goalUnit">진행 단위</label>
+                                <div class="goal-table-cell">
+                                    <input type="text" id="goalUnit" name="goalUnit" maxlength="50" autocomplete="off">
+                                </div>
+
+                                <label class="goal-table-label" for="goalFrequency">학습 빈도</label>
+                                <div class="goal-table-cell">
+                                    <input type="text" id="goalFrequency" name="goalFrequency" maxlength="255" autocomplete="off">
+                                </div>
+
+                                <label class="goal-table-label" for="specialNotes">특이 사항</label>
+                                <div class="goal-table-cell">
+                                    <input type="text" id="specialNotes" name="specialNotes" maxlength="255" autocomplete="off">
+                                </div>
+
+                                <label class="goal-table-label" for="goalPromise">다짐</label>
+                                <div class="goal-table-cell">
+                                    <input type="text" id="goalPromise" name="goalPromise" maxlength="255" autocomplete="off">
+                                </div>
+                            </div>
+
+                            <aside class="dday-box" aria-live="polite">
+                                <strong class="dday-count" id="ddayCount">D - 00</strong>
+                                <p class="dday-hint" id="ddayHint"></p>
+                            </aside>
+                        </div>
+
+                        <!-- 제목 줄: 스크롤해도 고정 -->
+                        <div class="item-heads">
+                            <div class="item-section-head">
+                                <button type="button" class="progress-add-btn" id="progressAddBtn"
+                                        aria-haspopup="true" aria-expanded="false" aria-controls="progressMenu">진도표 추가</button>
+                            </div>
+                            <header class="item-section-head">
+                                <h2 id="reviewTitle">오늘의 공부 한 줄 리뷰</h2>
+                                <button type="button" class="clear-selected" id="clearNotesBtn" disabled>선택 삭제</button>
+                            </header>
+                        </div>
+
+                        <!-- 제목 줄 바로 아래부터 스크롤 -->
+                        <div class="item-scroll">
+                            <div class="item-cols">
+                                <div class="item-col" role="group" aria-label="진도표">
+                                    <div class="progress-list" id="progressList"></div>
+                                </div>
+                                <div class="item-col" role="group" aria-labelledby="reviewTitle">
+                                    <div class="item-list" id="noteItems"></div>
+                                    <button type="button" class="add-item-btn" id="addNoteBtn" aria-label="한 줄 리뷰 추가">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ───── AI 자율 작성 ───── -->
+                    <div class="goal-panel ai-scroll" data-mode-panel="ai" hidden>
+                        <div class="ai-chat">
+                            <div class="chat-row">
+                                <span class="chat-face bot-face"><svg class="face" aria-hidden="true"><use href="#icon-face"/></svg></span>
+                                <div class="chat-bubble">안녕하세요. 전 당신의 도우미입니다. 원하는 목표가 있다면 달성 까지의 계획을 세워드릴게요. 무엇을, 언제부터, 언제 까지 마치고 싶나요?</div>
+                            </div>
+
+                            <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
+
+                            <div class="chat-row is-user">
+                                <textarea id="aiPrompt" class="chat-prompt" rows="2" placeholder="클릭하여 작성"
+                                          aria-label="도우미에게 보낼 메시지 (Enter로 전송, Shift+Enter로 줄바꿈)"></textarea>
+                                <span class="chat-face user-face"><svg class="face" aria-hidden="true"><use href="#icon-face"/></svg></span>
+                            </div>
+                        </div>
+
+                        <p class="ai-help-text">! 인공 지능의 도움 없이 이곳을 클릭하면 바로 자율 텍스트 작성이 가능합니다.</p>
+                        <textarea id="freeMemo" name="freeMemo" class="free-memo" aria-label="자유 메모"></textarea>
+                    </div>
+                </form>
+            </section>
+        </section>
+    </main>
+</div>
+
+<!-- ===== 진도표 추가 메뉴 =====
+     종이(스크롤/둥근 모서리 영역) 밖에 두어서 가장자리에 잘리지 않는다. 위치는 goal.js가 버튼/표 옆으로 맞춘다. -->
+<div class="pm" id="progressMenu" hidden>
+    <div class="pm-panel" role="menu" aria-label="진도표 종류">
+        <button type="button" class="pm-item" role="menuitem" data-kind="NUMBER" aria-haspopup="true">
+            <strong>숫자형</strong>
+            <span class="pm-desc">날짜 또는 인터넷 강의 등에서 적합한 숫자를 지워나가는 형태</span>
+            <svg class="pm-arrow" viewBox="0 0 10 12" aria-hidden="true"><path d="M1.5 1.5v9l7-4.5z"/></svg>
+        </button>
+        <button type="button" class="pm-item is-disabled" role="menuitem" data-kind="TEXT" aria-disabled="true">
+            <strong>글자형</strong>
+            <span class="pm-desc">단원 또는 특정 수행 과정 등을 직접 작성하여 지워나가는 형태</span>
+            <span class="pm-soon">준비 중</span>
+        </button>
+    </div>
+
+    <!-- 숫자형 팝업: 마우스를 올리면 옆에 나타난다. 값이 입력되면 닫기 버튼이 생기고 그 버튼으로만 닫힌다. -->
+    <div class="pm-sub" role="group" aria-label="숫자형 진도표 만들기">
+        <button type="button" class="pm-close" aria-label="닫기">&#10005;</button>
+        <div class="pf-mount" data-mount="create"></div>
+    </div>
+</div>
+
+<!-- ===== 진도표 수정 패널: 표를 클릭하면 표 왼쪽에 나타난다 ===== -->
+<div class="pe" id="progressEdit" role="group" aria-label="진도표 수정" hidden>
+    <button type="button" class="pe-close" aria-label="닫기">&#10005;</button>
+    <div class="pf-mount" data-mount="edit"></div>
+</div>
+
+<!-- 만들기/수정 패널이 같이 쓰는 입력 양식 (수의 개수, 행, 열, 미리보기) -->
+<template id="progressFormTemplate">
+    <div class="pf">
+        <p class="pf-name" hidden><span>표 이름 :</span> <strong class="pf-name-text"></strong></p>
+        <label class="pf-row"><span>수의 개수</span>
+            <input type="text" class="pf-field" data-field="count" inputmode="numeric" maxlength="3" placeholder="000" autocomplete="off">
+        </label>
+        <label class="pf-row"><span>행</span>
+            <input type="text" class="pf-field" data-field="rows" inputmode="numeric" maxlength="3" placeholder="000" autocomplete="off">
+        </label>
+        <label class="pf-row"><span>열</span>
+            <input type="text" class="pf-field" data-field="cols" inputmode="numeric" maxlength="3" placeholder="000" autocomplete="off">
+        </label>
+        <div class="pf-actions">
+            <button type="button" class="pf-submit" disabled>생성하기</button>
+            <button type="button" class="pf-delete" hidden>표 삭제하기</button>
+        </div>
+        <p class="pf-error" role="alert" hidden></p>
+        <div class="pf-preview" hidden aria-hidden="true">
+            <div class="pf-preview-grid"></div>
+            <span class="pf-preview-label">미리보기</span>
+        </div>
+    </div>
+</template>
+
+<!-- ===== 동적 항목 템플릿 (JS가 복제해서 사용) ===== -->
+
+<!-- 왼쪽 목록의 목표 카드 -->
+<template id="goalCardTemplate">
+    <div class="goal-card-row">
+        <button type="button" class="goal-card" aria-pressed="false">
+            <span class="goal-card-side">
+                <span class="goal-card-avatar"><svg class="face" aria-hidden="true"><use href="#icon-face"/></svg></span>
+            </span>
+            <span class="goal-card-copy">
+                <span class="goal-card-title"></span>
+                <span class="goal-card-dates">
+                    <span class="goal-card-start"></span>
+                    <span class="goal-card-end"></span>
+                </span>
+                <span class="goal-card-updated"></span>
+            </span>
+        </button>
+        <input type="checkbox" class="goal-select-checkbox">
+    </div>
+</template>
+
+<!-- 오늘의 공부 한 줄 리뷰 한 칸: 날짜(숫자 입력) + 한 줄 + 선택 체크박스. 모두 클릭해서 바로 수정하는 인라인 입력 -->
+<template id="noteTemplate">
+    <div class="note-row">
+        <div class="note-box">
+            <div class="review-date" role="group" aria-label="작성일">
+                <input type="text" class="rd-part" inputmode="numeric" maxlength="2" placeholder="00" aria-label="년 (두 자리)"><span>년</span>
+                <input type="text" class="rd-part" inputmode="numeric" maxlength="2" placeholder="00" aria-label="월"><span>월</span>
+                <input type="text" class="rd-part" inputmode="numeric" maxlength="2" placeholder="00" aria-label="일"><span>일</span>
+            </div>
+            <input type="text" class="review-text" maxlength="100" placeholder="클릭하여 한 줄 작성" aria-label="오늘의 공부 한 줄 리뷰" autocomplete="off">
+        </div>
+        <input type="checkbox" class="item-select" aria-label="삭제할 리뷰로 선택">
+    </div>
+</template>
+
+</body>
+</html>

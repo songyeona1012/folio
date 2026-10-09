@@ -1,0 +1,42 @@
+package com.example.folio.repository;
+
+import com.example.folio.entity.Schedule;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
+    interface CompletionSummary {
+        Long getRuleId();
+        Long getTotal();
+        Long getDone();
+    }
+
+    @org.springframework.data.jpa.repository.Query("""
+        select s.recurringId as ruleId, count(s) as total,
+            sum(case when s.completed = true then 1 else 0 end) as done
+        from Schedule s where s.recurringId is not null and s.cancelled = false
+            and s.date <= :through group by s.recurringId
+        """)
+    List<CompletionSummary> summarizeCompletion(@org.springframework.data.repository.query.Param("through") LocalDate through);
+
+    boolean existsByRecurringIdAndDate(Long recurringId, LocalDate date);
+    List<Schedule> findByRecurringIdAndDateGreaterThanEqual(Long id, LocalDate date);
+    // 특정 날짜의 일정 목록 (오른쪽 페이지 "금일 일정 목록"에 사용)
+    List<Schedule> findByDate(LocalDate date);
+    List<Schedule> findByDateLessThanEqual(LocalDate date);
+
+    // 한 달 범위의 일정 (달력 칸마다 태그 표시할 때 사용)
+    List<Schedule> findByDateBetween(LocalDate start, LocalDate end);
+
+    // ===== 대시보드 요약용 (추가) =====
+
+    // 오늘 이후의 미완료 일정을 가까운 순서로 (가장 가까운 일정 계산용)
+    List<Schedule> findTop30ByDateGreaterThanEqualAndCompletedFalseAndCancelledFalseOrderByDateAscTimeAsc(
+        LocalDate date);
+
+    // 특정 카테고리에서 오늘 이후 가장 가까운 미완료 일정 1개 (가장 가까운 건강 관리 계산용)
+    Optional<Schedule> findFirstByCategoryAndDateGreaterThanEqualAndCompletedFalseAndCancelledFalseOrderByDateAscTimeAsc(
+        String category, LocalDate date);
+}

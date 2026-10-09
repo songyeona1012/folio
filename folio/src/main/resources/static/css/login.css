@@ -1,0 +1,269 @@
+/* =========================================================
+   로그인
+========================================================= */
+
+.loginMain {
+    position: relative;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   로그인 장면
+========================================================= */
+
+.loginScene {
+    position: relative;
+    width: calc(100% - 130px);
+    height: calc(100vh - 45px);
+    margin: 15px auto 0;
+    overflow: visible;
+    perspective: 2000px;
+    transform-style: preserve-3d;
+}
+
+
+/* =========================================================
+   펼쳐진 책
+========================================================= */
+
+.openBook {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.openBook img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    user-select: none;
+}
+
+
+/* =========================================================
+   닫힌 책
+========================================================= */
+
+.closedBook {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 754 / 954;
+    z-index: 10;
+    perspective: 2000px;
+    transform-style: preserve-3d;
+}
+
+
+/* =========================================================
+   실제로 넘어가는 페이지
+========================================================= */
+
+.closedBookPage {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform, filter;
+    transform: rotateY(0deg);
+}
+
+
+/* =========================================================
+   닫힌 책 이미지
+========================================================= */
+
+.closedBookImage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    user-select: none;
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   로그인 영역
+========================================================= */
+.login-area {
+    position: absolute;
+    left: 50%;
+    top: 40.5%;
+    transform: translateX(-50%);
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 190px;
+    /* gap을 제거하고 각 요소의 margin으로 간격을 정밀하게 조절합니다. */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* 책이 펼쳐질 때 입력 폼 자연스럽게 사라짐 */
+.loginScene.opening .login-area {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+/* =========================================================
+   저자명 + 아이디 입력
+========================================================= */
+.author-row {
+    position: relative;
+    width: 190px;
+    height: 50px;
+}
+
+.username-input {
+    position: absolute;
+    /* '저자명' 텍스트 바로 오른쪽에 자연스럽게 붙도록 간격 조절 */
+    left: 45px;
+
+    /* 밑줄이 텍스트 바로 아래에 위치하도록
+       top: 0 대신 bottom: 0을 사용하고 높이를 확 줄입니다. */
+    bottom: 0;
+    width: 145px;
+    height: 24px;
+
+    /* 글자와 밑줄 사이의 내부 여백(padding-bottom) 조절 */
+    padding: 0 4px 2px 4px;
+
+    border: none;
+    border-bottom: 1px solid #d8d1c9;
+    background: transparent;
+    outline: none;
+    color: #77716b;
+    font-family: "Noto Serif KR", serif;
+    font-size: 12px;
+    text-align: left;
+}
+
+.username-input:focus {
+    border-bottom-color: #e9692c;
+}
+
+/* =========================================================
+   패스워드
+========================================================= */
+.password-input {
+    width: 190px; /* 윗줄(author-row)과 동일한 너비로 맞춰 안정감 부여 */
+    height: 28px; /* 높이 대폭 축소 (50px -> 28px) */
+
+    margin-top: 15px; /* 위 입력창과의 간격 */
+    padding: 0 5px 4px 5px; /* 글자와 밑줄 사이 간격 */
+
+    border: none;
+    border-bottom: 1px solid #d8d1c9;
+    background: transparent;
+    outline: none;
+    text-align: center;
+    color: #77716b;
+    font-family: "Noto Serif KR", serif;
+    font-size: 11px; /* 글씨 크기를 10px에서 11px로 살짝 키워 가독성 확보 */
+}
+
+.password-input::placeholder {
+    color: #8d8881;
+}
+
+.password-input:focus {
+    border-bottom-color: #e9692c;
+}
+
+/* =========================================================
+   로그인 버튼
+========================================================= */
+.login-button {
+    width: 120px;
+    height: 42px; /* 버튼 높이를 살짝 줄여서 세련되게 */
+
+    margin-top: 25px; /* 패스워드와 버튼 사이 간격을 여유 있게 띄움 */
+
+    border: 1px solid #d8d1c9;
+    background: rgba(255, 255, 255, 0.35);
+    color: #77716b;
+    font-family: "Noto Serif KR", serif;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.login-button:hover {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+
+/* =========================================================
+   펼치기 애니메이션 실행
+========================================================= */
+
+.loginScene.opening .closedBookPage {
+    animation: bookOpen 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.loginScene.opening .openBook {
+    animation: openBookShow 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+
+/* =========================================================
+   책장 넘김 (자연스러운 3D 곡선 및 입체 그림자)
+========================================================= */
+
+@keyframes bookOpen {
+    0% {
+        transform: rotateY(0deg) translateZ(0px);
+        filter: brightness(1) drop-shadow(0 8px 12px rgba(60, 45, 30, 0.15));
+    }
+    50% {
+        /* 책장이 수직에 도달할 때 휘어지는 입체감 및 입체 그림자 */
+        transform: rotateY(-90deg) translateZ(25px);
+        filter: brightness(0.88) drop-shadow(20px 15px 25px rgba(60, 45, 30, 0.25));
+    }
+    100% {
+        transform: rotateY(-180deg) translateZ(0px);
+        filter: brightness(1) drop-shadow(0 4px 8px rgba(60, 45, 30, 0.1));
+    }
+}
+
+
+/* =========================================================
+   펼쳐진 책 등장 (표지가 90도 넘어간 후 부드럽게 등장)
+========================================================= */
+
+@keyframes openBookShow {
+    0%, 45% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   반응형
+========================================================= */
+
+@media (max-width: 1300px) {
+    .loginScene {
+        width: calc(100% - 80px);
+    }
+}
+
+@media (max-width: 1100px) {
+    .loginScene {
+        width: calc(100% - 40px);
+    }
+}
