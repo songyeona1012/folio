@@ -493,7 +493,7 @@ body {
     --goal-inner-l: calc(var(--goal-pad-l) + 14px); /* 표·리뷰 등 본문은 제목 줄보다 조금 안쪽 */
     --goal-inner-r: calc(var(--goal-pad-r) + 14px);
     --goal-bleed: 0px;                            /* 종이가 오른쪽 페이지 밖으로 나오는 길이. goal.js가 화면 오른쪽 끝에 맞춰 채운다 */
-    --goal-slide-from: 44px;                      /* 목표를 클릭하면 이만큼 오른쪽에서 시작해 왼쪽으로 들어온다 */
+    --goal-slide-from: 100px;                      /* 목표를 클릭하면 이만큼 오른쪽에서 시작해 왼쪽으로 들어온다 */
     --goal-scroll-gap: 18px;                      /* 스크롤바를 종이 오른쪽 끝에서 띄우는 거리 */
     position: relative;
     display: flex;

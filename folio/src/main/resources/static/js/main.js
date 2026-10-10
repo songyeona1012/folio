@@ -413,28 +413,39 @@
         showToast("일정이 삭제되었습니다");
     }
 
+    // 지금 화면에 필요한 달 목록 (주간이 두 달에 걸치면 두 달 모두)
+    function monthsToLoad() {
+        if (VIEW === "week") {
+            const months = new Map();
+            weekDays().forEach(c => months.set(c.y + "-" + c.m, {y: c.y, m: c.m}));
+            return [...months.values()];
+        }
+        return [{y: YEAR, m: MONTH}];
+    }
+
+    let loadRequest = 0;
+
     function loadMonthEvents() {
-        fetch(
-            "/api/schedules?year=" +
-            YEAR +
-            "&month=" +
-            MONTH
-        )
-            .then(res => {
+        const requestId = ++loadRequest;
+
+        Promise.all(monthsToLoad().map(({y, m}) =>
+            fetch("/api/schedules?year=" + y + "&month=" + m).then(res => {
                 if (!res.ok) {
                     throw new Error("로드 실패");
                 }
-
                 return res.json();
             })
-            .then(data => {
+        ))
+            .then(results => {
+                // 늦게 도착한 이전 응답은 무시
+                if (requestId !== loadRequest) return;
+
                 events = {};
 
-                data.forEach(item => {
+                results.flat().forEach(item => {
                     if (!item || !item.date) return;
 
-                    const parts =
-                        String(item.date).split("-");
+                    const parts = String(item.date).split("-");
 
                     if (parts.length !== 3) return;
 
@@ -462,7 +473,7 @@
                 loadDashboardSummary();
             })
             .catch(() => {
-                refreshViews();
+                if (requestId === loadRequest) refreshViews();
             });
     }
 
@@ -524,6 +535,53 @@
         }
     }
 
+    // 선택한 날짜가 들어 있는 주 (일요일 ~ 토요일)
+    function weekDays() {
+        const base = new Date(selectedDate.y, selectedDate.m - 1, selectedDate.d);
+        const start = new Date(base);
+        start.setDate(base.getDate() - base.getDay());
+
+        return Array.from({length: 7}, (_, i) => {
+            const d = new Date(start);
+            d.setDate(start.getDate() + i);
+            return {y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate(), other: false};
+        });
+    }
+
+    // 월간: 앞뒤 달을 포함한 6주(42칸)
+    function monthDays() {
+        const total = daysInMonth(YEAR, MONTH);
+        const startWd = firstWeekday(YEAR, MONTH);
+
+        const prevMonth = MONTH === 1 ? 12 : MONTH - 1;
+        const prevYear = MONTH === 1 ? YEAR - 1 : YEAR;
+        const nextMonth = MONTH === 12 ? 1 : MONTH + 1;
+        const nextYear = MONTH === 12 ? YEAR + 1 : YEAR;
+        const prevTotal = daysInMonth(prevYear, prevMonth);
+
+        const cells = [];
+
+        for (let i = 0; i < startWd; i++) {
+            cells.push({y: prevYear, m: prevMonth, d: prevTotal - startWd + 1 + i, other: true});
+        }
+
+        for (let d = 1; d <= total; d++) {
+            cells.push({y: YEAR, m: MONTH, d: d, other: false});
+        }
+
+        let nextDay = 1;
+
+        while (cells.length < 42) {
+            cells.push({y: nextYear, m: nextMonth, d: nextDay, other: true});
+            nextDay++;
+        }
+
+        return cells;
+    }
+
+    const MONTH_TAG_LIMIT = 2;   // 월간: 칸마다 일정 2개까지
+    const WEEK_TAG_LIMIT = 6;    // 주간: 칸마다 일정 6개까지 (넘으면 +N)
+
     function renderGrid() {
         const grid = document.getElementById("grid");
 
@@ -531,56 +589,8 @@
 
         grid.innerHTML = "";
 
-        const total = daysInMonth(YEAR, MONTH);
-        const startWd = firstWeekday(YEAR, MONTH);
-
-        const prevMonth =
-            MONTH === 1 ? 12 : MONTH - 1;
-
-        const prevYear =
-            MONTH === 1 ? YEAR - 1 : YEAR;
-
-        const nextMonth =
-            MONTH === 12 ? 1 : MONTH + 1;
-
-        const nextYear =
-            MONTH === 12 ? YEAR + 1 : YEAR;
-
-        const prevTotal =
-            daysInMonth(prevYear, prevMonth);
-
-        const cells = [];
-
-        for (let i = 0; i < startWd; i++) {
-            cells.push({
-                y: prevYear,
-                m: prevMonth,
-                d: prevTotal - startWd + 1 + i,
-                other: true
-            });
-        }
-
-        for (let d = 1; d <= total; d++) {
-            cells.push({
-                y: YEAR,
-                m: MONTH,
-                d: d,
-                other: false
-            });
-        }
-
-        let nextDay = 1;
-
-        while (cells.length < 42) {
-            cells.push({
-                y: nextYear,
-                m: nextMonth,
-                d: nextDay,
-                other: true
-            });
-
-            nextDay++;
-        }
+        const isWeek = VIEW === "week";
+        const cells = isWeek ? weekDays() : monthDays();
 
         cells.forEach((cell, idx) => {
             const el = document.createElement("div");
@@ -612,31 +622,45 @@
             const num = document.createElement("div");
 
             num.className = "num";
-            num.textContent = cell.d;
+
+            // 주간에서 달이 바뀌는 날은 "9/1"처럼 월도 함께 표시
+            num.textContent =
+                isWeek && cell.d === 1 && idx !== 0 ?
+                    cell.m + "/" + cell.d :
+                    cell.d;
 
             el.appendChild(num);
 
             if (!cell.other) {
-                const k = key(
-                    YEAR,
-                    MONTH,
-                    cell.d
-                );
+                const k = key(cell.y, cell.m, cell.d);
 
-                const evs =
-                    sortEvents(events[k] || []);
+                const evs = sortEvents(events[k] || []);
+                const limit = isWeek ? WEEK_TAG_LIMIT : MONTH_TAG_LIMIT;
 
-                evs.slice(0, 2).forEach(ev => {
-                    const tag =
-                        document.createElement("div");
+                evs.slice(0, limit).forEach(ev => {
+                    const tag = document.createElement("div");
 
-                    tag.className =
-                        "tag " + ev.cat;
+                    tag.className = "tag " + ev.cat + (ev.completed ? " done" : "");
 
-                    tag.textContent = ev.title;
+                    if (isWeek && ev.time) {
+                        const time = document.createElement("span");
+                        time.className = "tagTime";
+                        time.textContent = ev.time;
+                        tag.appendChild(time);
+                    }
+
+                    tag.appendChild(document.createTextNode(ev.title));
+                    tag.title = (ev.time ? formatTime(ev.time) + " " : "") + ev.title;
 
                     el.appendChild(tag);
                 });
+
+                if (isWeek && evs.length > limit) {
+                    const more = document.createElement("div");
+                    more.className = "tagMore";
+                    more.textContent = "+" + (evs.length - limit) + "개";
+                    el.appendChild(more);
+                }
 
                 el.addEventListener("click", e => {
                     selectedDate = {
@@ -645,17 +669,15 @@
                         d: cell.d
                     };
 
-                    document.getElementById(
-                        "todayTitle"
-                    ).textContent =
-                        "금일 일정 목록 [ " +
-                        String(cell.y).slice(2) +
-                        "." +
-                        pad(cell.m) +
-                        "." +
-                        pad(cell.d) +
-                        " ]";
+                    // 주간에서 다른 달의 날짜를 누르면 그 달 기준으로 요약을 다시 계산
+                    if (cell.y !== YEAR || cell.m !== MONTH) {
+                        YEAR = cell.y;
+                        MONTH = cell.m;
+                        updateMonthLabel();
+                        loadDashboardSummary();
+                    }
 
+                    updateTodayTitle();
                     refreshViews();
                     openMemo();
                 });
@@ -1507,61 +1529,136 @@
             }
         );
 
-    document
-        .getElementById("prevBtn")
-        .addEventListener(
-            "click",
-            () => {
-                MONTH--;
+    // ==============================
+    // 월간 / 주간 보기
+    // ==============================
 
-                if (MONTH < 1) {
-                    MONTH = 12;
-                    YEAR--;
-                }
+    const VIEW_KEY = "folio.calendarView";
+    let VIEW = "month";
 
-                selectedDate = {
-                    y: YEAR,
-                    m: MONTH,
-                    d: 1
-                };
+    try {
+        if (localStorage.getItem(VIEW_KEY) === "week") VIEW = "week";
+    } catch (e) { /* 저장소를 못 쓰면 월간으로 */ }
 
-                updateMonthLabel();
-                loadMonthEvents();
+    function applyViewUI() {
+        document.getElementById("grid").classList.toggle("isWeek", VIEW === "week");
+
+        document.querySelectorAll("[data-cal-view]").forEach(button => {
+            button.setAttribute("aria-pressed", String(button.dataset.calView === VIEW));
+        });
+
+        document.getElementById("prevBtn").setAttribute("aria-label", VIEW === "week" ? "이전 주" : "이전 달");
+        document.getElementById("nextBtn").setAttribute("aria-label", VIEW === "week" ? "다음 주" : "다음 달");
+    }
+
+    // 보기를 바꿀 때 날짜 칸이 살짝 바뀌는 효과
+    function playGridSwap() {
+        const grid = document.getElementById("grid");
+        grid.classList.remove("gridSwap");
+        void grid.offsetWidth;
+        grid.classList.add("gridSwap");
+    }
+
+    function setView(view) {
+        if (view === VIEW) return;
+
+        VIEW = view;
+
+        try {
+            localStorage.setItem(VIEW_KEY, VIEW);
+        } catch (e) { /* 무시 */ }
+
+        // 두 보기 모두 "선택한 날짜"를 기준으로 맞춘다
+        YEAR = selectedDate.y;
+        MONTH = selectedDate.m;
+
+        applyViewUI();
+        updateMonthLabel();
+        playGridSwap();
+        renderGrid();
+        loadMonthEvents();
+    }
+
+    document.querySelectorAll("[data-cal-view]").forEach(button => {
+        button.addEventListener("click", () => setView(button.dataset.calView));
+    });
+
+    // 월간: 한 달씩 / 주간: 일주일씩 이동
+    function step(dir) {
+        if (VIEW === "week") {
+            const d = new Date(selectedDate.y, selectedDate.m - 1, selectedDate.d + 7 * dir);
+
+            selectedDate = {
+                y: d.getFullYear(),
+                m: d.getMonth() + 1,
+                d: d.getDate()
+            };
+
+            YEAR = selectedDate.y;
+            MONTH = selectedDate.m;
+        } else {
+            MONTH += dir;
+
+            if (MONTH < 1) {
+                MONTH = 12;
+                YEAR--;
             }
-        );
 
-    document
-        .getElementById("nextBtn")
-        .addEventListener(
-            "click",
-            () => {
-                MONTH++;
-
-                if (MONTH > 12) {
-                    MONTH = 1;
-                    YEAR++;
-                }
-
-                selectedDate = {
-                    y: YEAR,
-                    m: MONTH,
-                    d: 1
-                };
-
-                updateMonthLabel();
-                loadMonthEvents();
+            if (MONTH > 12) {
+                MONTH = 1;
+                YEAR++;
             }
-        );
+
+            selectedDate = {
+                y: YEAR,
+                m: MONTH,
+                d: 1
+            };
+        }
+
+        updateTodayTitle();
+        updateMonthLabel();
+        playGridSwap();
+        loadMonthEvents();
+    }
+
+    document.getElementById("prevBtn").addEventListener("click", () => step(-1));
+    document.getElementById("nextBtn").addEventListener("click", () => step(1));
+
+    function updateTodayTitle() {
+        document.getElementById("todayTitle").textContent =
+            "금일 일정 목록 [ " +
+            String(selectedDate.y).slice(2) +
+            "." +
+            pad(selectedDate.m) +
+            "." +
+            pad(selectedDate.d) +
+            " ]";
+    }
 
     function updateMonthLabel() {
-        document.getElementById(
-            "yearLabel"
-        ).textContent = YEAR;
+        const range = document.getElementById("weekRange");
 
-        document.getElementById(
-            "monthLabel"
-        ).textContent =
-            monthNames[MONTH - 1];
+        if (VIEW === "week") {
+            const days = weekDays();
+            const first = days[0];
+            const last = days[6];
+            const weekNo =
+                Math.floor((selectedDate.d + firstWeekday(selectedDate.y, selectedDate.m) - 1) / 7) + 1;
+
+            document.getElementById("yearLabel").textContent = selectedDate.y;
+            document.getElementById("monthLabel").textContent =
+                monthNames[selectedDate.m - 1] + " " + weekNo + "주차";
+
+            range.textContent =
+                pad(first.m) + "." + pad(first.d) + " ~ " + pad(last.m) + "." + pad(last.d);
+            range.hidden = false;
+            return;
+        }
+
+        document.getElementById("yearLabel").textContent = YEAR;
+        document.getElementById("monthLabel").textContent = monthNames[MONTH - 1];
+        range.hidden = true;
     }
 
     document
@@ -1878,6 +1975,8 @@
     }).catch(() => {
         document.getElementById('dashboardManagementList').textContent = '관리 일정을 불러오지 못했어요.';
     });
+    applyViewUI();
+    updateTodayTitle();
     updateMonthLabel();
     renderGrid();
     loadMonthEvents();

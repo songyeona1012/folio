@@ -1,0 +1,765 @@
+/* ============================================================
+   일기 페이지 추가 스타일 (diary.css 다음에 불러옵니다)
+   기존 diary.css 디자인은 그대로 두고, 새로 생긴 요소만 꾸밉니다.
+   ============================================================ */
+
+:root {
+    --diary-ink: #3b3330;
+    --diary-muted: #9c918b;
+    --diary-soft: #8c7b6e;          /* 기록지 본문 글씨 (연한 갈색) */
+    --diary-accent: #b39a8b;
+    --diary-line: #ece7e2;
+    --diary-sheet-border: #e3ded9;
+    --diary-paper: #fbf9f6;
+    --diary-error: #c0533f;
+    --diary-select: #d76950;        /* 선택 표시 주황 */
+    --diary-folder: #f6e39b;
+    --diary-folder-edge: #dcc472;
+}
+
+.muted {
+    color: var(--diary-muted);
+}
+
+/* ---------- 기분 그래프 (상자 + 일별 스틱, 10일 넘으면 옆으로 슬라이드) ---------- */
+.moodBox {
+    --bars: 10;   /* JS가 일기 개수로 덮어씀 */
+    --cols: 10;
+    box-sizing: border-box;
+    height: 190px;
+    margin: 6px 0 22px;
+    padding: 16px 14px 6px;
+    background: #fdfcfa;
+    border: 1px solid var(--diary-sheet-border);
+}
+
+.moodScroll {
+    position: relative;             /* 스틱 위치 계산 기준 */
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--diary-accent) transparent;
+}
+
+.moodScroll::-webkit-scrollbar {
+    height: 5px;
+}
+
+.moodScroll::-webkit-scrollbar-thumb {
+    background: var(--diary-accent);
+    border-radius: 3px;
+}
+
+.moodTrack {
+    display: flex;
+    flex-direction: column;
+    width: 100%;                    /* 10일 넘으면 JS가 넓힘 */
+    height: 100%;
+    padding-bottom: 6px;
+    box-sizing: border-box;
+}
+
+.moodBox.isEmpty .moodLabels {
+    visibility: hidden;
+}
+
+/* diary.css의 예전 막대 스타일 덮어쓰기 */
+.moodBox .moodChart {
+    display: grid;
+    grid-template-columns: repeat(var(--bars, 10), calc((100% - (var(--cols, 10) - 1) * 10px) / var(--cols, 10)));
+    justify-content: start;
+    gap: 10px;
+    align-items: end;
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
+.moodSlot {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.moodBar {
+    display: block;
+    width: 100%;
+    min-height: 3px;
+    box-sizing: border-box;
+    border: 1px solid #cfc8c2;
+    border-radius: 1px 1px 0 0;
+    transition: height 0.35s ease, border-color 0.15s ease;
+}
+
+.moodBar.noRating {
+    height: 3px;
+}
+
+.moodSlot:hover .moodBar,
+.moodSlot:focus-visible .moodBar {
+    border-color: var(--diary-accent);
+}
+
+.moodSlot:focus-visible {
+    outline: 2px solid var(--diary-accent);
+    outline-offset: 2px;
+}
+
+/* 오른쪽에 열려 있는 날 */
+.moodSlot.active .moodBar {
+    border-color: var(--diary-muted);
+    box-shadow: 0 0 0 1px var(--diary-muted);
+}
+
+.moodBox .moodLabels {
+    display: grid;
+    grid-template-columns: repeat(var(--bars, 10), calc((100% - (var(--cols, 10) - 1) * 10px) / var(--cols, 10)));
+    justify-content: start;
+    gap: 10px;
+    margin-top: 6px;
+    font-size: 8.5px;
+    color: var(--diary-muted);
+    text-align: center;
+}
+
+.diaryEmptyYear {
+    margin: 28px 0 0;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ---------- 월별 폴더 ---------- */
+button.folderItem {
+    appearance: none;
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: left;
+}
+
+.folderItem:hover,
+.folderItem:focus-visible {
+    transform: translateY(-2px);
+    transition: transform 0.15s ease;
+}
+
+.folderBody {
+    position: relative;
+}
+
+.folderCount {
+    position: absolute;
+    left: 10px;
+    bottom: 8px;
+    font-size: 11px;
+    color: var(--diary-ink);
+    opacity: 0.7;
+}
+
+/* 폴더가 많아지면 폴더 영역만 스크롤 */
+.folderGrid {
+    max-height: 320px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 6px 6px 6px 2px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--diary-accent) transparent;
+}
+
+.folderGrid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.folderGrid::-webkit-scrollbar-thumb {
+    background: var(--diary-accent);
+    border-radius: 3px;
+}
+
+/* ============================================================
+   폴더 클릭 시: 월 기록지
+   ============================================================ */
+.monthView {
+    position: relative;
+    margin: 12px -12px 0;           /* 양옆으로 살짝 넓게 */
+    padding-bottom: 24px;           /* 왼쪽 아래 폴더가 걸칠 자리 (노트 안쪽) */
+    box-sizing: border-box;
+}
+
+.monthSheet {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    height: 400px;                  /* 노트 아래로 넘어가지 않게 높이 고정, 넘치면 표만 스크롤 */
+    padding: 22px 24px 14px;
+    background: #fff;
+    border: 1px solid var(--diary-sheet-border);
+    border-radius: 3px;
+    box-shadow: 0 1px 2px rgba(59, 51, 48, 0.04);
+}
+
+.monthSheetHead {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.monthSheetTitle {
+    flex: none;
+    font-size: 12px;
+    color: var(--diary-ink);
+    letter-spacing: 0.02em;
+}
+
+.monthSheetHelp {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    font-size: 9.5px;
+    line-height: 1.4;
+    color: #b8aea7;
+}
+
+.monthSheetHelp .qMark {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border: 1px solid #c9c0b9;
+    border-radius: 50%;
+    font-size: 9px;
+    color: #a99f98;
+}
+
+/* 표 */
+.monthTableWrap {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--diary-accent) transparent;
+}
+
+.monthTable {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.monthTable .colDay { width: 16%; }
+.monthTable .colSummary { width: 48%; }
+.monthTable .colRating { width: 24%; }
+.monthTable .colSelect { width: 12%; }
+
+.monthTable th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0 6px 14px;
+    background: #fff;
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--diary-ink);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.monthTable th:last-child,
+.monthTable td.cellSelect {
+    text-align: center;
+}
+
+.monthTable td {
+    padding: 0 6px;
+    height: 34px;
+    border-bottom: 1px solid var(--diary-line);
+    vertical-align: middle;
+}
+
+.cellDay {
+    font-size: 13px;
+    color: var(--diary-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.summaryBtn {
+    display: block;
+    width: 100%;
+    padding: 4px 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 10.5px;
+    color: var(--diary-soft);
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.summaryBtn:hover,
+.summaryBtn:focus-visible {
+    color: var(--diary-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--diary-accent);
+    outline: none;
+}
+
+.rowLock {
+    font-size: 9px;
+}
+
+.rowStars {
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #d9ad3c;
+    white-space: nowrap;
+}
+
+.rowStars.none {
+    color: #cfc7c0;
+    letter-spacing: 0;
+}
+
+/* 지금 오른쪽에 열린 일기 / 선택된 줄 */
+.monthRow.active td {
+    background: rgba(179, 154, 139, 0.08);
+}
+
+.monthRow.active .summaryBtn {
+    color: var(--diary-ink);
+}
+
+/* 선택 체크박스: 네모 칸 + 선택 시 주황 동그라미 */
+.rowCheck {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-grid;
+    place-content: center;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    border: 1px solid #b9b0a9;
+    border-radius: 1px;
+    background: #fff;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.rowCheck::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--diary-select);
+    transform: scale(0);
+    transition: transform 0.12s ease;
+}
+
+.rowCheck:checked::before {
+    transform: scale(1);
+}
+
+.rowCheck:focus-visible {
+    outline: 2px solid var(--diary-accent);
+    outline-offset: 2px;
+}
+
+.monthEmpty {
+    margin: 36px 0;
+    text-align: center;
+    font-size: 12px;
+}
+
+/* 아래: 선택 삭제 + 말풍선 */
+.monthSheetFoot {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.selectDeleteBtn {
+    border: 0;
+    background: none;
+    padding: 4px 2px;
+    font: inherit;
+    font-size: 10px;
+    color: var(--diary-muted);
+    cursor: pointer;
+}
+
+.selectDeleteBtn:not(:disabled):hover {
+    color: var(--diary-error);
+}
+
+.selectDeleteBtn:disabled {
+    color: #cfc7c0;
+    cursor: default;
+}
+
+.deleteBubble {
+    position: absolute;
+    right: 18px;
+    bottom: calc(100% + 12px);
+    width: 180px;
+    padding: 12px 10px 10px;
+    background: #fff;
+    border: 1px solid #b9b0a9;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 6px 16px rgba(59, 51, 48, 0.08);
+    z-index: 2;
+}
+
+/* 말풍선 꼬리 (오른쪽 아래, 선택 삭제 쪽) */
+.deleteBubble::after,
+.deleteBubble::before {
+    content: "";
+    position: absolute;
+    right: 22px;
+    border-style: solid;
+}
+
+.deleteBubble::before {
+    bottom: -11px;
+    border-width: 11px 10px 0 0;
+    border-color: #b9b0a9 transparent transparent transparent;
+}
+
+.deleteBubble::after {
+    bottom: -9px;
+    right: 23px;
+    border-width: 10px 9px 0 0;
+    border-color: #fff transparent transparent transparent;
+}
+
+.deleteBubble p {
+    margin: 0 0 8px;
+    font-size: 9.5px;
+    line-height: 1.6;
+    color: var(--diary-ink);
+}
+
+.deleteBubbleActions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--diary-muted);
+}
+
+.deleteBubbleActions button {
+    border: 0;
+    background: none;
+    padding: 2px 4px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.deleteYes {
+    color: var(--diary-muted);
+}
+
+.deleteYes:hover {
+    color: var(--diary-error);
+}
+
+.deleteNo {
+    color: var(--diary-ink);
+    font-weight: 600;
+}
+
+/* 왼쪽 아래 노란 폴더 (누르면 폴더 목록으로) */
+.monthFolderIcon {
+    position: absolute;
+    left: 4px;                      /* 노트 밖으로 나가지 않게 안쪽에 배치 */
+    bottom: 0;
+    width: 62px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    z-index: 2;
+    transition: transform 0.15s ease;
+}
+
+.monthFolderIcon:hover,
+.monthFolderIcon:focus-visible {
+    transform: translateY(-3px);
+}
+
+.monthFolderIcon:focus-visible {
+    outline: 2px solid var(--diary-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.monthFolderTab {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 26px;
+    height: 10px;
+    background: var(--diary-folder);
+    border: 1px solid var(--diary-folder-edge);
+    border-bottom: 0;
+    border-radius: 4px 6px 0 0;
+}
+
+.monthFolderBody {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 8px;
+    bottom: 0;
+    background: linear-gradient(180deg, #f8e9ad 0%, var(--diary-folder) 100%);
+    border: 1px solid var(--diary-folder-edge);
+    border-radius: 2px 4px 3px 3px;
+    box-shadow: 0 2px 4px rgba(59, 51, 48, 0.12);
+}
+
+.monthFolderNum {
+    position: absolute;
+    right: 7px;
+    bottom: 4px;
+    font-size: 17px;
+    font-style: italic;
+    color: var(--diary-ink);
+}
+
+/* ============================================================
+   오른쪽: 도움말 / 날짜 / 상태
+   ============================================================ */
+button.diaryHelpRow {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-size: 11px;
+    color: #b8aea7;                 /* 작고 흐리게 */
+    cursor: pointer;
+}
+
+button.diaryHelpRow .qMark {
+    transform: scale(0.85);
+    opacity: 0.8;
+}
+
+button.diaryHelpRow:hover,
+button.diaryHelpRow:focus-visible {
+    color: var(--diary-muted);
+}
+
+/* 소개 문구가 한 줄로 줄어든 만큼 위로 붙이기 */
+.diaryLeftPage .diaryIntro {
+    margin-bottom: 12px;
+}
+
+.diaryLeftPage #yearView {
+    margin-top: 0;
+}
+
+/* 폴더 목록도 노트 아래로 넘치지 않게 */
+.folderGrid {
+    max-height: 280px;
+}
+
+.diaryHelpText {
+    margin: 4px 0 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--diary-ink);
+    background: var(--diary-paper);
+    border: 1px solid var(--diary-line);
+    border-radius: 8px;
+}
+
+.diaryHelpText p {
+    margin: 0;
+}
+
+button.diaryDateHint {
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: var(--diary-accent);
+    text-underline-offset: 4px;
+}
+
+.diaryHeaderRow {
+    position: relative;
+}
+
+/* 날짜 입력칸은 숨기고 달력 팝업만 사용 */
+.diaryDateInput {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.starRating .star {
+    cursor: pointer;
+}
+
+.starRating .star:focus-visible {
+    outline: 2px solid var(--diary-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.diaryStatus {
+    min-height: 18px;
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--diary-accent);
+}
+
+.diaryStatus.isError {
+    color: var(--diary-error);
+}
+
+/* ---------- 저장 줄: 비공개 / 삭제 / 저장 ---------- */
+.diarySaveRow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.privateToggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: auto;
+    font-size: 13px;
+    color: var(--diary-ink);
+    cursor: pointer;
+}
+
+.diaryDeleteBtn {
+    border: 1px solid var(--diary-line);
+    background: none;
+    color: var(--diary-error);
+    font: inherit;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.diaryDeleteBtn:hover {
+    background: rgba(192, 83, 63, 0.08);
+}
+
+.diarySaveBtn:disabled,
+.diaryDeleteBtn:disabled {
+    opacity: 0.5;
+    cursor: progress;
+}
+
+#nextYearBtn:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+/* ============================================================
+   자유형 양식: 배경/테두리 없이 노트 위에 바로 쓰기
+   ============================================================ */
+.freeformArea.plainNote {
+    background: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.plainNoteText {
+    display: block;
+    width: 100%;
+    min-height: 420px;
+    margin: 0;
+    padding: 4px 2px;
+    border: 0;
+    outline: none;
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none;
+    resize: none;
+    font: inherit;
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--diary-ink);
+}
+
+.plainNoteText::placeholder {
+    color: var(--diary-muted);
+}
+/* ---------- 저장 버튼: "선택 삭제"처럼 글자만 ---------- */
+.diarySaveRow .diarySaveBtn {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    padding: 4px 6px;
+    font: inherit;
+    font-size: 14px;
+    color: var(--diary-ink);
+    cursor: pointer;
+}
+
+.diarySaveRow .diarySaveBtn:hover,
+.diarySaveRow .diarySaveBtn:focus-visible {
+    background: none;
+    color: var(--diary-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    outline: none;
+}
+/* ---------- 삭제 버튼도 저장과 똑같이 글자만 ---------- */
+.diarySaveRow .diaryDeleteBtn {
+    border: 0;
+    background: none;
+    box-shadow: none;
+    padding: 4px 6px;
+    font: inherit;
+    font-size: 14px;
+    color: var(--diary-ink);
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.diarySaveRow .diaryDeleteBtn:hover,
+.diarySaveRow .diaryDeleteBtn:focus-visible {
+    background: none;
+    color: var(--diary-accent);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    outline: none;
+}

@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>폴리오 - 달력</title>
         <link rel="stylesheet" href="/css/manage.css">
-        <link rel="stylesheet" href="/css/calendar.css">
+        <link rel="stylesheet" href="/css/calendar.css?v=2">
         <link rel="stylesheet" href="/css/sidebar.css">
     </head>
     <body>
@@ -29,14 +29,21 @@
                             가장 가까운 일정 : <strong id="nextEventLabel">[오늘 오후 4시 40분] 중등부 수학 숙제 검사</strong>
                         </div>
 
-                        <div class="postit">
+                        <div class="postit memoStickIn">
                             <div class="cal-head">
                                 <span class="year" id="yearLabel">2026</span>
                                 <span class="month" id="monthLabel">8월</span>
+                                <span class="weekRange" id="weekRange" hidden></span>
+
+                                <!-- 월간 / 주간 보기 전환 -->
+                                <div class="viewToggle" role="group" aria-label="달력 보기 방식">
+                                    <button type="button" data-cal-view="month" aria-pressed="true">월간</button>
+                                    <button type="button" data-cal-view="week" aria-pressed="false">주간</button>
+                                </div>
 
                                 <div class="cal-nav">
-                                    <button id="prevBtn" type="button">‹</button>
-                                    <button id="nextBtn" type="button">›</button>
+                                    <button id="prevBtn" type="button" aria-label="이전">‹</button>
+                                    <button id="nextBtn" type="button" aria-label="다음">›</button>
                                 </div>
                             </div>
 
@@ -126,7 +133,7 @@
         <div class="toast" id="toast"></div>
 
 
-        <script src="/js/main.js"></script>
+        <script src="/js/main.js?v=2"></script>
 
     </body>
 </html>
