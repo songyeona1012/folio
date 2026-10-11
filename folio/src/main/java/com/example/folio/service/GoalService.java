@@ -3,6 +3,7 @@ package com.example.folio.service;
 import com.example.folio.dto.GoalRequest;
 import com.example.folio.dto.GoalResponse;
 import com.example.folio.entity.Goal;
+import com.example.folio.entity.GoalProgressTable;
 import com.example.folio.repository.GoalRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,12 @@ public class GoalService {
     private static final int TITLE_MAX_LENGTH = 100;
     private static final int PROGRESS_MAX = 100;
     private static final int PROGRESS_NAME_MAX_LENGTH = 60;
+    private static final int TEXT_ITEM_MAX = 100;
+    private static final int TEXT_ITEM_MAX_LENGTH = 100;
     private static final String KIND_NUMBER = "NUMBER";
+    private static final String KIND_TEXT = "TEXT";
+    private static final String FORM_STUDY = "STUDY";
+    private static final String FORM_AI = "AI";
 
     private final GoalRepository goalRepository;
 
@@ -67,6 +73,9 @@ public class GoalService {
         if (request.title() != null && request.title().trim().length() > TITLE_MAX_LENGTH) {
             throw new IllegalArgumentException("목표명은 " + TITLE_MAX_LENGTH + "자까지 쓸 수 있어요.");
         }
+        if (request.formType() != null && !FORM_STUDY.equals(request.formType()) && !FORM_AI.equals(request.formType())) {
+            throw new IllegalArgumentException("지원하지 않는 작성 양식이에요.");
+        }
         if (request.startDate() != null && request.endDate() != null
             && request.startDate().isAfter(request.endDate())) {
             throw new IllegalArgumentException("종료일이 시작일보다 빠를 수 없어요.");
@@ -80,11 +89,15 @@ public class GoalService {
         if (table == null) {
             return;
         }
-        if (!KIND_NUMBER.equals(table.kind())) {
+        if (!KIND_NUMBER.equals(table.kind()) && !KIND_TEXT.equals(table.kind())) {
             throw new IllegalArgumentException("지원하지 않는 진도표 종류예요.");
         }
         if (table.name() != null && table.name().trim().length() > PROGRESS_NAME_MAX_LENGTH) {
             throw new IllegalArgumentException("표 이름은 " + PROGRESS_NAME_MAX_LENGTH + "자까지 쓸 수 있어요.");
+        }
+        if (KIND_TEXT.equals(table.kind())) {
+            validateTextItems(table.items());
+            return;
         }
         if (table.total() < 1 || table.total() > PROGRESS_MAX) {
             throw new IllegalArgumentException("진도표의 수는 1~" + PROGRESS_MAX + " 사이여야 해요.");
@@ -96,10 +109,25 @@ public class GoalService {
         }
     }
 
+    private void validateTextItems(List<GoalRequest.Item> items) {
+        if (items == null) {
+            return;
+        }
+        if (items.size() > TEXT_ITEM_MAX) {
+            throw new IllegalArgumentException("글자형 진도표는 줄을 " + TEXT_ITEM_MAX + "개까지 만들 수 있어요.");
+        }
+        for (GoalRequest.Item item : items) {
+            if (item != null && item.text() != null && item.text().trim().length() > TEXT_ITEM_MAX_LENGTH) {
+                throw new IllegalArgumentException("한 줄은 " + TEXT_ITEM_MAX_LENGTH + "자까지 쓸 수 있어요.");
+            }
+        }
+    }
+
     /** 요청 내용을 엔티티에 반영한다. 진도표와 한 줄 리뷰는 화면에 보이는 순서대로 통째로 교체한다. */
     private void apply(Goal goal, GoalRequest request) {
         goal.change(
             request.title() == null ? "" : request.title().trim(),
+            FORM_AI.equals(request.formType()) ? FORM_AI : FORM_STUDY,
             request.startDate(),
             request.endDate(),
             trim(request.goalUnit()),
@@ -113,8 +141,7 @@ public class GoalService {
         if (request.progressTables() != null) {
             request.progressTables().stream()
                 .filter(table -> table != null)
-                .forEach(table -> goal.addProgressTable(
-                    table.kind(), trim(table.name()), table.total(), table.rows(), table.cols()));
+                .forEach(table -> addProgressTable(goal, table));
         }
 
         goal.clearNotes();
@@ -123,6 +150,20 @@ public class GoalService {
                 .filter(note -> note != null && StringUtils.hasText(note.text()))
                 .forEach(note -> goal.addNote(note.date(), note.text().trim()));
         }
+    }
+
+    /** 숫자형은 수/행/열을, 글자형은 줄(글 + 완료 체크)을 저장한다. 글자형의 수/행/열은 0. */
+    private void addProgressTable(Goal goal, GoalRequest.ProgressTable table) {
+        if (KIND_TEXT.equals(table.kind())) {
+            GoalProgressTable saved = goal.addProgressTable(KIND_TEXT, trim(table.name()), 0, 0, 0);
+            if (table.items() != null) {
+                table.items().stream()
+                    .filter(item -> item != null)
+                    .forEach(item -> saved.addItem(item.text() == null ? "" : item.text().trim(), item.done()));
+            }
+            return;
+        }
+        goal.addProgressTable(KIND_NUMBER, trim(table.name()), table.total(), table.rows(), table.cols());
     }
 
     private static String trim(String value) {

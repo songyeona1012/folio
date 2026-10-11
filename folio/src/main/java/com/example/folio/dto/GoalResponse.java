@@ -12,6 +12,7 @@ import java.util.List;
 public record GoalResponse(
     Long id,
     String title,
+    String formType,
     String cardColor,
     LocalDate startDate,
     LocalDate endDate,
@@ -30,6 +31,7 @@ public record GoalResponse(
         return new GoalResponse(
             goal.getId(),
             goal.getTitle(),
+            goal.getFormType(),
             goal.getCardColor(),
             goal.getStartDate(),
             goal.getEndDate(),
@@ -40,7 +42,10 @@ public record GoalResponse(
             goal.getFreeMemo(),
             goal.getProgressTables().stream()
                 .map(table -> new GoalRequest.ProgressTable(
-                    table.getKind(), table.getName(), table.getTotal(), table.getRowCount(), table.getColCount()))
+                    table.getKind(), table.getName(), table.getTotal(), table.getRowCount(), table.getColCount(),
+                    table.getItems().stream()
+                        .map(item -> new GoalRequest.Item(item.getContent(), item.isDone()))
+                        .toList()))
                 .toList(),
             goal.getNotes().stream()
                 .map(note -> new GoalRequest.Note(note.getNoteDate(), note.getContent()))

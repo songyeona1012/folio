@@ -1,7 +1,7 @@
 /* =========================================================
    goal.css — 목표 페이지
    0. 공통   1. 왼쪽 페이지(목록)   2. 오른쪽 페이지(종이)
-   3. 공부 양식   4. 진도표 추가 메뉴   5. AI 자율 작성
+   3. 공부 양식(숫자형/글자형 진도표 포함)   4. 진도표 추가 메뉴·수정 패널·글자형 삭제 메뉴   5. AI 자율 작성
    - 배경 이미지에 입력창을 겹치지 않고 전부 CSS로 그립니다.
    - 화면이 좁아지면 글자/칸 크기가 같이 줄어들도록 clamp()와 컨테이너 쿼리(cqw)를 씁니다.
    ========================================================= */
@@ -10,7 +10,8 @@
 .goal-page,
 .goal-paper,
 .pm,
-.pe {
+.pe,
+.rm {
     --pm-sub-w: 142px;             /* 만들기/수정 팝업의 최소 너비 (미리보기가 크면 자동으로 넓어진다) */
     --goal-brown-900: #5c3716;
     --goal-brown-700: #7a5532;
@@ -27,14 +28,16 @@
 .goal-page *,
 .goal-paper *,
 .pm *,
-.pe * {
+.pe *,
+.rm * {
     box-sizing: border-box;
 }
 
 .goal-page [hidden],
 .goal-paper [hidden],
 .pm[hidden],
-.pe[hidden] {
+.pe[hidden],
+.rm[hidden] {
     display: none !important;
 }
 
@@ -43,7 +46,8 @@
 .pm button,
 .pm input,
 .pe button,
-.pe input {
+.pe input,
+.rm button {
     font-family: inherit;
 }
 
@@ -143,9 +147,10 @@ body {
     }
 }
 
-/* 체크박스 공통: 목록(22px)과 리뷰(18px)가 같은 모양을 쓴다 */
+/* 체크박스 공통: 목록(22px), 리뷰(18px), 글자형 진도표(18px)가 같은 모양을 쓴다 */
 .goal-select-checkbox,
-.item-select {
+.item-select,
+.text-check {
     appearance: none;
     -webkit-appearance: none;
     margin: 0;
@@ -154,7 +159,8 @@ body {
 }
 
 .goal-select-checkbox:checked,
-.item-select:checked {
+.item-select:checked,
+.text-check:checked {
     background-color: #8a5a3c;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
     background-position: center;
@@ -164,13 +170,16 @@ body {
 
 .goal-select-checkbox:focus-visible,
 .item-select:focus-visible,
+.text-check:focus-visible,
+.text-handle:focus-visible,
 .goal-card:focus-visible,
 .mode-new-goal:focus-visible,
 .progress-add-btn:focus-visible,
 .progress-grid:focus-visible,
 .progress-name:focus-visible,
 .pm button:focus-visible,
-.pe button:focus-visible {
+.pe button:focus-visible,
+.rm button:focus-visible {
     outline: 2px dashed var(--goal-accent);
     outline-offset: 2px;
 }
@@ -493,7 +502,7 @@ body {
     --goal-inner-l: calc(var(--goal-pad-l) + 14px); /* 표·리뷰 등 본문은 제목 줄보다 조금 안쪽 */
     --goal-inner-r: calc(var(--goal-pad-r) + 14px);
     --goal-bleed: 0px;                            /* 종이가 오른쪽 페이지 밖으로 나오는 길이. goal.js가 화면 오른쪽 끝에 맞춰 채운다 */
-    --goal-slide-from: 100px;                      /* 목표를 클릭하면 이만큼 오른쪽에서 시작해 왼쪽으로 들어온다 */
+    --goal-slide-from: 44px;                      /* 목표를 클릭하면 이만큼 오른쪽에서 시작해 왼쪽으로 들어온다 */
     --goal-scroll-gap: 18px;                      /* 스크롤바를 종이 오른쪽 끝에서 띄우는 거리 */
     position: relative;
     display: flex;
@@ -527,13 +536,9 @@ body {
     animation: goal-paper-in 0.38s cubic-bezier(0.22, 0.7, 0.2, 1) both;
 }
 
-/* 운영체제에서 "애니메이션 효과"를 끈 사람에게는 모션을 생략한다 (항상 보이게 하려면 이 블록을 지우세요) */
-@media (prefers-reduced-motion: reduce) {
-    .goal-paper.is-entering,
-    .pf-field.is-shaking {
-        animation: none;
-    }
-}
+/* 참고: 예전에는 여기에 @media (prefers-reduced-motion: reduce) { animation: none } 이 있어서,
+   Windows의 "애니메이션 효과"가 꺼져 있으면(원격 접속·절전 상태 등 포함) 종이 모션과 진동이 전부 사라졌다.
+   움직임이 작고(44px, 0.38초) 이 화면의 핵심 연출이라 항상 보이도록 이 예외를 뺐다. */
 
 .save-status {
     position: absolute;
@@ -928,6 +933,136 @@ body.is-reordering-progress * {
     background: transparent;
 }
 
+/* ----- 글자형 진도표 (예: 목차) -----
+   줄마다 [회색 핸들] [한 줄 글] [완료 체크]. 글은 클릭하면 바로 쓰고, 핸들을 누른 채 움직이면 순서가 바뀌고,
+   글을 클릭하면 그 줄 왼쪽에 '삭제하기'가 뜬다. */
+.progress-block[data-kind="TEXT"] > .progress-name,
+.progress-block[data-kind="TEXT"] > .progress-name-input {
+    padding-left: 11px; /* 시안: 글자형 표 이름은 줄 상자보다 조금 안쪽에서 시작한다 */
+}
+
+/* 핸들이 줄 왼쪽으로 살짝 튀어나오므로 이 영역은 가로로 자르지 않는다 (바깥 스크롤 영역의 왼쪽 여백이 받아 준다) */
+.text-body {
+    min-width: 0;
+}
+
+.text-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.text-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18px;
+    column-gap: 8px;
+    align-items: center;
+}
+
+/* 줄과 체크박스를 잇는 짧은 선 (시안) */
+.text-row::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    width: 8px;
+    height: 1px;
+    background: var(--goal-line);
+}
+
+.text-cell {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 37px;
+    padding: 0 12px 0 22px; /* 왼쪽은 핸들이 차지하는 만큼 비워 둔다 */
+    border: 1px solid #858585;
+    border-radius: 0;
+    outline: 0;
+    background: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    color: #1f1f1f;
+}
+
+.text-cell::placeholder {
+    font-weight: 400;
+    color: #cfcfcf;
+}
+
+.text-cell:focus {
+    background: #fffdf3;
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+/* 회색 핸들: 줄 왼쪽 가장자리에 걸쳐 있다. 누른 채 위아래로 움직이면 순서가 바뀐다 */
+.text-handle {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: -7px;
+    width: 15px;
+    height: 23px;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 8px 8px 9px 9px;
+    background: #dfe2ea;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* 점 2 x 2 */
+.text-handle::before {
+    content: "";
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    width: 10px;
+    height: 8px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, #a3abc2 1.5px, transparent 1.9px) 0 0 / 5px 4px;
+}
+
+.text-handle:hover {
+    background: #d3d8e4;
+}
+
+/* 핸들을 누르고 있는 동안에만 보이는 파란 표시선 (손을 떼면 사라진다) */
+.text-row.is-dragging .text-cell {
+    outline: 2px solid #2f78e8;
+    outline-offset: 3px;
+}
+
+.text-row.is-dragging .text-handle {
+    background: #c3cde8;
+}
+
+/* 완료한 줄: 초록빛으로 칠하고 글에 줄을 긋는다 (지워나가는 형태) */
+.text-row.is-done .text-cell {
+    border-color: #9db7a2;
+    background: #eaf6ec;
+    text-decoration: line-through;
+    text-decoration-color: rgba(60, 90, 70, 0.55);
+    color: #6f8575;
+}
+
+.text-check {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #555;
+}
+
+/* '+'는 줄 상자(체크박스를 뺀 폭)의 가운데에 맞춘다 */
+.text-foot {
+    padding-right: 26px;
+}
+
 /* ----- 오늘의 공부 한 줄 리뷰 ----- */
 .note-row {
     position: relative;
@@ -1080,23 +1215,31 @@ body.is-reordering-progress * {
     background: #f3f3f3;
 }
 
+/* 항목 사이의 가는 구분선 (시안) */
+.pm-item {
+    position: relative;
+}
+
+.pm-item + .pm-item::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    right: 8px;
+    left: 8px;
+    height: 1px;
+    background: #efefef;
+}
+
+.pm-item:hover::before,
+.pm-item.is-active::before,
+.pm-item:hover + .pm-item::before,
+.pm-item.is-active + .pm-item::before {
+    opacity: 0; /* 눌려 있는 항목 위아래의 선은 감춘다 */
+}
+
 .pm-item:hover .pm-arrow path,
 .pm-item.is-active .pm-arrow path {
     fill: currentColor;
-}
-
-.pm-item.is-disabled {
-    cursor: default;
-}
-
-.pm-item.is-disabled strong {
-    color: #9d9d9d;
-}
-
-.pm-soon {
-    font-size: 9px;
-    white-space: nowrap;
-    color: #b3b3b3;
 }
 
 /* 숫자형 팝업과 수정 패널: 같은 카드 모양. 바탕 크기는 안의 내용(미리보기)에 맞춰 자동으로 늘어난다 */
@@ -1120,7 +1263,7 @@ body.is-reordering-progress * {
     display: none;
 }
 
-.pm.has-sub .pm-sub {
+.pm.has-sub .pm-sub.is-open {
     display: block;
 }
 
@@ -1135,7 +1278,31 @@ body.is-reordering-progress * {
     z-index: 1000;
 }
 
-/* 닫기(✕): 팝업 바깥쪽에 붙는다. 만들기 팝업에서는 숫자가 입력됐을 때만 나타난다 */
+/* 글자형 줄 삭제 메뉴: 클릭한 줄의 핸들 왼쪽에 뜬다 (goal.js가 위치를 맞춘다) */
+.rm {
+    position: fixed;
+    z-index: 1000;
+}
+
+.rm-delete {
+    display: block;
+    padding: 3px 7px;
+    border: 1px solid #f1dcda;
+    border-radius: 6px;
+    background: #fdf1f0;
+    box-shadow: 0 1px 5px rgba(120, 60, 50, 0.2);
+    font-size: 9px;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: #b4524c;
+    cursor: pointer;
+}
+
+.rm-delete:hover {
+    background: #fbe3e1;
+}
+
+/* 닫기(✕): 팝업 바깥쪽에 붙는다. 만들기 팝업에서는 값이 입력됐을 때만 나타난다 */
 .pm-close,
 .pe-close {
     position: absolute;
@@ -1186,6 +1353,41 @@ body.is-reordering-progress * {
     margin-left: 2px;
     font-size: 11px;
     color: #222;
+}
+
+/* 글자형 만들기 팝업: "표 이름 : [터치하여 작성]" 한 줄 + 생성하기 */
+.pf-name-edit {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 12px 9px;
+    cursor: text;
+}
+
+.pf-name-edit span {
+    font-weight: 700;
+    color: #666;
+}
+
+.pf-name-input {
+    flex: 1 1 auto;
+    width: 88px;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 10px;
+    color: #222;
+}
+
+.pf-name-input::placeholder {
+    color: #c8c8c8;
+}
+
+.pf-name-input:focus {
+    box-shadow: 0 1px 0 var(--goal-accent);
 }
 
 .pf-row {

@@ -64,6 +64,13 @@ public class Goal {
     @Column(length = 10)
     private String cardColor;
 
+    /**
+     * 작성 양식: STUDY(공부) 또는 AI(AI 자율 작성). 왼쪽 양식 바에서 고른 양식으로 만들어지고,
+     * 목록에서 다시 열 때 같은 양식으로 보여 주는 데 쓴다. 이 기능 이전에 만든 목표는 null → STUDY로 본다.
+     */
+    @Column(length = 10)
+    private String formType;
+
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
     @BatchSize(size = 50)
@@ -94,9 +101,10 @@ public class Goal {
     }
 
     /** 표에 적는 기본 정보를 한 번에 바꾼다. 수정 시각도 함께 갱신한다. */
-    public void change(String title, LocalDate startDate, LocalDate endDate, String goalUnit,
+    public void change(String title, String formType, LocalDate startDate, LocalDate endDate, String goalUnit,
                        String goalFrequency, String specialNotes, String goalPromise, String freeMemo) {
         this.title = title;
+        this.formType = formType;
         this.startDate = startDate;
         this.endDate = endDate;
         this.goalUnit = goalUnit;
@@ -111,8 +119,11 @@ public class Goal {
         progressTables.clear();
     }
 
-    public void addProgressTable(String kind, String name, int total, int rows, int cols) {
-        progressTables.add(new GoalProgressTable(this, kind, name, total, rows, cols, progressTables.size()));
+    /** 진도표를 맨 뒤에 붙이고 돌려준다. 글자형이면 돌려받은 표에 addItem()으로 줄을 채운다. */
+    public GoalProgressTable addProgressTable(String kind, String name, int total, int rows, int cols) {
+        GoalProgressTable table = new GoalProgressTable(this, kind, name, total, rows, cols, progressTables.size());
+        progressTables.add(table);
+        return table;
     }
 
     public void clearNotes() {
@@ -133,6 +144,7 @@ public class Goal {
     public String getGoalPromise() { return goalPromise; }
     public String getFreeMemo() { return freeMemo; }
     public String getCardColor() { return cardColor; }
+    public String getFormType() { return formType == null ? "STUDY" : formType; }
     public List<GoalProgressTable> getProgressTables() { return progressTables; }
     public List<GoalNote> getNotes() { return notes; }
     public LocalDateTime getCreatedAt() { return createdAt; }

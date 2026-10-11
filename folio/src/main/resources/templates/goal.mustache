@@ -184,18 +184,27 @@
             <span class="pm-desc">날짜 또는 인터넷 강의 등에서 적합한 숫자를 지워나가는 형태</span>
             <svg class="pm-arrow" viewBox="0 0 10 12" aria-hidden="true"><path d="M1.5 1.5v9l7-4.5z"/></svg>
         </button>
-        <button type="button" class="pm-item is-disabled" role="menuitem" data-kind="TEXT" aria-disabled="true">
+        <button type="button" class="pm-item" role="menuitem" data-kind="TEXT" aria-haspopup="true">
             <strong>글자형</strong>
             <span class="pm-desc">단원 또는 특정 수행 과정 등을 직접 작성하여 지워나가는 형태</span>
-            <span class="pm-soon">준비 중</span>
+            <svg class="pm-arrow" viewBox="0 0 10 12" aria-hidden="true"><path d="M1.5 1.5v9l7-4.5z"/></svg>
         </button>
     </div>
 
-    <!-- 숫자형 팝업: 마우스를 올리면 옆에 나타난다. 값이 입력되면 닫기 버튼이 생기고 그 버튼으로만 닫힌다. -->
-    <div class="pm-sub" role="group" aria-label="숫자형 진도표 만들기">
+    <!-- 항목에 마우스를 올리면 옆에 팝업이 나타난다. 값이 입력되면 닫기 버튼이 생기고 그 버튼으로만 닫힌다. -->
+    <div class="pm-sub" data-for="NUMBER" role="group" aria-label="숫자형 진도표 만들기">
         <button type="button" class="pm-close" aria-label="닫기">&#10005;</button>
         <div class="pf-mount" data-mount="create"></div>
     </div>
+    <div class="pm-sub" data-for="TEXT" role="group" aria-label="글자형 진도표 만들기">
+        <button type="button" class="pm-close" aria-label="닫기">&#10005;</button>
+        <div class="pf-mount" data-mount="create-text"></div>
+    </div>
+</div>
+
+<!-- ===== 글자형 진도표: 줄을 클릭하면 그 줄 왼쪽에 뜨는 삭제 메뉴. 다른 곳을 클릭하면 사라진다 ===== -->
+<div class="rm" id="rowMenu" hidden>
+    <button type="button" class="rm-delete">삭제하기</button>
 </div>
 
 <!-- ===== 진도표 수정 패널: 표를 클릭하면 표 왼쪽에 나타난다 ===== -->
@@ -229,7 +238,29 @@
     </div>
 </template>
 
+<!-- 글자형 만들기 팝업: 표 이름을 써야 '생성하기'가 활성화된다 -->
+<template id="textFormTemplate">
+    <div class="pf pf-text">
+        <label class="pf-name pf-name-edit">
+            <span>표 이름 :</span>
+            <input type="text" class="pf-name-input" maxlength="30" placeholder="터치하여 작성" autocomplete="off" aria-label="표 이름">
+        </label>
+        <div class="pf-actions">
+            <button type="button" class="pf-submit" disabled>생성하기</button>
+        </div>
+    </div>
+</template>
+
 <!-- ===== 동적 항목 템플릿 (JS가 복제해서 사용) ===== -->
+
+<!-- 글자형 진도표의 한 줄: 회색 핸들(눌러서 순서 변경) + 한 줄 글(클릭하면 바로 수정) + 완료 체크 -->
+<template id="textRowTemplate">
+    <div class="text-row">
+        <button type="button" class="text-handle" aria-label="순서 바꾸기 (누른 채 위아래로 움직이세요)"></button>
+        <input type="text" class="text-cell" maxlength="100" placeholder="클릭하여 작성" aria-label="진도표 항목" autocomplete="off">
+        <input type="checkbox" class="text-check" aria-label="완료">
+    </div>
+</template>
 
 <!-- 왼쪽 목록의 목표 카드 -->
 <template id="goalCardTemplate">

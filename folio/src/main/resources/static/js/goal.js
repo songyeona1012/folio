@@ -15,6 +15,10 @@
     const PROGRESS_MAX = 100;        // 진도표 수의 개수 최대
     const PROGRESS_MAX_COLS = 12;    // 진도표 열 최대
     const NAME_MAX = 30;             // 표 이름 최대 글자 수
+    const TEXT_ITEM_MAX = 100;       // 글자형 진도표: 줄 최대 개수
+    const DRAG_START = 3;            // 글자형 핸들을 이만큼(px) 움직이면 순서 바꾸기가 시작된다
+    const MODE_TO_TYPE = { form: "STUDY", ai: "AI" };   // 화면 양식 ↔ 서버에 저장하는 양식 종류
+    const TYPE_TO_MODE = { STUDY: "form", AI: "ai" };
     const SVG_NS = "http://www.w3.org/2000/svg";
 
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -32,6 +36,8 @@
     const goalCardTemplate = $("#goalCardTemplate");
     const noteTemplate = $("#noteTemplate");
     const formTemplate = $("#progressFormTemplate");
+    const textFormTemplate = $("#textFormTemplate");
+    const textRowTemplate = $("#textRowTemplate");
     const noteItems = $("#noteItems");
     const progressList = $("#progressList");
     const itemScroll = $(".item-scroll");
@@ -48,6 +54,7 @@
     /* ---------- 상태 ---------- */
     let goals = [];
     let activeGoalId = null;  // null이면 "아직 저장 전인 새 목표"
+    let formMode = "form";    // 지금 열려 있는 목표의 작성 양식 (form: 공부, ai: AI 자율 작성)
 
     let saveTimer = null;     // 자동 저장 대기 타이머
     let savePromise = null;   // 진행 중인 저장 요청
@@ -370,6 +377,7 @@
         closeEdit();
         activeGoalId = id;
         fillEditor(goal);
+        setMode(TYPE_TO_MODE[goal.formType] ?? "form"); // 그 목표를 만들 때 쓴 양식으로 보여 준다
         markActiveCard();
         playEnterMotion();
     }
@@ -403,7 +411,9 @@
 
     newGoalBtn.addEventListener("click", async () => {
         await flushSave();
+        const wasOpen = activeGoalId !== null;
         resetEditor();
+        if (wasOpen) playEnterMotion(); // 작성해 둔 목표에서 새 양식으로 넘어갈 때만
         form.elements.title.focus();
     });
 
@@ -417,15 +427,37 @@
         renderGoals();
     }
 
-    /* ---------- 작성 방식 전환 ---------- */
+    /* ---------- 작성 양식 전환 (공부 / AI 자율 작성) ----------
+       - 목표마다 양식이 정해져 있고(저장된다), 목록에서 목표를 열면 그 양식으로 보인다.
+       - 이미 작성한 목표가 열려 있을 때 다른 양식을 누르면, 그 목표는 그대로 두고 새 목표 양식으로 넘어간다.
+       - 아직 비어 있는 새 목표라면 양식만 바뀐다. */
+    const modeRadios = $$('input[name="goalMode"]');
+
     function setMode(mode) {
+        formMode = mode;
         $$("[data-mode-panel]").forEach((panel) => {
             panel.hidden = panel.dataset.modePanel !== mode;
         });
+        modeRadios.forEach((radio) => { radio.checked = radio.value === mode; });
     }
 
-    $$('input[name="goalMode"]').forEach((radio) => {
-        radio.addEventListener("change", () => setMode(radio.value));
+    modeRadios.forEach((radio) => {
+        radio.addEventListener("change", async () => {
+            if (!radio.checked || radio.value === formMode) return;
+
+            await flushSave(); // 보던 목표의 수정 내용은 원래 양식(formMode) 그대로 먼저 저장한다
+            const wanted = modeRadios.find((item) => item.checked)?.value ?? radio.value; // 기다리는 사이 또 눌렀을 수 있다
+            if (wanted === formMode) return;
+
+            if (activeGoalId !== null) {
+                resetEditor();
+                setMode(wanted);
+                playEnterMotion();
+                form.elements.title.focus();
+            } else {
+                setMode(wanted);
+            }
+        });
     });
 
     /* ---------- 오늘의 공부 한 줄 리뷰 (인라인 에디트) ----------
@@ -562,19 +594,22 @@
         if (event.isComposing) return;
         if (event.key === "Enter" && event.target.matches("input")) {
             event.preventDefault(); // 한 줄 입력이라 Enter는 아무 일도 하지 않는다
-        } else if (event.key === "Escape" && event.target.matches(".review-text, .rd-part, .progress-name-input")) {
+        } else if (event.key === "Escape" && event.target.matches(".review-text, .rd-part, .progress-name-input, .text-cell")) {
             event.target.blur(); // 키보드로도 수정을 끝낼 수 있게
         }
     });
 
     /* ---------- 진도표 (표 이름 인라인 편집 / 길게 눌러 순서 바꾸기 / 표를 클릭하면 수정) ---------- */
-    function buildProgressBlock({ kind = "NUMBER", name = "", total, rows, cols }) {
+    function buildProgressBlock({ kind = "NUMBER", name = "", total = 0, rows = 0, cols = 0, items = [] }) {
+        const isText = kind === "TEXT";
         const block = document.createElement("div");
         block.className = "progress-block";
         block.dataset.kind = kind;
-        block.dataset.total = total;
-        block.dataset.rows = rows;
-        block.dataset.cols = cols;
+        if (!isText) {
+            block.dataset.total = total;
+            block.dataset.rows = rows;
+            block.dataset.cols = cols;
+        }
 
         // 표 이름: 평소엔 글자, 짧게 클릭하면 바로 고치는 입력칸으로 바뀐다
         const view = document.createElement("span");
@@ -592,6 +627,11 @@
         input.hidden = true;
         input.autocomplete = "off";
         input.setAttribute("aria-label", "표 이름");
+
+        if (isText) {
+            block.append(view, input, buildTextBody(items));
+            return block;
+        }
 
         const body = document.createElement("div");
         body.className = "progress-body";
@@ -624,13 +664,27 @@
     }
 
     function collectProgressTables() {
-        return $$(".progress-block", progressList).map((block) => ({
-            kind: block.dataset.kind,
-            name: getBlockName(block),
-            total: Number(block.dataset.total),
-            rows: Number(block.dataset.rows),
-            cols: Number(block.dataset.cols),
-        }));
+        return $$(".progress-block", progressList).map((block) => {
+            const base = { kind: block.dataset.kind, name: getBlockName(block) };
+            if (base.kind === "TEXT") {
+                return {
+                    ...base,
+                    total: 0,
+                    rows: 0,
+                    cols: 0,
+                    items: $$(".text-row", block).map((row) => ({
+                        text: $(".text-cell", row).value.trim(),
+                        done: $(".text-check", row).checked,
+                    })),
+                };
+            }
+            return {
+                ...base,
+                total: Number(block.dataset.total),
+                rows: Number(block.dataset.rows),
+                cols: Number(block.dataset.cols),
+            };
+        });
     }
 
     /* 이름 수정: 짧은 클릭 */
@@ -648,7 +702,9 @@
         const view = $(".progress-name", block);
         const input = $(".progress-name-input", block);
         if (input.hidden) return;
-        view.textContent = input.value.trim();
+        const next = input.value.trim();
+        // 글자형은 이름이 꼭 있어야 하므로, 다 지우고 벗어나면 원래 이름으로 돌아간다
+        if (next || block.dataset.kind !== "TEXT") view.textContent = next;
         input.hidden = true;
         view.hidden = false;
         if (editBlock === block) editForm.setName(view.textContent);
@@ -762,6 +818,205 @@
     progressList.addEventListener("click", (event) => {
         const grid = event.target.closest(".progress-grid");
         if (grid) openEdit(grid.closest(".progress-block"));
+    });
+
+    /* ---------- 글자형 진도표 (예: 목차) ----------
+       - 줄마다 [회색 핸들] [한 줄 글] [완료 체크]. 글과 표 이름은 모두 클릭해서 바로 쓰는 인라인 입력.
+       - 줄(글)을 클릭하면 그 줄 왼쪽에 '삭제하기'가 뜬다. 다른 곳을 클릭하면 사라진다.
+       - 핸들을 누른 채 위아래로 움직이면 순서가 바뀐다. 누르고 있는 동안에만 파란 선이 보인다.
+       - '+'는 줄을 하나 더한다. */
+    function createTextRow(item) {
+        const row = cloneFirst(textRowTemplate);
+        const check = $(".text-check", row);
+        $(".text-cell", row).value = item?.text ?? "";
+        check.checked = Boolean(item?.done);
+        row.classList.toggle("is-done", check.checked);
+        return row;
+    }
+
+    function buildTextBody(items) {
+        const body = document.createElement("div");
+        body.className = "text-body";
+
+        const list = document.createElement("div");
+        list.className = "text-list";
+        (items.length ? items : [{ text: "", done: false }]).forEach((item) => list.appendChild(createTextRow(item)));
+
+        const foot = document.createElement("div");
+        foot.className = "text-foot";
+        const add = document.createElement("button");
+        add.type = "button";
+        add.className = "add-item-btn text-add";
+        add.textContent = "+";
+        add.setAttribute("aria-label", "줄 추가");
+        foot.appendChild(add);
+
+        body.append(list, foot);
+        return body;
+    }
+
+    /* 삭제 메뉴 */
+    const rowMenu = $("#rowMenu");
+    const rowMenuBtn = $(".rm-delete", rowMenu);
+    let rowMenuRow = null;
+
+    function positionRowMenu() {
+        if (rowMenu.hidden || !rowMenuRow) return;
+        const row = rowMenuRow.getBoundingClientRect();
+        const area = itemScroll.getBoundingClientRect();
+        if (row.bottom < area.top + 4 || row.top > area.bottom - 4) { // 스크롤로 줄이 보이는 영역을 벗어나면 닫는다
+            closeRowMenu();
+            return;
+        }
+
+        const handle = $(".text-handle", rowMenuRow).getBoundingClientRect();
+        const margin = 6;
+        const width = rowMenu.offsetWidth;
+        const height = rowMenu.offsetHeight;
+
+        let left = handle.left - width - 8;     // 시안: 핸들 왼쪽
+        if (left < margin) left = Math.min(row.right + 34, window.innerWidth - margin - width); // 자리가 없으면 줄 오른쪽
+        const top = Math.max(margin, Math.min(row.top + (row.height - height) / 2, window.innerHeight - margin - height));
+
+        rowMenu.style.left = `${left}px`;
+        rowMenu.style.top = `${top}px`;
+    }
+
+    function openRowMenu(row) {
+        if (!row) return;
+        rowMenuRow = row;
+        // 마지막 한 줄이면 표를 통째로 지우는 메뉴가 된다
+        rowMenuBtn.textContent = $$(".text-row", row.parentElement).length === 1 ? "표 삭제하기" : "삭제하기";
+        rowMenu.hidden = false;
+        positionRowMenu();
+    }
+
+    function closeRowMenu() {
+        rowMenu.hidden = true;
+        rowMenuRow = null;
+    }
+
+    rowMenuBtn.addEventListener("click", () => {
+        const row = rowMenuRow;
+        if (!row) return;
+        const block = row.closest(".progress-block");
+
+        if ($$(".text-row", block).length === 1) {
+            if (!confirm("이 진도표를 삭제할까요?")) return;
+            closeRowMenu();
+            block.remove();
+        } else {
+            closeRowMenu();
+            row.remove();
+        }
+        scheduleSave();
+    });
+
+    // 줄(글)을 좌클릭하면 그 자리에서 바로 쓸 수 있고, 동시에 삭제 메뉴가 뜬다
+    progressList.addEventListener("click", (event) => {
+        const add = event.target.closest(".text-add");
+        if (add) {
+            const list = $(".text-list", add.closest(".progress-block"));
+            if ($$(".text-row", list).length >= TEXT_ITEM_MAX) return;
+            const row = createTextRow();
+            list.appendChild(row);
+            $(".text-cell", row).focus();
+            scheduleSave();
+            return;
+        }
+
+        const cell = event.target.closest(".text-cell");
+        if (cell && event.button === 0) openRowMenu(cell.closest(".text-row"));
+    });
+
+    // 오른쪽 체크박스: 끝낸 줄은 초록빛으로 칠하고 글에 줄을 긋는다
+    progressList.addEventListener("change", (event) => {
+        if (!event.target.matches(".text-check")) return;
+        event.target.closest(".text-row").classList.toggle("is-done", event.target.checked);
+        scheduleSave();
+    });
+
+    /* 핸들로 순서 바꾸기 */
+    let rowDrag = null;
+
+    function onRowDragMove(event) {
+        if (!rowDrag || event.pointerId !== rowDrag.id) return;
+
+        if (!rowDrag.active) {
+            if (Math.hypot(event.clientX - rowDrag.x, event.clientY - rowDrag.y) < DRAG_START) return;
+            rowDrag.active = true;
+            document.activeElement?.blur?.();
+            closeRowMenu();
+            rowDrag.row.classList.add("is-dragging");
+            document.body.classList.add("is-reordering-progress");
+        }
+
+        const list = rowDrag.row.parentElement;
+        const next = $$(".text-row", list)
+            .filter((row) => row !== rowDrag.row)
+            .find((row) => {
+                const box = row.getBoundingClientRect();
+                return event.clientY < box.top + box.height / 2;
+            });
+        if ((next ?? null) !== rowDrag.row.nextElementSibling) {
+            list.insertBefore(rowDrag.row, next ?? null);
+            rowDrag.changed = true;
+        }
+
+        const area = itemScroll.getBoundingClientRect(); // 위/아래 가장자리 근처에서는 스크롤도 따라간다
+        if (event.clientY < area.top + 24) itemScroll.scrollTop -= 10;
+        else if (event.clientY > area.bottom - 24) itemScroll.scrollTop += 10;
+    }
+
+    function endRowDrag(event) {
+        if (!rowDrag || event.pointerId !== rowDrag.id) return;
+        const { row, changed, active } = rowDrag;
+        rowDrag = null;
+
+        document.removeEventListener("pointermove", onRowDragMove);
+        document.removeEventListener("pointerup", endRowDrag);
+        document.removeEventListener("pointercancel", endRowDrag);
+
+        row.classList.remove("is-dragging"); // 손을 떼면 파란 선이 사라진다
+        document.body.classList.remove("is-reordering-progress");
+        if (active && changed) scheduleSave();
+    }
+
+    progressList.addEventListener("pointerdown", (event) => {
+        const handle = event.target.closest(".text-handle");
+        if (!handle || event.button !== 0) return;
+
+        event.preventDefault(); // 글자 선택/포커스 이동 없이 바로 끌 수 있게
+        rowDrag = {
+            row: handle.closest(".text-row"),
+            id: event.pointerId,
+            x: event.clientX,
+            y: event.clientY,
+            active: false,
+            changed: false,
+        };
+        document.addEventListener("pointermove", onRowDragMove);
+        document.addEventListener("pointerup", endRowDrag);
+        document.addEventListener("pointercancel", endRowDrag);
+    });
+
+    // 키보드: 핸들에 포커스를 두고 ↑ ↓ 로도 순서를 바꿀 수 있다
+    progressList.addEventListener("keydown", (event) => {
+        const handle = event.target.closest?.(".text-handle");
+        if (!handle || (event.key !== "ArrowUp" && event.key !== "ArrowDown")) return;
+        event.preventDefault();
+
+        const row = handle.closest(".text-row");
+        if (event.key === "ArrowUp" && row.previousElementSibling) {
+            row.parentElement.insertBefore(row, row.previousElementSibling);
+        } else if (event.key === "ArrowDown" && row.nextElementSibling) {
+            row.parentElement.insertBefore(row.nextElementSibling, row);
+        } else {
+            return;
+        }
+        handle.focus();
+        positionRowMenu();
+        scheduleSave();
     });
 
     /* ---------- 숫자형 진도표 입력 양식 (만들기 / 수정 패널이 같이 쓴다) ----------
@@ -926,30 +1181,71 @@
         };
     }
 
+    /* ---------- 글자형 진도표 입력 양식 (표 이름만 쓴다) ----------
+       - 표 이름을 써야 '생성하기'가 활성화된다.
+       - 이름이 입력되면 닫기 버튼이 생기는 것은 숫자형과 같다. */
+    function createTextForm(mount) {
+        mount.appendChild(textFormTemplate.content.cloneNode(true));
+        const root = $(".pf", mount);
+        const nameInput = $(".pf-name-input", root);
+        const submit = $(".pf-submit", root);
+        const listeners = [];
+
+        const name = () => nameInput.value.trim();
+
+        function refresh() {
+            submit.disabled = !name();
+            listeners.forEach((fn) => fn());
+        }
+
+        nameInput.addEventListener("input", refresh);
+        nameInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.isComposing) {
+                event.preventDefault();
+                if (!submit.disabled) submit.click();
+            }
+        });
+
+        return {
+            root, nameInput, submit, name,
+            hasValue: () => name() !== "",
+            onChange: (fn) => listeners.push(fn),
+            reset() {
+                nameInput.value = "";
+                refresh();
+            },
+        };
+    }
+
     /* ---------- 진도표 추가 메뉴 (인텔리제이 메뉴처럼) ----------
        - "진도표 추가"를 클릭하면 메뉴가 뜬다.
-       - 숫자형에 마우스를 올리면 옆에 팝업이 뜬다.
+       - 숫자형/글자형에 마우스를 올리면 옆에 그 항목의 팝업이 뜬다.
        - 마우스가 그 구역(버튼+메뉴+팝업)을 벗어나면 사라진다.
-       - 단, 숫자가 하나라도 입력되면 닫기 버튼이 생기고, 그 버튼으로만 닫힌다.
-       - 숫자를 모두 지우면 닫기 버튼이 사라지고 처음 동작으로 돌아간다. */
+       - 단, 값(숫자 또는 표 이름)이 하나라도 입력되면 닫기 버튼이 생기고, 그 버튼으로만 닫힌다.
+         이때는 다른 항목에 마우스를 올려도 입력 중인 팝업이 그대로 유지된다.
+       - 값을 모두 지우면 닫기 버튼이 사라지고 처음 동작으로 돌아간다. */
     const addBtn = $("#progressAddBtn");
     const pm = $("#progressMenu");
-    const pmSub = $(".pm-sub", pm);
+    const pmSubs = $$(".pm-sub", pm);
     const pmItems = $$(".pm-item", pm);
     const createForm = createProgressForm($('[data-mount="create"]', pm), { submitText: "생성하기" });
+    const textForm = createTextForm($('[data-mount="create-text"]', pm));
 
     let pmOpen = false;
     let pmInside = false;   // 마우스가 구역 안에 있는가
     let pmTimer = null;
+    let activeKind = null;  // 지금 옆에 떠 있는 팝업 종류 (NUMBER / TEXT)
 
-    const isPinned = () => createForm.hasValue();
+    const isPinned = () => createForm.hasValue() || textForm.hasValue();
 
     function positionMenu() {
         if (pm.hidden) return;
         const rect = addBtn.getBoundingClientRect();
         const margin = 8;
-        const subVisible = pm.classList.contains("has-sub");
-        const subW = subVisible ? pmSub.offsetWidth : (parseFloat(getComputedStyle(pm).getPropertyValue("--pm-sub-w")) || 142);
+        const pmSub = pmSubs.find((sub) => sub.classList.contains("is-open"));
+        const subVisible = pm.classList.contains("has-sub") && Boolean(pmSub);
+        // 팝업 폭 + 팝업 바깥쪽에 붙는 닫기(✕) 자리(22px). 값이 입력돼 ✕가 나타나도 화면 밖으로 나가지 않게 미리 비워 둔다.
+        const subW = (subVisible ? pmSub.offsetWidth : (parseFloat(getComputedStyle(pm).getPropertyValue("--pm-sub-w")) || 142)) + 22;
         const subH = subVisible ? pmSub.offsetHeight + 6 : 0;
         const width = pm.offsetWidth;
         const height = Math.max(pm.offsetHeight, subH, 150);
@@ -969,14 +1265,21 @@
     }
 
     function showSub(item) {
+        const kind = item.dataset.kind;
+        if (isPinned() && activeKind && kind !== activeKind) return; // 입력 중인 팝업은 다른 항목을 지나가도 유지
+
+        activeKind = kind;
         pm.classList.add("has-sub");
         pmItems.forEach((other) => other.classList.toggle("is-active", other === item));
+        pmSubs.forEach((sub) => sub.classList.toggle("is-open", sub.dataset.for === kind));
         positionMenu();
     }
 
     function hideSub() {
+        activeKind = null;
         pm.classList.remove("has-sub");
         pmItems.forEach((item) => item.classList.remove("is-active"));
+        pmSubs.forEach((sub) => sub.classList.remove("is-open"));
     }
 
     function openMenu() {
@@ -994,6 +1297,7 @@
         hideSub();
         addBtn.setAttribute("aria-expanded", "false");
         createForm.reset();
+        textForm.reset();
         pm.classList.remove("is-pinned");
     }
 
@@ -1005,14 +1309,17 @@
         }, MENU_CLOSE_DELAY);
     }
 
-    // 숫자가 입력되면 닫기 버튼이 나타나고, 모두 지우면 사라진다
-    createForm.onChange(() => {
+    // 값(숫자/표 이름)이 입력되면 닫기 버튼이 나타나고, 모두 지우면 사라진다
+    function syncPinned() {
         const pinned = isPinned();
         pm.classList.toggle("is-pinned", pinned);
         if (pmOpen) positionMenu();
-        // 숫자를 모두 지웠는데 마우스가 이미 구역 밖이면, 원래 동작대로 곧 사라진다
+        // 값을 모두 지웠는데 마우스가 이미 구역 밖이면, 원래 동작대로 곧 사라진다
         if (!pinned && pmOpen && !pmInside) scheduleClose();
-    });
+    }
+
+    createForm.onChange(syncPinned);
+    textForm.onChange(syncPinned);
 
     [addBtn, pm].forEach((zone) => {
         zone.addEventListener("mouseenter", () => {
@@ -1031,23 +1338,21 @@
     });
 
     pmItems.forEach((item) => {
-        const enabled = item.dataset.kind === "NUMBER";
-        const activate = () => {
-            if (enabled) showSub(item);
-            else if (!isPinned()) hideSub(); // 입력 중인 팝업은 다른 항목을 지나가도 유지
-        };
+        const activate = () => showSub(item);
         item.addEventListener("mouseenter", activate);
         item.addEventListener("focus", activate);
         item.addEventListener("click", () => {
-            if (!enabled) return;
             showSub(item);
-            createForm.fields.count.focus();
+            if (activeKind !== item.dataset.kind) return; // 다른 팝업에 입력 중이면 그대로 둔다
+            (item.dataset.kind === "TEXT" ? textForm.nameInput : createForm.fields.count).focus();
         });
     });
 
-    $(".pm-close", pm).addEventListener("click", () => {
-        closeMenu();
-        addBtn.focus();
+    $$(".pm-close", pm).forEach((button) => {
+        button.addEventListener("click", () => {
+            closeMenu();
+            addBtn.focus();
+        });
     });
 
     createForm.submit.addEventListener("click", () => {
@@ -1060,6 +1365,19 @@
         addBtn.focus();
         block.scrollIntoView({ block: "nearest" });
         updateDday();
+        scheduleSave();
+    });
+
+    // 글자형: 이름을 쓰고 '생성하기'를 누르면 빈 줄 하나로 시작하고, 바로 첫 줄을 쓸 수 있다
+    textForm.submit.addEventListener("click", () => {
+        const name = textForm.name();
+        if (!name) return;
+
+        const block = buildProgressBlock({ kind: "TEXT", name });
+        progressList.appendChild(block);
+        closeMenu();
+        block.scrollIntoView({ block: "nearest" });
+        $(".text-cell", block).focus({ preventScroll: true });
         scheduleSave();
     });
 
@@ -1141,12 +1459,15 @@
     });
 
     $(".pe-close", pe).addEventListener("click", closeEdit);
-    itemScroll.addEventListener("scroll", positionEdit);
-    window.addEventListener("resize", () => { positionMenu(); positionEdit(); });
+    itemScroll.addEventListener("scroll", () => { positionEdit(); positionRowMenu(); });
+    window.addEventListener("resize", () => { positionMenu(); positionEdit(); positionRowMenu(); });
 
     // 고친 내용이 없을 때만 바깥 클릭/Esc로 닫는다 (실수로 날아가지 않게)
     document.addEventListener("pointerdown", (event) => {
         const target = event.target;
+
+        // 삭제 메뉴: 메뉴나 글자형 줄(글) 밖을 클릭하면 사라진다
+        if (!rowMenu.hidden && !rowMenu.contains(target) && !target.closest(".text-cell")) closeRowMenu();
 
         if (pmOpen && !isPinned() && !pm.contains(target) && !addBtn.contains(target)) closeMenu();
 
@@ -1158,7 +1479,9 @@
 
     document.addEventListener("keydown", (event) => {
         if (event.key !== "Escape") return;
-        if (pmOpen && !isPinned()) {
+        if (!rowMenu.hidden) {
+            closeRowMenu();
+        } else if (pmOpen && !isPinned()) {
             closeMenu();
             addBtn.focus();
         } else if (!pe.hidden && !editForm.isDirty()) {
@@ -1168,6 +1491,7 @@
 
     /* ---------- 오른쪽: 편집기 채우기 / 비우기 ---------- */
     function clearEditor() {
+        closeRowMenu();
         form.reset();
         [startInput, endInput].forEach((input) => { input.dataset.valid = ""; });
         progressList.replaceChildren();
@@ -1216,6 +1540,7 @@
 
         return {
             title: text("title"),
+            formType: MODE_TO_TYPE[formMode],
             startDate: readShortDate(startInput),
             endDate: readShortDate(endInput),
             goalUnit: text("goalUnit"),
