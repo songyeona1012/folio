@@ -399,6 +399,12 @@
             events[k] = events[k].filter(item => item.id !== ev.id);
         }
 
+        const highlights = getHighlights();
+        if (highlights[ev.id]) {
+            delete highlights[ev.id];
+            saveHighlights(highlights);
+        }
+
         if (!String(ev.id).startsWith("local_")) {
             fetch("/api/schedules/" + ev.id, {
                 method: "DELETE"
@@ -593,6 +599,7 @@
 
         const isWeek = VIEW === "week";
         const cells = isWeek ? weekDays() : monthDays();
+        const highlights = getHighlights();
 
         cells.forEach((cell, idx) => {
             const el = document.createElement("div");
@@ -643,6 +650,12 @@
                     const tag = document.createElement("div");
 
                     tag.className = "tag " + ev.cat + (ev.completed ? " done" : "");
+
+                    // 형광펜을 칠한 일정은 카테고리 색 대신 형광펜 색으로 표시
+                    const pen = highlights[ev.id];
+                    if (pen && penColors[pen]) {
+                        tag.classList.add("pen", "pen-" + pen);
+                    }
 
                     if (isWeek && ev.time) {
                         const time = document.createElement("span");
@@ -1007,22 +1020,6 @@
 
                 timeText.className =
                     "hover-edit time-text";
-
-                const clockIcon =
-                    document.createElement("img");
-
-                clockIcon.src =
-                    "/img/clock.png";
-
-                clockIcon.alt =
-                    "시간 선택";
-
-                clockIcon.className =
-                    "clock-icon";
-
-                timeText.appendChild(
-                    clockIcon
-                );
 
                 const timeLabel =
                     document.createElement("span");
@@ -1402,6 +1399,13 @@
                     res.json()
                 )
                 .then(saved => {
+                    const highlights = getHighlights();
+                    if (highlights[tempEv.id]) {
+                        highlights[saved.id] = highlights[tempEv.id];
+                        delete highlights[tempEv.id];
+                        saveHighlights(highlights);
+                    }
+
                     tempEv.id = saved.id;
                     loadDashboardSummary();
                 })
@@ -1484,16 +1488,24 @@
         const highlights =
             getHighlights();
 
-        highlights[ev.id] =
-            selectedPen;
+        // 같은 색으로 한 번 더 칠하면 형광펜을 지운다
+        const removing = highlights[ev.id] === selectedPen;
+
+        if (removing) {
+            delete highlights[ev.id];
+        } else {
+            highlights[ev.id] = selectedPen;
+        }
 
         saveHighlights(
             highlights
         );
 
-        applyHighlightStyle(
-            titleText,
-            selectedPen
+        // 메모장과 달력을 함께 다시 그려서 달력 칸 색도 바로 바뀌게 한다
+        refreshViews();
+
+        showToast(
+            removing ? "형광펜을 지웠어요" : "달력에 형광펜 색으로 표시했어요"
         );
     }
 

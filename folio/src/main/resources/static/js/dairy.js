@@ -186,10 +186,9 @@
     }
 
     $('freeformText').addEventListener('input', markDirty);
-    $('diaryPrivate').addEventListener('change', markDirty);
-
     /* ============================================================
        날짜 선택 → 그 날짜 일기 불러오기
+
        ============================================================ */
     const dateInput = $('diaryDateInput');
     dateInput.max = TODAY;
@@ -231,7 +230,7 @@
         setType(diary ? diary.type : 'TIMETABLE');
         $('freeformText').value = (diary && diary.content) || '';
         fillHours(diary ? diary.hours : null);
-        $('diaryPrivate').checked = !!(diary && diary.isPrivate);
+
         state.dirty = false;
         renderHeader();
     }
@@ -262,7 +261,7 @@
             type: getType(),
             content: $('freeformText').value,
             hours: readHours(),
-            isPrivate: $('diaryPrivate').checked
+
         };
         if (!payload.content.trim() && Object.keys(payload.hours).length === 0) {
             status('일기 내용을 한 줄 이상 적어주세요.', true);
@@ -342,107 +341,86 @@
             if (version !== summaryVersion) return;
             state.summary = summary;
             renderFolders(summary);
-            moodKey = null;
-            syncMoodChart();
+            renderMoodChart(summary);
         } catch (error) {
             if (version === summaryVersion) status(error.message, true);
         }
     }
 
     /* ============================================================
-       기분 그래프: 일기를 쓴 날마다 스틱 하나 (높이 = 별점)
-       - 오른쪽에 열린 날짜가 속한 달을 보여줌 (그 해가 아니면 마지막으로 쓴 달)
-       - 10일치를 넘으면 옆으로 슬라이드
-       - 스틱을 누르면 그 날 일기가 열림
-       ============================================================ */
+    기분 그래프: 달마다 스틱 하나 (높이 = 그 달 별점 평균)
+    - 1월 ~ 이번 달(지난해면 12월)까지 표시
+    - 10달을 넘으면 옆으로 슬라이드
+    - 스틱을 누르면 그 달 기록지가 열림
+    ============================================================ */
     const MOOD_COLORS = ['#E2E5F1', '#E1ECD5', '#F1ECC9', '#EDDDC7', '#D8E2E8', '#DBD4EE'];
     const MOOD_VISIBLE = 10;
-    let moodVersion = 0;
-    let moodKey = null;
 
-    function chartMonthFor(summary) {
-        const [y, m] = state.date.split('-').map(Number);
-        if (y === summary.year) return m;
-        if (summary.folders.length) return summary.folders[summary.folders.length - 1].month;
-        return Math.max(1, summary.shownMonths);
-    }
-
+    // 오른쪽 날짜가 바뀌었을 때: 그 달 스틱만 다시 강조
     function syncMoodChart() {
-        if (!state.summary) return;
-        const month = chartMonthFor(state.summary);
-        const key = state.summary.year + '-' + month;
-        if (key !== moodKey) {
-            moodKey = key;
-            loadMoodChart(state.summary.year, month);
-        } else {
-            markActiveStick();
-        }
+        if (state.summary) markActiveStick();
     }
 
-    async function loadMoodChart(year, month) {
-        const version = ++moodVersion;
-        try {
-            const diaries = await api(`/month?year=${year}&month=${month}`);
-            if (version !== moodVersion) return;
-            renderMoodChart(diaries, month);
-        } catch (error) {
-            if (version === moodVersion) status(error.message, true);
-        }
-    }
-
-    function renderMoodChart(diaries, month) {
+    function renderMoodChart(summary) {
         const chart = $('moodChart');
         const labels = $('moodLabels');
         const track = $('moodTrack');
         chart.replaceChildren();
         labels.replaceChildren();
 
-        $('moodBox').classList.toggle('isEmpty', diaries.length === 0);
-        if (!diaries.length) {
+        const months = summary.months || [];
+        $('moodBox').classList.toggle('isEmpty', months.length === 0);
+        if (!months.length) {
             track.style.width = '100%';
-            chart.setAttribute('aria-label', `${month}월 기분 그래프: 아직 기록 없음`);
+            chart.setAttribute('aria-label', `${summary.year}년 기분 그래프: 아직 기록 없음`);
             return;
         }
 
-        const count = diaries.length;
+        const count = months.length;
         track.style.width = count > MOOD_VISIBLE ? (count / MOOD_VISIBLE * 100) + '%' : '100%';
-        const cols = Math.max(count, MOOD_VISIBLE);       // 스틱 폭은 항상 상자의 1/10
+        const cols = Math.max(count, MOOD_VISIBLE);
         [chart, labels].forEach(node => {
             node.style.setProperty('--bars', count);
             node.style.setProperty('--cols', cols);
         });
 
-        diaries.forEach((d, i) => {
+        months.forEach((m, i) => {
+            const avg = m.averageRating;              // 별점 준 일기가 없으면 null
+            const avgText = avg != null ? `평균 ${avg.toFixed(1)}점` : '별점 기록 없음';
+            const label = `${m.month}월 · ${avgText} (일기 ${m.count}편)`;
+
             const stick = el('button', null, 'moodSlot');
             stick.type = 'button';
-            stick.dataset.date = d.date;
-            const label = shortDate(d.date) + (d.rating ? ` · 별점 ${d.rating}점` : ' · 별점 없음');
+            stick.dataset.month = m.month;
             stick.title = label;
-            stick.setAttribute('aria-label', label + ', 일기 열기');
+            stick.setAttribute('aria-label', m.count ? label + ', 기록지 열기' : label);
+            stick.disabled = m.count === 0;
 
-            const bar = el('span', null, 'moodBar' + (d.rating ? '' : ' noRating'));
-            if (d.rating) bar.style.height = (d.rating / 5 * 100) + '%';
+            const bar = el('span', null, 'moodBar' + (avg != null ? '' : ' noRating'));
+            if (avg != null) bar.style.height = (avg / 5 * 100) + '%';
             bar.style.backgroundColor = MOOD_COLORS[i % MOOD_COLORS.length];
             stick.append(bar);
 
             stick.addEventListener('click', () => {
-                if (d.date === state.date || !confirmDiscard()) return;
-                loadDiary(d.date);
+                if (m.count) openMonth(m.month);
             });
             chart.append(stick);
-            labels.append(el('span', d.date.slice(8, 10)));
+            labels.append(el('span', m.month + '월'));
         });
 
-        chart.setAttribute('aria-label', `${month}월 기분 그래프: ` + diaries
-            .map(d => `${Number(d.date.slice(8, 10))}일 ${d.rating ? d.rating + '점' : '별점 없음'}`).join(', '));
+        chart.setAttribute('aria-label', `${summary.year}년 월별 기분 그래프: ` + months
+            .map(m => `${m.month}월 ${m.averageRating != null ? m.averageRating.toFixed(1) + '점' : '기록 없음'}`)
+            .join(', '));
         markActiveStick(true);
     }
 
-    /* 오른쪽에 열린 날짜의 스틱 강조 + 보이도록 슬라이드 */
+    /* 오른쪽에 열린 날짜가 속한 달의 스틱 강조 + 보이도록 슬라이드 */
     function markActiveStick(scroll = false) {
+        const [y, m] = state.date.split('-').map(Number);
+        const activeMonth = state.summary && y === state.summary.year ? String(m) : null;
         let active = null;
         document.querySelectorAll('.moodSlot').forEach(stick => {
-            const on = stick.dataset.date === state.date;
+            const on = stick.dataset.month === activeMonth;
             stick.classList.toggle('active', on);
             if (on) active = stick;
         });
@@ -452,7 +430,7 @@
             if (active) {
                 scroller.scrollLeft = active.offsetLeft - (scroller.clientWidth - active.offsetWidth) / 2;
             } else {
-                scroller.scrollLeft = scroller.scrollWidth;      // 가장 최근 날짜 쪽
+                scroller.scrollLeft = scroller.scrollWidth;
             }
         });
     }
@@ -661,7 +639,7 @@
         if (state.openMonth != null) await openMonth(state.openMonth);
     }
 
-    /* ============================================================
+    /* ===========================================================
        도움말
        ============================================================ */
     $('diaryHelpRow').addEventListener('click', () => {

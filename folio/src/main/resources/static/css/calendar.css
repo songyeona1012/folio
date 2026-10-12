@@ -670,22 +670,6 @@ Folio 제목
     cursor: pointer;
 }
 
-.time-text::before {
-    content: "";
-
-    width: 16px;
-    height: 16px;
-
-    flex: 0 0 16px;
-
-    background-image: url('../img/clock.png');
-
-    background-repeat: no-repeat;
-
-    background-position: center;
-
-    background-size: contain;
-}
 
 /* =========================================================
 우측 섹션
@@ -2529,3 +2513,35 @@ Toast
 :is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-thumb { min-height:34px; background:url('/img/scroll-thumb.png') center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat; }
 :is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-button { display:none; width:0; height:0; }
 :is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-corner { background:transparent; }
+
+/* =========================================================
+🖍 형광펜 색으로 달력 일정 표시 (카테고리 색 대신)
+========================================================= */
+.day .tag.pen {
+    font-weight: 600;
+}
+
+.day .tag.pen-red {
+    background: rgba(215, 105, 80, 0.32);
+    color: #9c3a24;
+}
+
+.day .tag.pen-orange {
+    background: rgba(233, 189, 44, 0.38);
+    color: #7d5d05;
+}
+
+.day .tag.pen-green {
+    background: rgba(134, 231, 64, 0.34);
+    color: #3b7012;
+}
+
+.day .tag.pen-blue {
+    background: rgba(73, 176, 255, 0.30);
+    color: #1d5f97;
+}
+
+.day .tag.pen-purple {
+    background: rgba(166, 65, 238, 0.24);
+    color: #6a2799;
+}
