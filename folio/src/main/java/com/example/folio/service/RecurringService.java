@@ -122,7 +122,7 @@ public class RecurringService {
             r.startDate = input.startDate;
             r.intervalValue = input.intervalValue;
             r.intervalUnit = input.intervalUnit;
-            r.effectiveFrom = id == null ? r.startDate : LocalDate.now();
+            r.effectiveFrom = r.startDate;
             rules.saveAndFlush(r);
             materialize(r, id == null ? r.startDate : LocalDate.now(), LocalDate.now().plusYears(1));
             return r;
@@ -156,12 +156,22 @@ public class RecurringService {
         tx.executeWithoutResult(status -> rules.findAll().forEach(r -> materialize(r, start, end)));
     }
 
+    public synchronized void ensureHistory(LocalDate through) {
+        tx.executeWithoutResult(status -> rules.findAll().forEach(r -> {
+            if (!r.startDate.isAfter(through)) materialize(r, r.startDate, through);
+        }));
+    }
+
     private void materialize(RecurringRule r, LocalDate start, LocalDate end) {
+        // Repair older generic categories without changing completion or cancellation records.
+        var existing = schedules.findByRecurringIdAndDateGreaterThanEqual(r.id, start);
+        existing.stream().filter(item -> !item.getDate().isAfter(end) && !r.category.equals(item.getCategory()))
+            .forEach(item -> { item.setCategory(r.category); schedules.save(item); });
+
         for (long i = 0; i < 75000; i++) {
             LocalDate date = r.occurrence(i);
             if (date.isAfter(end)) break;
             if (
-                (r.effectiveFrom != null && date.isBefore(r.effectiveFrom)) ||
                 date.isBefore(start) ||
                 schedules.existsByRecurringIdAndDate(r.id, date)
             ) continue;
@@ -169,7 +179,7 @@ public class RecurringService {
                 r.title,
                 date,
                 null,
-                r.category.equals("health") ? "health" : "todo",
+                r.category,
                 false
             );
             s.setRecurringId(r.id);

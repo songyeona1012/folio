@@ -682,3 +682,18 @@
     loadSummary();
     loadDiary(startDate);
 })();
+
+// Keep the fixed-size scrollbar artwork aligned with the actual scroll position.
+(() => {
+    const selector = '.today-list, .memoList, .dashboardManagementList, .timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap';
+    function update(area) {
+        const distance = area.scrollHeight - area.clientHeight;
+        const ratio = distance > 0 ? Math.max(0, Math.min(1, area.scrollTop / distance)) : 0;
+        area.style.setProperty('--scroll-thumb-position', (ratio * 100) + '%');
+    }
+    document.addEventListener('scroll', event => {
+        if (event.target instanceof Element && event.target.matches(selector)) update(event.target);
+    }, true);
+    window.addEventListener('resize', () => document.querySelectorAll(selector).forEach(update));
+    document.querySelectorAll(selector).forEach(update);
+})();

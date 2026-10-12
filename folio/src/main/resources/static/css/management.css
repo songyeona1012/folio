@@ -735,3 +735,8 @@
 .managementApp[data-fluid="true"] .memoTable { font-size: 9px; }
 .managementApp[data-fluid="true"] .memoTable td { padding-top: 3px; padding-bottom: 3px; line-height: 1.4; }
 .managementApp[data-fluid="true"] .leftPage { scrollbar-width: thin; scrollbar-color: #ded9cf transparent; }
+
+.reportDetails { margin-top:20px; white-space:normal; }
+.reportDetails summary { cursor:pointer; width:fit-content; color:var(--gold); }
+.reportDetails summary:hover { color:var(--orange); }
+.reportFacts { margin-top:12px; white-space:pre-wrap; }

@@ -1,5 +1,9 @@
 (() => {
     'use strict';
+    function easyReportText(text) {
+        return String(text || '').replaceAll('날짜가 된', '예정된').replaceAll('도래한', '예정된').replaceAll('도래 ', '일정 ')
+            .replaceAll('[산출 근거]', '[완료 기록 자세히 보기]').replaceAll('관리 완료 기록 기준 v2', '관리 일정 완료 기록');
+    }
     const $ = id => document.getElementById(id);
     const today = () => {
         const d = new Date();
@@ -249,8 +253,13 @@
             !event.target.closest('.detailOpen, .removeRule')) activeEdit.commit();
     });
     async function loadBrief() {
-        const report = await api('/reports?period=week&date=' + today(), {method: 'POST'});
-        renderBrief((report.source === 'AI' ? 'AI 브리핑 · ' : '관리 브리핑 · ') + report.briefing);
+        const summary = await api('/analytics?period=week&date=' + today());
+        const count = summary.scheduleCount || 0;
+        const level = count >= 35 ? '매우 혼잡' : count >= 21 ? '혼잡' : count >= 14 ? '보통' : count >= 7 ? '여유' : '매우 여유';
+        const messages = {'매우 혼잡':'일정이 많이 모여 있어요. 중요한 일부터 하나씩 챙겨보세요.', '혼잡':'조금 바쁜 한 주네요. 쉬는 시간도 함께 챙겨보세요.', '보통':'적당한 일정이네요. 차근차근 이어가 보세요.', '여유':'쾌적하군요. 여유롭게 하나씩 챙겨보세요.', '매우 여유':'한결 여유롭군요. 편안하게 이번 주를 보내보세요.'};
+        const colors = {'매우 혼잡':'#940808','혼잡':'#C83030','보통':'#DAAB11','여유':'#2EA132','매우 여유':'#036507'};
+        const word = el('span', level); word.style.color = colors[level];
+        $('weeklyBrief').replaceChildren(document.createTextNode('이번 주의 일정 혼잡도 평균은 “'), word, document.createTextNode('” 이었습니다. ' + messages[level]));
     }
 
     function renderBrief(text) {
@@ -318,7 +327,7 @@
             }, period === 'year' ? point.date.slice(5, 7) : point.date.slice(8,
                 10)));
         });
-        const colors = {health: '#91bd8c', subscription: '#7986da', relationship: '#ef929c', daily: '#dbc766'};
+        const colors = {health: '#91bd8c', subscription: '#7986da', relationship: '#b28abb', daily: '#dbc766'};
         const series = Object.keys(categories).map(key => ({
             name: categories[key][0], color: colors[key], value: point => point.rates[key]
         }));
@@ -374,7 +383,17 @@
             if (version !== reportVersion) return;
             box.replaceChildren(el('span',
                 `${r.startDate} ~ ${r.endDate} · ${r.source==='AI'?'AI 기록지':'완료 기록 기반 기본 브리핑'}`,
-                'reportSource'), el('div', r.content));
+                'reportSource'));
+            const content = easyReportText(r.content);
+            const marker = '[완료 기록 자세히 보기]';
+            const split = content.indexOf(marker);
+            box.append(el('div', split < 0 ? content : content.slice(0, split).trim(), 'reportNarrative'));
+            if (split >= 0) {
+                const details = el('details', null, 'reportDetails');
+                details.append(el('summary', '완료 기록 자세히 보기'),
+                    el('div', content.slice(split + marker.length).trim(), 'reportFacts'));
+                box.append(details);
+            }
         } catch (e) {
             if (version === reportVersion) box.textContent = e.message;
         }

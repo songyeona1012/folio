@@ -464,6 +464,7 @@
                         title: item.title || "",
                         time: item.time || "",
                         cat: item.category || "todo",
+                        recurringId: item.recurringId,
                         priv: !!item.private,
                         completed: !!item.completed
                     });
@@ -526,6 +527,7 @@
     function refreshViews() {
         renderGrid();
         renderTodayList();
+        renderDashboardManagement();
 
         if (
             document.getElementById("memoPanel").style.display ===
@@ -634,7 +636,7 @@
             if (!cell.other) {
                 const k = key(cell.y, cell.m, cell.d);
 
-                const evs = sortEvents(events[k] || []);
+                const evs = sortEvents((events[k] || []).filter(event => !isSideManagement(event)));
                 const limit = isWeek ? WEEK_TAG_LIMIT : MONTH_TAG_LIMIT;
 
                 evs.slice(0, limit).forEach(ev => {
@@ -696,7 +698,7 @@
 
         events[k] = sortEvents(events[k] || []);
 
-        const list = events[k];
+        const list = events[k].filter(event => !isSideManagement(event));
 
         const wrap =
             document.getElementById("todayList");
@@ -973,7 +975,7 @@
         );
 
         const list =
-            sortEvents(events[k] || []);
+            sortEvents((events[k] || []).filter(event => !isSideManagement(event)));
 
         const highlights =
             getHighlights();
@@ -1887,7 +1889,17 @@
     if (!dashboardCategories[dashboardCategory]) dashboardCategory = 'daily';
     let dashboardRules = [];
     const dashboardOccurrences = new Map();
+    function isSideManagement(event) {
+        if (!event.recurringId) return false;
+        const category = dashboardRules.find(rule => String(rule.id) === String(event.recurringId))?.category || event.cat;
+        return ['daily', 'subscription', 'relationship'].includes(category);
+    }
     function renderDashboardManagement() {
+        dashboardOccurrences.clear();
+        const dateKey = key(selectedDate.y, selectedDate.m, selectedDate.d);
+        (events[dateKey] || []).forEach(event => {
+            if (isSideManagement(event)) dashboardOccurrences.set(String(event.recurringId), event);
+        });
         document.getElementById('dashboardCategoryTitle').textContent = dashboardCategories[dashboardCategory];
         const list = document.getElementById('dashboardManagementList');
         list.replaceChildren();
@@ -1899,7 +1911,7 @@
         document.getElementById('nearestManagementTitle').textContent = nearest ? nearest.title : '예정된 건강 관리가 없어요';
         const days = nearest ? Math.round((new Date(nearest.nextDate + 'T00:00:00') - todayDate) / 86400000) : null;
         document.getElementById('nearestManagementDays').textContent = nearest ? '[ 다음 건강 일정 : ' + (days === 0 ? '오늘' : days + '일 뒤') + ' ]' : '';
-        const matching = dashboardRules.filter(rule => rule.category === dashboardCategory);
+        const matching = dashboardRules.filter(rule => rule.category === dashboardCategory && dashboardOccurrences.has(String(rule.id)));
         matching.sort((a, b) => String(a.nextDate || '').localeCompare(String(b.nextDate || '')));
         for (const rule of matching) {
             const li = document.createElement('li');
@@ -1936,7 +1948,7 @@
         if (!matching.length) {
             const li = document.createElement('li');
             li.className = 'muted';
-            li.textContent = '등록된 관리 일정이 없어요.';
+            li.textContent = '선택한 날짜에 해당하는 관리 일정이 없어요.';
             list.append(li);
         }
         document.querySelectorAll('[data-dashboard-category]').forEach(button => {
@@ -1962,15 +1974,7 @@
     }).then(async data => {
         dashboardRules = data;
         renderDashboardManagement();
-        await Promise.all([...new Set(data.filter(rule => rule.category !== 'health' && rule.nextDate).map(rule => rule.nextDate))].map(async date => {
-            const response = await fetch('/api/schedules/date?value=' + encodeURIComponent(date));
-            if (!response.ok) throw new Error('관리 일정 로드 실패');
-            const occurrences = await response.json();
-            occurrences.forEach(occurrence => {
-                const rule = data.find(rule => String(rule.id) === String(occurrence.recurringId) && rule.nextDate === date);
-                if (rule) dashboardOccurrences.set(String(rule.id), occurrence);
-            });
-        }));
+        refreshViews();
         renderDashboardManagement();
     }).catch(() => {
         document.getElementById('dashboardManagementList').textContent = '관리 일정을 불러오지 못했어요.';
@@ -1981,4 +1985,19 @@
     renderGrid();
     loadMonthEvents();
 
+})();
+
+// Keep the fixed-size scrollbar artwork aligned with the actual scroll position.
+(() => {
+    const selector = '.today-list, .memoList, .dashboardManagementList, .timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap';
+    function update(area) {
+        const distance = area.scrollHeight - area.clientHeight;
+        const ratio = distance > 0 ? Math.max(0, Math.min(1, area.scrollTop / distance)) : 0;
+        area.style.setProperty('--scroll-thumb-position', (ratio * 100) + '%');
+    }
+    document.addEventListener('scroll', event => {
+        if (event.target instanceof Element && event.target.matches(selector)) update(event.target);
+    }, true);
+    window.addEventListener('resize', () => document.querySelectorAll(selector).forEach(update));
+    document.querySelectorAll(selector).forEach(update);
 })();

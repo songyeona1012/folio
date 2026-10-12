@@ -47,7 +47,7 @@ public final class BookmarkLayout {
             Map<String, Object> bookmark = new LinkedHashMap<>();
 
             bookmark.put("href", HREFS[i]);
-            bookmark.put("posClass", posClass);
+            bookmark.put("posClass", posClass + (i == leftCount ? " is-current" : ""));
             bookmark.put("image", IMAGES[i]);
 
             result.add(bookmark);

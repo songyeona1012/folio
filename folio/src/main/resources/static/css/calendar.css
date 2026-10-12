@@ -2489,3 +2489,43 @@ Toast
         animation: none;
     }
 }
+
+/* 현재 페이지의 책갈피만 위로 돌출 */
+.bookmark { top: .8%; }
+.bookmark.is-current { top: -2%; z-index: 5; }
+.bookmark:not(.is-current):hover { transform: translateY(-2px); }
+/* 네 책갈피에 동일한 모양을 적용하고 색상만 구분합니다. */
+.bookmark {
+    height: 4.8%;
+    border-radius: 6px 6px 0 0;
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse at 50% 65%, rgba(255,255,255,.3), transparent 62%),
+        linear-gradient(to bottom, rgba(255,255,255,.08), rgba(0,0,0,.025)),
+        var(--bookmark-color, #d5d5d2);
+}
+.bookmark[href="/main"] { --bookmark-color: #acb8e3; }
+.bookmark[href="/dairy"] { --bookmark-color: #97bc94; }
+.bookmark[href="/index"] { --bookmark-color: #ed9166; }
+.bookmark[href="/goal"] { --bookmark-color: #d5d5d2; }
+.bookmark img { visibility: hidden; }
+/* 카테고리 메뉴는 버튼 너비에 맞추고 관리 체크는 이름 옆에 배치합니다. */
+.dashboardCategoryOptions { min-width:0; width:max-content; padding:3px 4px; }
+.dashboardCategoryOptions button { padding:5px 10px; }
+.dashboardManagementList li { justify-content:flex-start; gap:16px; padding-right:0; }
+.dashboardManagementList li > span { flex:0 1 145px; min-width:0; overflow-wrap:anywhere; }
+.dashboardManagementList .chk2 { flex:0 0 13px; }
+
+/* 메인 목록은 책 높이 안에서 스크롤합니다. */
+.rightPage:has(#rightDashboard) { min-height:0; padding-bottom:4%; }
+.rightDashboard { flex:1; min-height:0; overflow:hidden; }
+.rightDashboard .section.grow { flex:1 1 0; min-height:0; margin-bottom:0; overflow:hidden; }
+.rightDashboard .today-list { min-height:0; overflow-y:auto; overflow-x:hidden; }
+.rightPage:has(#rightDashboard) .memoPanel { top:16%; bottom:4%; height:auto; margin-bottom:0; overflow:hidden; }
+.rightPage:has(#rightDashboard) .memoInner { min-height:0; }
+:is(.today-list, .memoList, .dashboardManagementList) { scrollbar-width:auto; scrollbar-color:auto; scrollbar-gutter:stable; }
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar { width:14px; height:14px; background:transparent; }
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-track { background:url('/img/scroll-rail.png') center / 1px 100% no-repeat; margin-block:3px; }
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-thumb { min-height:34px; background:url('/img/scroll-thumb.png') center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat; }
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-button { display:none; width:0; height:0; }
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-corner { background:transparent; }

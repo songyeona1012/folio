@@ -76,6 +76,7 @@ public class ManagementAnalytics {
         LocalDate today = LocalDate.now();
         List<String> categories = List.of("health", "subscription", "relationship", "daily");
         LocalDate through = range.end().isAfter(today) ? today : range.end();
+        recurring.ensureHistory(through);
         var history = schedules.findByDateLessThanEqual(through).stream()
             .filter(s -> s.getRecurringId() != null && !s.isCancelled() && categories.contains(s.getCategory()))
             .sorted(Comparator.comparing(Schedule::getDate)).toList();
@@ -106,7 +107,7 @@ public class ManagementAnalytics {
         int completed = (int) history.stream().filter(Schedule::isCompleted).count();
         return new CompletionChart(range.start().toString(), range.end().toString(), points,
             total, completed, total == 0 ? null : (int) Math.round(100.0 * completed / total),
-            "카테고리별 누적 완료율(%) = 해당 날짜까지 완료한 관리 일정 ÷ 해당 날짜까지 도래한 관리 일정 × 100. " +
+            "카테고리별 누적 완료율(%) = 해당 날짜까지 완료한 관리 일정 ÷ 해당 날짜까지 예정된 관리 일정 × 100. " +
             "조회 기간 이전의 기록도 포함하며, 취소·미래 일정과 일반 일정은 제외합니다. 기록이 없으면 선을 표시하지 않습니다.");
     }
 
@@ -378,28 +379,102 @@ public class ManagementAnalytics {
             : completed > 0 ? "완료한 일정이 좋은 시작이에요. 다음에 실천할 한 가지를 정해보세요."
             : "아직 완료 기록이 없어요. 부담이 작은 일정 한 가지부터 시작해보세요.";
         String briefing = total == 0
-            ? "이 기간에 도래한 관리 일정이 없어 완료율을 평가할 수 없어요. " + encouragement
-            : "이 기간에 도래한 관리 일정 " + total + "건 중 " + completed + "건을 완료했어요(완료율 " + rate + "%). " + encouragement;
-        StringBuilder facts = new StringBuilder("관리 완료 기록 기준 v2\n기간: ")
+            ? "이 기간에 예정된 관리 일정이 없어 완료율을 평가할 수 없어요. " + encouragement
+            : "이 기간에 예정된 관리 일정 " + total + "건 중 " + completed + "건을 완료했어요(완료율 " + rate + "%). " + encouragement;
+        StringBuilder detailed = new StringBuilder(briefing);
+        if (total > 0) {
+            detailed.append("\n\n이번 기간에는 예정된 관리 일정 중 ").append(completed).append("건을 마무리했고, ")
+                .append(total - completed).append("건은 아직 완료 표시가 되어 있지 않아요. ")
+                .append("이 기록은 지금까지 일정 날짜가 지난 항목을 기준으로 살펴본 결과예요. 앞으로 예정된 일정은 포함하지 않았습니다. ")
+                .append("실제로 끝낸 일이 있다면 완료 표시를 해주세요. 기록이 정확해질수록 관리 흐름도 더 잘 확인할 수 있어요.");
+            categories.forEach((key, label) -> {
+                var items = events.stream().filter(event -> key.equals(event.getCategory())).toList();
+                if (items.isEmpty()) return;
+                long done = items.stream().filter(Schedule::isCompleted).count();
+                long percent = Math.round(100.0 * done / items.size());
+                detailed.append("\n\n").append(label).append(" 관리는 ").append(items.size()).append("건 중 ").append(done)
+                    .append("건을 완료해 완료율이 ").append(percent).append("%예요. ");
+                if (percent >= 80) detailed.append("예정된 일을 잘 챙기고 있어요. 지금 도움이 되는 알림이나 습관을 유지하면 다음 일정도 놓치지 않는 데 도움이 될 거예요.");
+                else detailed.append("아직 완료하지 않은 항목을 확인하고, 가장 먼저 할 수 있는 일 하나를 골라보세요. ")
+                    .append(key.equals("health") ? "예약이 필요한 일이라면 가능한 날짜를 먼저 정해두는 것도 좋아요." : "반복해서 챙겨야 하는 일이라면 평소 하는 행동과 연결하거나 알림을 설정해보세요.");
+            });
+            detailed.append("\n\n완료 기록이 없는 다른 카테고리는 관리가 부족하다고 판단할 수 없어요. ")
+                .append("월별 기록이 더 쌓이면 어느 시기에 잘 이어갔고 어느 시기에 놓친 일이 많았는지 비교할 수 있습니다. ")
+                .append("지금은 한꺼번에 모두 해결하기보다 다음에 챙길 한 가지를 정하고, 완료할 때마다 표시해보세요. 작은 실천을 차근차근 이어가면 좋아요.");
+        } else {
+            detailed.append("\n\n아직 이 기간에는 평가할 완료 기록이 없어요. 미래 일정은 완료율에 포함하지 않기 때문에 일정이 등록되어 있어도 수치가 나오지 않을 수 있습니다. ")
+                .append("시작일과 주기를 확인하고, 일정에 맞춰 실천한 뒤 완료를 표시해주세요. 기록이 쌓이면 카테고리별 관리 흐름과 변화를 함께 살펴볼 수 있어요.");
+        }
+        briefing = detailed.toString();
+        StringBuilder facts = new StringBuilder("관리 일정 완료 기록\n기간: ")
             .append(range.start()).append(" ~ ").append(range.end())
-            .append("\n관리 대상: 도래한 일정 ").append(total).append("건, 완료 ")
+            .append("\n관리 대상: 예정된 일정 ").append(total).append("건, 완료 ")
             .append(completed).append("건, 미완료 ").append(total - completed)
             .append("건, 완료율 ").append(rate == null ? "평가할 기록 없음" : rate + "%")
             .append("\n취소·미래 일정과 일반 달력 일정은 제외합니다.");
         categories.forEach((key, label) -> {
             var categoryEvents = events.stream().filter(event -> key.equals(event.getCategory())).toList();
             long done = categoryEvents.stream().filter(Schedule::isCompleted).count();
-            facts.append("\n").append(label).append(": 도래 ").append(categoryEvents.size())
+            facts.append("\n").append(label).append(": 일정 ").append(categoryEvents.size())
                 .append("건, 완료 ").append(done).append("건, 완료율 ")
                 .append(categoryEvents.isEmpty() ? "평가할 기록 없음" : Math.round(100.0 * done / categoryEvents.size()) + "%");
         });
+        var allPeriodEvents = scheduleRange(range.start(), range.end()).stream()
+            .filter(event -> !event.getDate().isAfter(today)).toList();
+        facts.append("\n월별 변화 (미래 일정 제외, 완료율 차이는 %포인트, 혼잡도는 하루 평균 일정 수 기준):");
+        for (LocalDate month = range.start().withDayOfMonth(1); !month.isAfter(range.end()) && !month.isAfter(today); month = month.plusMonths(1)) {
+            LocalDate from = month.isBefore(range.start()) ? range.start() : month;
+            LocalDate until = month.with(TemporalAdjusters.lastDayOfMonth());
+            if (until.isAfter(range.end())) until = range.end();
+            if (until.isAfter(today)) until = today;
+            final LocalDate last = until;
+            var monthEvents = allPeriodEvents.stream().filter(event -> !event.getDate().isBefore(from) && !event.getDate().isAfter(last)).toList();
+            long days = java.time.temporal.ChronoUnit.DAYS.between(from, last) + 1;
+            facts.append("\n").append(month.getYear()).append("년 ").append(month.getMonthValue()).append("월: 전체 일정 ").append(monthEvents.size())
+                .append("건, 하루 평균 ").append(Math.round(10.0 * monthEvents.size() / days) / 10.0).append("건");
+            categories.forEach((key, label) -> {
+                var items = monthEvents.stream().filter(event -> event.getRecurringId() != null && key.equals(event.getCategory())).toList();
+                long done = items.stream().filter(Schedule::isCompleted).count();
+                facts.append("; ").append(label).append(" 예정 ").append(items.size()).append("건, 완료 ").append(done).append("건, 완료율 ")
+                    .append(items.isEmpty() ? "기록 없음" : Math.round(100.0 * done / items.size()) + "%");
+            });
+        }
+        StringBuilder changes = new StringBuilder();
+        for (var category : categories.entrySet()) {
+            Double previousRate = null;
+            Double previousLoad = null;
+            java.time.YearMonth previousMonth = null;
+            double biggestDrop = 0;
+            String decline = null;
+            for (LocalDate month = range.start().withDayOfMonth(1); !month.isAfter(range.end()) && !month.isAfter(today); month = month.plusMonths(1)) {
+                final java.time.YearMonth ym = java.time.YearMonth.from(month);
+                var monthItems = events.stream().filter(event -> category.getKey().equals(event.getCategory()) && java.time.YearMonth.from(event.getDate()).equals(ym)).toList();
+                if (monthItems.isEmpty()) continue;
+                double currentRate = 100.0 * monthItems.stream().filter(Schedule::isCompleted).count() / monthItems.size();
+                long monthCount = allPeriodEvents.stream().filter(event -> java.time.YearMonth.from(event.getDate()).equals(ym)).count();
+                LocalDate monthEnd = month.with(TemporalAdjusters.lastDayOfMonth());
+                if (monthEnd.isAfter(today)) monthEnd = today;
+                if (monthEnd.isAfter(range.end())) monthEnd = range.end();
+                LocalDate monthStart = month.isBefore(range.start()) ? range.start() : month;
+                double load = (double) monthCount / (java.time.temporal.ChronoUnit.DAYS.between(monthStart, monthEnd) + 1);
+                if (previousRate != null && previousRate - currentRate > biggestDrop) {
+                    biggestDrop = previousRate - currentRate;
+                    decline = category.getValue() + " 관리는 " + previousMonth.getMonthValue() + "월의 완료율 " + Math.round(previousRate) + "%에서 " + ym.getMonthValue() + "월 " + Math.round(currentRate) + "%로, " + Math.round(biggestDrop * 10) / 10.0 + "%포인트 낮아졌어요. "
+                        + (load > previousLoad ? "같은 시기에 하루 평균 일정 수도 늘어났어요. 일정이 많았던 점과 관련이 있을 수 있지만, 이것만으로 이유를 단정할 수는 없어요. " : "완료하지 못한 항목을 확인해 다음에 챙길 일을 한 가지 정해보세요. ")
+                        + (category.getKey().equals("relationship") ? "교체할 물품을 미리 준비하고 예정일 전날 알림을 설정해보세요." : category.getKey().equals("daily") ? "일상 관리는 식사나 잠들기 전처럼 이미 하는 행동에 붙여보면 반복하기 쉬워져요." : "다음 일정의 날짜를 확인하고 필요한 예약이나 준비를 미리 해두면 도움이 돼요.");
+                }
+                previousRate = currentRate; previousLoad = load; previousMonth = ym;
+            }
+            if (decline != null) changes.append(decline).append("\n\n");
+        }
+        if (!changes.isEmpty()) briefing = changes + briefing;
         return new CompletionBriefing(total, completed, rate, briefing, facts.toString());
     }
 
     public synchronized ManagementReport report(String period, LocalDate anchor, boolean retry) {
         Range range = range(period, anchor);
         CompletionBriefing summary = completionBriefing(period, anchor);
-        String facts = summary.facts();
+        String facts = "변화 분석 기록지 형식 v4\n" + summary.facts();
         String raw = scheduleRange(range.start(), range.end()).stream()
             .filter(event -> event.getRecurringId() != null)
             .map(event -> event.getId() + ":" + event.getTitle() + ":" + event.getCategory() + ":" + event.getDate() + ":" + event.isCompleted())
@@ -419,7 +494,7 @@ public class ManagementAnalytics {
         report.endDate = range.end().toString();
         report.fingerprint = hash;
         report.source = narrative == null ? "BASIC" : "AI";
-        report.content = (narrative == null ? summary.briefing() : narrative) + "\n\n[산출 근거]\n" + facts;
+        report.content = (narrative == null ? summary.briefing() : narrative) + "\n\n[완료 기록 자세히 보기]\n" + facts;
         report.briefing = narrative == null ? summary.briefing() : narrative.lines()
             .filter(line -> !line.isBlank()).findFirst().orElse(summary.briefing());
         report.briefing = report.briefing.substring(0, Math.min(report.briefing.length(), 1000));
