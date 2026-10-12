@@ -1,0 +1,634 @@
+/* =========================================================
+   responsive.css — 반응형 (태블릿 / 모바일)
+   - 모든 페이지에서 CSS 중 "맨 마지막"에 불러오세요.
+   - 사이드바 파셜이 sidebar.css를 body 안에서 한 번 더 불러오기 때문에
+     사이드바 규칙은 앞에 body 를 붙여서 우선순위를 높였습니다.
+   - 기존 CSS / JS / HTML 은 하나도 바꾸지 않고, 화면이 좁을 때만 덮어씁니다.
+   - PC(1101px 이상) 화면은 지금과 완전히 같습니다.
+
+   1101px 이상 : 그대로 (책 두 쪽 펼침)
+   901 ~ 1100px : 책은 그대로, 사이드바만 조금 좁게
+   900px 이하  : 피그마 모바일 시안처럼
+                 - 사이드바 → 위쪽 책갈피 탭 (달력/일기/관리/목표) + 클립(설정)
+                 - 책 이미지 대신 종이 한 장, 왼쪽 페이지 → 오른쪽 페이지 순서로 위아래로 쌓임
+                 - 페이지 전체가 세로로 스크롤
+   ========================================================= */
+
+:root {
+    --m-paper: #faf9f6;
+    --m-paper-line: #e6ddda;
+    --m-gutter: 20px;
+    --m-tab-h: 44px;
+}
+
+/* =========================================================
+   901 ~ 1100px : 사이드바만 좁게, 가로 스크롤 없애기
+   ========================================================= */
+@media (max-width: 1100px) {
+    body {
+        min-width: 0;
+    }
+
+    body .sideBar {
+        width: 128px;
+        flex-basis: 128px;
+    }
+
+    body .userProfile {
+        padding: 20px 12px 12px;
+        gap: 7px;
+    }
+
+    body .profileImage {
+        width: 34px;
+        height: 34px;
+        flex-basis: 34px;
+        font-size: 26px;
+    }
+
+    body .userInfo strong {
+        font-size: 13px;
+    }
+
+    body .sideMenu {
+        padding: 0 16px;
+        font-size: 14px;
+    }
+}
+
+/* =========================================================
+   900px 이하 : 모바일 레이아웃
+   ========================================================= */
+@media (max-width: 900px) {
+
+    /* ---------- 0. 페이지 전체를 세로 스크롤로 ---------- */
+    html,
+    body {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    body {
+        min-width: 0;
+        background: var(--m-paper);
+    }
+
+    .appShell {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: visible;
+    }
+
+    .mainArea {
+        height: auto;
+        overflow: visible;
+    }
+
+    .topBar {
+        display: none;
+    }
+
+    /* ---------- 1. 사이드바 → 위쪽 책갈피 탭 ---------- */
+    body .sideBar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        width: 100%;
+        height: auto;
+        flex: 0 0 auto;
+        padding: 14px 52px 0 var(--m-gutter);   /* 오른쪽은 클립 자리 */
+        border: 0;
+        border-bottom: 1px solid var(--m-paper-line);
+        background: rgba(250, 250, 249, 0.96);
+        backdrop-filter: blur(4px);
+        transform: none;
+    }
+
+    /* 왼쪽의 주황 글씨 (피그마의 "CAL") */
+    body .pageTitle {
+        position: static;
+        flex: 0 0 auto;
+        width: auto;
+        padding-bottom: 12px;
+        color: var(--orange, #e9692c);
+        font-family: 'Cormorant Garamond', 'Gowun Batang', serif;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+    }
+
+    body .userProfile,
+    body .sideLine,
+    body .teamName {
+        display: none;
+    }
+
+    body .sideMenu {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        gap: 6px;
+        padding: 0;
+        font-size: 13px;
+    }
+
+    /* 탭 하나 = 책갈피 하나 (색은 책 위 책갈피와 같게) */
+    body .sideMenu a {
+        flex: 1 1 0;
+        min-width: 0;
+        width: auto;
+        height: var(--m-tab-h);
+        padding: 0 4px 10px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        border-radius: 7px 7px 0 0;
+        background: var(--tab-color, #e3e1de);
+        color: #6c5f57;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transform: translateY(8px);
+        transition: transform 0.15s ease;
+    }
+
+    body .sideMenu a[href="/main"]  { --tab-color: #d9def1; }
+    body .sideMenu a[href="/dairy"] { --tab-color: #d6e5d4; }
+    body .sideMenu a[href="/index"] { --tab-color: #f6d3c2; }
+    body .sideMenu a[href="/goal"]  { --tab-color: #e5e4e1; }
+
+    /* 설정은 오른쪽 클립으로 들어가므로 탭에서는 숨김 */
+    body .sideMenu a[href="/setting"] {
+        display: none;
+    }
+
+    /* 지금 페이지 탭은 위로 쏙 올라옴 */
+    body .sideMenu .selected,
+    body .sideMenu a.selected {
+        background: var(--tab-color, #e3e1de);
+        color: #4b3f38;
+        font-weight: 700;
+        transform: translateY(0);
+        box-shadow: 0 -2px 6px rgba(60, 50, 40, 0.08);
+    }
+
+    body .sideMenu a:not(.selected):hover {
+        transform: translateY(4px);
+    }
+
+    /* ---------- 2. 책 → 종이 한 장 ---------- */
+    .notebook {
+        position: relative;
+        width: 100%;
+        max-width: 720px;
+        height: auto;
+        aspect-ratio: auto;
+        margin: 0 auto;
+        padding-bottom: 40px;
+    }
+
+    .notebookImage,
+    .bookmark {
+        display: none;
+    }
+
+    /* 클립(설정)은 탭 줄 오른쪽 끝에 걸쳐 둠 */
+    .clipLink {
+        position: fixed;
+        top: 8px;
+        right: 12px;
+        z-index: 60;
+        display: block;
+        width: 22px;
+        height: 64px;
+    }
+
+    .clip,
+    .clipLink .clip {
+        position: static;
+        display: block;
+        width: 100%;
+        height: 100%;
+        transform: rotate(4deg);
+    }
+
+    /* 왼쪽/오른쪽 페이지를 위아래로 쌓기 (manage.css, management.css 의 절대 위치 덮어쓰기) */
+    .notebook > .leftPage,
+    .notebook > .rightPage {
+        position: relative;
+        inset: auto;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        width: auto;
+        height: auto;
+        min-height: 0;
+        padding: 28px var(--m-gutter) 8px;
+        overflow: visible;
+    }
+
+    .notebook > .rightPage {
+        padding-top: 20px;
+        border-top: 1px dashed var(--m-paper-line);
+        margin-top: 12px;
+    }
+
+    /* =========================================================
+       3. 달력 (main)
+       ========================================================= */
+    .brand-row {
+        flex-wrap: wrap;
+        gap: 2px 12px;
+        justify-content: flex-start;
+    }
+
+    .brand-row h1 {
+        font-size: 26px;
+    }
+
+    .brand-row .rate {
+        font-size: 11px;
+    }
+
+    .briefing {
+        font-size: 11.5px;
+        margin-bottom: 14px;
+    }
+
+    /* 포스트잇 달력: 화면 폭에 꽉 차게, 높이는 폭에 비례 */
+    .postit {
+        flex: none;
+        width: 100%;
+        height: clamp(420px, 118vw, 640px);
+        margin: 0;
+        padding: 22px 5% 26px;
+    }
+
+    .cal-head {
+        flex-wrap: wrap;
+        row-gap: 6px;
+        padding: 8px 4px;
+    }
+
+    .weekdays,
+    .grid {
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+
+    .day .num {
+        font-size: 12px;
+    }
+
+    .day .tag {
+        max-width: 100%;
+        font-size: 7.5px;
+        padding: 1px 2px;
+    }
+
+    .grid.isWeek .day .tag {
+        font-size: 8.5px;
+    }
+
+    /* 오른쪽 대시보드: 높이 제한 풀기 */
+    .rightPage:has(#rightDashboard) {
+        padding-bottom: 8px;
+    }
+
+    .rightDashboard {
+        flex: none;
+        overflow: visible;
+    }
+
+    .rightDashboard .section.grow {
+        flex: none;
+        overflow: visible;
+    }
+
+    .rightDashboard .today-list {
+        flex: none;
+        max-height: 360px;
+    }
+
+    .natural-schedule {
+        margin-bottom: 28px;
+    }
+
+    .natural-schedule .add-pill {
+        font-size: 12px;
+    }
+
+    /* 메모장: 화면 아래에서 올라오는 시트 (피그마 "금일 일정 자세히 보기") */
+    .rightPage .memoPanel,
+    .rightPage:has(#rightDashboard) .memoPanel {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        width: min(100%, 520px) !important;
+        height: min(72vh, 640px) !important;
+        margin: 0 !important;
+        translate: -50% 0;
+        z-index: 70;
+        overflow: hidden !important;
+        filter: drop-shadow(0 -8px 24px rgba(60, 50, 40, 0.18));
+    }
+
+    .memoPanel,
+    .memoPanel * {
+        font-size: 13px !important;
+    }
+
+    .memoPanel .memoDate {
+        font-size: 15px !important;
+    }
+
+    .memoInner {
+        padding: 9% 10% 10%;
+    }
+
+    /* 형광펜도 화면에 맞게 작게 */
+    .penTool {
+        right: 2%;
+        bottom: 2%;
+    }
+
+    .penButton {
+        width: 70px;
+        height: 136px;
+    }
+
+    .penPalette {
+        right: 64px;
+        bottom: 12px;
+    }
+
+    .toast {
+        max-width: calc(100vw - 32px);
+        white-space: normal;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    /* =========================================================
+       4. 일기 (dairy)
+       ========================================================= */
+    .diaryLeftPage h1 {
+        font-size: 22px;
+    }
+
+    .yearNav .yearLabel {
+        font-size: 15px;
+    }
+
+    .moodBox {
+        height: 180px;
+    }
+
+    .folderGrid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px 16px;
+        max-height: none;
+        padding: 10px 4px;
+    }
+
+    .folderItem .folderCaption {
+        font-size: 8px;
+    }
+
+    .folderItem .folderNum {
+        font-size: 13px;
+    }
+
+    .monthView {
+        margin: 12px 0 0;
+    }
+
+    .monthSheet {
+        height: min(460px, 80vh);
+        padding: 18px 14px 12px;
+    }
+
+    .monthSheetHead {
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 14px;
+    }
+
+    .monthTable .colDay { width: 13%; }
+    .monthTable .colSummary { width: 45%; }
+    .monthTable .colRating { width: 28%; }
+    .monthTable .colSelect { width: 14%; }
+
+    .rowStars {
+        font-size: 10px;
+        letter-spacing: 0;
+    }
+
+    .formTabBtn {
+        font-size: 11px;
+        padding: 8px 6px;
+    }
+
+    .plainNoteText {
+        min-height: 320px;
+    }
+
+    .timetableGrid {
+        max-height: 420px;
+    }
+
+    .timetableRow input {
+        min-width: 0;
+        width: 100%;
+    }
+
+    /* =========================================================
+       5. 관리 (index)
+       ========================================================= */
+    .managementApp .managementIntro {
+        font-size: 11px;
+    }
+
+    .managementApp .categoryGrid {
+        flex: none;
+        grid-template-rows: auto;
+        gap: 18px 14px;
+    }
+
+    .managementApp .categoryCard,
+    .managementApp .categoryColumn .categoryCard {
+        min-height: 210px;
+    }
+
+    .managementApp .largeMemo,
+    .managementApp[data-view="detail"] .largeMemo {
+        flex: none;
+        min-height: 460px;
+    }
+
+    .managementApp .editorPage,
+    .managementApp .analysisPage {
+        overflow: visible !important;
+    }
+
+    .appStatus {
+        max-width: calc(100vw - 32px);
+    }
+
+    /* =========================================================
+       6. 목표 (goal)
+       ========================================================= */
+    .goal-page {
+        height: auto;
+    }
+
+    .goal-heading h1 {
+        font-size: 28px;
+    }
+
+    .goal-heading p {
+        font-size: 13px;
+    }
+
+    .goal-toolbar {
+        margin-top: 22px;
+    }
+
+    .goal-list-scroll {
+        flex: none;
+        max-height: 420px;
+    }
+
+    /* 종이: 화면 밖으로 튀어나가던 부분(bleed)을 없애고 카드처럼 */
+    .notebook > .rightPage .goal-paper {
+        width: 100% !important;
+        height: auto;
+        min-height: 70vh;
+        margin-right: 0 !important;
+        border-radius: 24px;
+        overflow: visible;
+    }
+
+    .goal-paper .item-scroll {
+        flex: none;
+        max-height: 60vh;
+    }
+
+    .goal-panel[data-mode-panel="ai"] {
+        max-height: 70vh;
+    }
+
+    /* =========================================================
+       7. 로그인 (login)
+       ========================================================= */
+    .loginScene {
+        width: calc(100% - 24px);
+        height: calc(100vh - 90px);
+        height: calc(100dvh - 90px);
+        margin-top: 16px;
+    }
+
+    .closedBook {
+        left: 0;
+        right: 0;
+        width: min(100%, calc((100dvh - 90px) * 754 / 954));
+        height: auto;
+        margin: 0 auto;
+    }
+}
+
+/* =========================================================
+   600px 이하 : 작은 휴대폰
+   ========================================================= */
+@media (max-width: 600px) {
+    :root {
+        --m-gutter: 16px;
+    }
+
+    body .sideBar {
+        gap: 6px;
+        padding-right: 44px;
+    }
+
+    body .pageTitle {
+        font-size: 14px;
+    }
+
+    body .sideMenu {
+        gap: 4px;
+        font-size: 12px;
+    }
+
+    .clipLink {
+        right: 8px;
+        width: 18px;
+        height: 54px;
+    }
+
+    /* 달력 */
+    .viewToggle {
+        margin-left: 0;
+    }
+
+    .viewToggle + .cal-nav {
+        margin-left: auto;
+    }
+
+    .cal-head .weekRange {
+        order: 5;
+        flex-basis: 100%;
+    }
+
+    /* 일기: 시간 기록형은 한 줄에 한 칸 */
+    .timetableGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .monthSheetHelp {
+        font-size: 9px;
+    }
+
+    /* 관리: 메모지 한 줄에 하나 */
+    .managementApp .categoryGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .managementApp .managementHeading {
+        flex-wrap: wrap;
+    }
+
+    /* 목표: 표 + D-day 상자를 위아래로, 진도표/리뷰도 위아래로 */
+    .form-top {
+        grid-template-columns: 1fr;
+    }
+
+    .dday-box {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 8px 14px;
+    }
+
+    .item-heads,
+    .item-cols {
+        grid-template-columns: 1fr;
+        row-gap: 14px;
+    }
+
+    .goal-card {
+        height: 84px;
+    }
+
+    .goal-card-title {
+        font-size: 15px;
+    }
+}
