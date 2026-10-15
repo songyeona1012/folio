@@ -1,7 +1,7 @@
 /* =========================================================
    goal.css — 목표 페이지
    0. 공통   1. 왼쪽 페이지(목록)   2. 오른쪽 페이지(종이)
-   3. 공부 양식(숫자형/글자형 진도표 포함)   4. 진도표 추가 메뉴·수정 패널·글자형 삭제 메뉴   5. AI 자율 작성
+   3. 공부 양식(숫자형/글자형 진도표 포함)   3-2. 금전 양식   4. 진도표 추가 메뉴·수정 패널·글자형 삭제 메뉴   5. AI 자율 작성
    - 배경 이미지에 입력창을 겹치지 않고 전부 CSS로 그립니다.
    - 화면이 좁아지면 글자/칸 크기가 같이 줄어들도록 clamp()와 컨테이너 쿼리(cqw)를 씁니다.
    ========================================================= */
@@ -68,6 +68,7 @@ body {
    ::-webkit-scrollbar 를 무시하므로, 둘 다 auto 로 두고 webkit 쪽을 꾸민다. */
 .goal-list-scroll,
 .item-scroll,
+.money-scroll,
 .ai-scroll,
 .progress-body {
     --goal-thumb: #fff;
@@ -80,6 +81,7 @@ body {
 
 .goal-list-scroll::-webkit-scrollbar,
 .item-scroll::-webkit-scrollbar,
+.money-scroll::-webkit-scrollbar,
 .ai-scroll::-webkit-scrollbar,
 .progress-body::-webkit-scrollbar {
     width: var(--goal-scroll-w);
@@ -88,6 +90,7 @@ body {
 
 .goal-list-scroll::-webkit-scrollbar-track,
 .item-scroll::-webkit-scrollbar-track,
+.money-scroll::-webkit-scrollbar-track,
 .ai-scroll::-webkit-scrollbar-track {
     background: linear-gradient(to right,
     transparent calc(50% - 0.5px), var(--goal-track) calc(50% - 0.5px),
@@ -105,6 +108,7 @@ body {
 
 .goal-list-scroll::-webkit-scrollbar-button,
 .item-scroll::-webkit-scrollbar-button,
+.money-scroll::-webkit-scrollbar-button,
 .ai-scroll::-webkit-scrollbar-button,
 .progress-body::-webkit-scrollbar-button {
     display: none;
@@ -114,6 +118,7 @@ body {
 
 .goal-list-scroll::-webkit-scrollbar-thumb,
 .item-scroll::-webkit-scrollbar-thumb,
+.money-scroll::-webkit-scrollbar-thumb,
 .ai-scroll::-webkit-scrollbar-thumb {
     min-height: 32px;
     border: 1px solid transparent;
@@ -140,6 +145,7 @@ body {
 @supports not selector(::-webkit-scrollbar) {
     .goal-list-scroll,
     .item-scroll,
+    .money-scroll,
     .ai-scroll,
     .progress-body {
         scrollbar-width: thin;
@@ -150,6 +156,8 @@ body {
 /* 체크박스 공통: 목록(22px), 리뷰(18px), 글자형 진도표(18px)가 같은 모양을 쓴다 */
 .goal-select-checkbox,
 .item-select,
+.tx-select,
+.ai-check,
 .text-check {
     appearance: none;
     -webkit-appearance: none;
@@ -160,6 +168,8 @@ body {
 
 .goal-select-checkbox:checked,
 .item-select:checked,
+.tx-select:checked,
+.ai-check:checked,
 .text-check:checked {
     background-color: #8a5a3c;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -170,6 +180,8 @@ body {
 
 .goal-select-checkbox:focus-visible,
 .item-select:focus-visible,
+.tx-select:focus-visible,
+.ai-check:focus-visible,
 .text-check:focus-visible,
 .text-handle:focus-visible,
 .goal-card:focus-visible,
@@ -241,7 +253,7 @@ body {
     display: flex;
     flex-wrap: wrap; /* 아주 좁으면 버튼이 바 안에서 아랫줄로 내려간다 */
     align-items: center;
-    gap: 6px 18px;
+    gap: 6px 26px;
     width: 100%;
     max-width: 506px;
     min-height: 42px;
@@ -249,10 +261,6 @@ body {
     padding: 6px 7px 6px 20px;
     border-radius: 21px;
     background: #f0eeec;
-}
-
-.mode-option:first-of-type {
-    margin-right: auto;
 }
 
 .mode-option {
@@ -294,6 +302,7 @@ body {
 
 .mode-new-goal {
     flex: 0 0 auto;
+    margin-left: auto;
     height: 29px;
     padding: 0 22px;
     border: 0;
@@ -621,8 +630,8 @@ body {
     background: var(--goal-blue);
     font-size: clamp(12.5px, 2.1cqw, 16px);
     color: #111;
-    text-align: justify;
-    text-align-last: justify;
+    text-align: center;
+    /*text-align-last: justify;*/
     white-space: nowrap;
 }
 
@@ -1154,6 +1163,697 @@ body.is-reordering-progress * {
 }
 
 
+/* ---------- 3-2. 금전 양식 ----------
+   위쪽(남은 금액·표·사진)은 고정, 달성 현황과 입출금 내역은 제목 줄 아래부터 스크롤된다. */
+.goal-panel[data-mode-panel="money"] {
+    --money-yellow: #f5eebe;                          /* 표 이름 칸 / 사진 테두리 / 입출금 머리글 */
+    --money-status-w: clamp(128px, 23.5cqw, 204px);   /* 달성 현황 상자 너비 */
+    --money-gap: clamp(12px, 3.6cqw, 30px);
+    --money-rule: clamp(19px, 2.8cqw, 23px);          /* 달성 현황의 줄 간격 */
+    --money-red: #c4403b;
+    --money-blue: #3566c9;
+    display: flex;
+    flex-direction: column;
+}
+
+.money-top {
+    display: grid;
+    flex: 0 0 auto;
+    grid-template-columns: minmax(0, 1fr) clamp(96px, 21.5cqw, 163px);
+    gap: clamp(8px, 2.1cqw, 16px);
+    align-items: stretch;
+    margin: clamp(10px, 2.2cqw, 18px) var(--goal-inner-r) 0 var(--goal-inner-l);
+}
+
+.money-main {
+    position: relative;
+    min-width: 0;
+}
+
+/* 앞으로 남은 금액 : 1,720,000 */
+.money-remain {
+    margin: 0;
+    font-size: clamp(10px, 1.45cqw, 11.5px);
+    line-height: 1.4;
+    color: #8a6c50;
+}
+
+.money-remain b {
+    margin-left: 5px;
+    font-weight: 400;
+}
+
+/* 470,000 / 2,190,000 */
+.money-sum {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.7em;
+    margin: clamp(2px, 0.6cqw, 5px) 0 clamp(8px, 1.5cqw, 12px);
+    font-size: clamp(17px, 3.4cqw, 26px);
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+    color: #111;
+}
+
+.money-sum i {
+    font-style: normal;
+    font-weight: 300;
+}
+
+.money-remain .is-empty,
+.money-sum .is-empty {
+    color: #dcdcdc;
+    font-weight: 700;
+}
+
+.money-table .goal-table-label {
+    background: var(--money-yellow);
+    justify-items: center;
+    text-align: center;
+    text-align-last: center; /* 시안: 표 이름은 늘여 맞추지 않고 가운데에 둔다 */
+}
+
+.money-table .goal-table-label,
+.money-table .goal-table-cell {
+    min-height: clamp(30px, 4.6cqw, 36px);
+}
+
+/* 금액 칸: 숫자는 칸 가운데, ₩ 는 칸 오른쪽 끝 */
+.money-amount-cell {
+    position: relative;
+}
+
+.money-amount-cell .money-input {
+    padding: 0 clamp(26px, 4cqw, 34px); /* 오른쪽 ₩ 자리만큼 양쪽을 똑같이 비워서 숫자가 가운데에 놓인다 */
+    letter-spacing: 0.1em;
+}
+
+.money-won {
+    position: absolute;
+    top: 50%;
+    right: clamp(10px, 1.9cqw, 14px);
+    transform: translateY(-50%);
+    font-size: clamp(12.5px, 2cqw, 15px);
+    font-weight: 600;
+    color: #1f1f1f;
+    pointer-events: none;
+}
+
+.money-input::placeholder,
+.money-cycle::placeholder {
+    color: #c9c9c9;
+}
+
+/* 입금 금액과 주기:  [300,000] ₩ 씩  /  [매 달 4일] 마다 */
+.money-cycle-cell {
+    gap: clamp(2px, 0.5cqw, 4px);
+    padding: 0 clamp(6px, 1.4cqw, 10px) 0 0;
+}
+
+.money-cycle-cell .money-deposit {
+    flex: 0 1 34%;
+    padding: 0 2px;
+    font-size: clamp(11px, 1.8cqw, 14px);
+    letter-spacing: 0.06em;
+}
+
+.money-cycle-cell .money-cycle {
+    flex: 1 1 0;
+    padding: 0 2px;
+    font-size: clamp(11px, 1.9cqw, 14.5px);
+}
+
+.money-unit {
+    flex: 0 0 auto;
+    font-size: clamp(10.5px, 1.9cqw, 14.5px);
+    font-weight: 600;
+    white-space: nowrap;
+    color: #333;
+}
+
+.money-slash {
+    flex: 0 0 auto;
+    margin: 0 clamp(2px, 0.6cqw, 5px);
+    font-style: normal;
+    font-size: clamp(16px, 2.8cqw, 21px);
+    font-weight: 300;
+    line-height: 1;
+    color: #222;
+}
+
+.money-input.is-invalid,
+.money-cycle.is-invalid {
+    color: var(--money-red);
+}
+
+.money-input.is-shaking,
+.money-cycle.is-shaking,
+.tx-amount.is-shaking,
+.tx-date.is-shaking,
+.tx-time.is-shaking {
+    animation: pf-shake 0.34s ease-in-out;
+}
+
+/* 표 아래에 잠깐 나오는 안내/오류 한 줄 */
+.money-hint {
+    position: absolute;
+    z-index: 2;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    margin: 0;
+    font-size: clamp(10px, 1.45cqw, 11.5px);
+    line-height: 1.45;
+    color: var(--goal-accent);
+    pointer-events: none;
+}
+
+.money-hint.is-info {
+    color: #8a6c50;
+}
+
+/* 사진 */
+.money-photo {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 0;
+    border: clamp(5px, 0.95cqw, 7px) solid var(--money-yellow);
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.money-photo.is-over {
+    box-shadow: inset 0 0 0 3px rgba(233, 105, 44, 0.5);
+}
+
+.photo-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+}
+
+.photo-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.photo-pick {
+    padding: 6px 4px;
+    border: 0;
+    background: none;
+    font-size: clamp(9px, 1.4cqw, 11px);
+    white-space: nowrap;
+    color: #c0c0c0;
+    cursor: pointer;
+}
+
+.photo-pick:hover {
+    color: #6d5844;
+}
+
+/* 두 글자 사이의 가는 줄 */
+.photo-pick:first-child::after {
+    content: "";
+    display: block;
+    width: min(86px, 92%);
+    height: 1px;
+    margin: 6px auto -6px;
+    background: #d6d6d6;
+}
+
+.photo-tools {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 2px;
+    padding: 3px 2px;
+    background: rgba(255, 255, 255, 0.92);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.money-photo:hover .photo-tools,
+.money-photo:focus-within .photo-tools {
+    opacity: 1;
+}
+
+.photo-tool {
+    padding: 3px 5px;
+    border: 0;
+    background: none;
+    font-size: clamp(9px, 1.4cqw, 10.5px);
+    color: #6d5844;
+    cursor: pointer;
+}
+
+.photo-tool:hover {
+    color: var(--goal-accent);
+}
+
+.photo-pick:focus-visible,
+.photo-tool:focus-visible,
+.tx-type-btn:focus-visible,
+.money-apply-btn:focus-visible,
+.ai-quill:focus-visible,
+.ai-send:focus-visible,
+.ai-add:focus-visible {
+    outline: 2px dashed var(--goal-accent);
+    outline-offset: 2px;
+}
+
+/* 제목 줄: 달성 현황 | 입출금 내역 ........ 선택 삭제 */
+.money-heads {
+    display: grid;
+    flex: 0 0 auto;
+    grid-template-columns: var(--money-status-w) minmax(0, 1fr);
+    column-gap: var(--money-gap);
+    align-items: baseline;
+    margin: clamp(24px, 3.9cqw, 31px) var(--goal-inner-r) 0 var(--goal-inner-l);
+}
+
+.money-heads h2 {
+    margin: 0;
+    font-size: clamp(13px, 2cqw, 15.5px);
+    font-weight: 500;
+    white-space: nowrap;
+    color: #222;
+}
+
+.money-heads-right {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 6px;
+    min-width: 0;
+}
+
+.money-scroll {
+    flex: 1 1 auto;
+    min-height: 120px;
+    margin: 12px var(--goal-scroll-gap) 0 0;
+    padding: 2px calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 22px var(--goal-inner-l);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.money-cols {
+    display: grid;
+    grid-template-columns: var(--money-status-w) minmax(0, 1fr);
+    column-gap: var(--money-gap);
+    align-items: start;
+}
+
+/* ----- 달성 현황: 금빛 테두리의 줄 노트. 글은 계산해서 채워지고, 고쳐 쓰면 입력값에 반영된다 ----- */
+.money-status-box {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: calc(var(--money-rule) * 12 + 14px);
+    border: 1px solid #b9aa62;
+    background: #fff;
+}
+
+.money-status {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: calc(var(--money-rule) * 0.45) clamp(8px, 1.4cqw, 11px) 0;
+    outline: 0;
+    font-size: clamp(10px, 1.45cqw, 11.5px);
+    line-height: var(--money-rule);
+    color: #222;
+    overflow-wrap: anywhere;
+    word-break: keep-all;
+    background-image: linear-gradient(to bottom, transparent calc(var(--money-rule) - 1px), #efebe0 calc(var(--money-rule) - 1px));
+    background-size: 100% var(--money-rule);
+    background-origin: content-box;
+    background-clip: content-box;
+    cursor: text;
+}
+
+.money-status:focus {
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.45);
+}
+
+/* 비어 있을 때의 안내: 상자 가운데 */
+.money-status:empty::before {
+    content: attr(data-placeholder);
+    display: block;
+    padding-top: calc(var(--money-rule) * 4.5);
+    text-align: center;
+    color: #c6c6c6;
+}
+
+.ms-line {
+    min-height: var(--money-rule);
+}
+
+.ms-line .hl-red {
+    color: var(--money-red);
+}
+
+.ms-line .hl-blue {
+    color: var(--money-blue);
+}
+
+.ms-note {
+    color: #b3b3b3;
+}
+
+/* [추천] 선택지: 오른쪽 끝의 라디오로 고른다 */
+.ms-opt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.ms-opt-text {
+    min-width: 0;
+}
+
+.ms-radio {
+    position: relative;
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+    border: 1.3px solid #b99b82;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.ms-radio[aria-checked="true"] {
+    border-color: #b9795a;
+    background: radial-gradient(circle, var(--goal-accent) 0 4.4px, #fff 4.9px);
+}
+
+.money-apply {
+    flex: 0 0 auto;
+    padding: 9px 0 11px;
+    border-top: 1px solid #efebe0;
+    text-align: center;
+}
+
+.money-apply-btn {
+    padding: 5px 17px;
+    border: 1px solid #cfe5cb;
+    border-radius: 9px;
+    background: #ebf7e8;
+    box-shadow: 0 2px 6px rgba(70, 120, 60, 0.16);
+    font: inherit;
+    font-size: clamp(10.5px, 1.55cqw, 12px);
+    font-weight: 600;
+    color: #3d8d3a;
+    cursor: pointer;
+}
+
+.money-apply-btn:hover {
+    background: #e0f2dc;
+}
+
+/* ----- 입출금 내역: 일자 / 시간 / 입출금 유형 / 금액 / 총 액 ----- */
+.tx-wrap {
+    --tx-fs: clamp(10px, 1.6cqw, 12.5px);   /* 머리글과 줄이 같은 글자 크기를 기준으로 열을 나눈다 */
+    --tx-cols: calc(var(--tx-fs) * 5) calc(var(--tx-fs) * 3.8) calc(var(--tx-fs) * 6) minmax(0, 1fr) minmax(0, 1fr);
+    --tx-side: 26px; /* 오른쪽 체크박스 칸 (연결선 8 + 간격 + 체크박스 18) */
+    min-width: 0;
+}
+
+.tx-head,
+.tx-box {
+    display: grid;
+    grid-template-columns: var(--tx-cols);
+    align-items: stretch;
+    min-width: 0;
+}
+
+.tx-head {
+    height: clamp(24px, 3.6cqw, 28px);
+    margin-right: var(--tx-side);
+    border: 1px solid #2b2b2b;
+    background: var(--money-yellow);
+    font-size: var(--tx-fs);
+    font-weight: 600;
+    color: #222;
+}
+
+.tx-head span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
+    overflow: hidden;
+    border-right: 1px solid #9c9468;
+    white-space: nowrap;
+}
+
+.tx-head span:last-child {
+    border-right: 0;
+}
+
+.tx-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 0.7cqw, 6px);
+    margin-top: clamp(4px, 0.7cqw, 6px);
+}
+
+.tx-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18px;
+    column-gap: 8px;
+    align-items: center;
+}
+
+/* 줄과 체크박스를 잇는 짧은 선 (시안) */
+.tx-row::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 18px;
+    width: 8px;
+    height: 1px;
+    background: var(--goal-line);
+}
+
+.tx-box {
+    height: clamp(27px, 4.1cqw, 32px);
+    border: 1px solid #2b2b2b;
+    background: #fff;
+    font-size: var(--tx-fs);
+}
+
+.tx-box > * {
+    min-width: 0;
+    border-right: 1px solid #b4b4b4;
+}
+
+.tx-box > :last-child {
+    border-right: 0;
+}
+
+.tx-box input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    padding: 0 3px;
+    border: 0;
+    border-radius: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    text-align: center;
+    color: #2a2a2a;
+}
+
+.tx-box input::placeholder {
+    color: #c8c8c8;
+}
+
+.tx-box input:focus {
+    background: #fffdf3;
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+.tx-date {
+    letter-spacing: 0.06em;
+}
+
+.tx-time {
+    letter-spacing: 0.04em;
+}
+
+.tx-type {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    white-space: nowrap;
+    color: #444;
+}
+
+.tx-type i {
+    font-style: normal;
+}
+
+.tx-type-btn {
+    padding: 2px;
+    border: 0;
+    border-radius: 3px;
+    background: transparent;
+    font: inherit;
+    color: #222;
+    cursor: pointer;
+}
+
+.tx-type-btn:hover {
+    background: #fbeee8;
+}
+
+.tx-type-btn[aria-pressed="true"] {
+    background: #f9d9cc;
+}
+
+/* 입금은 빨강, 출금은 파랑 */
+.tx-row.is-in .tx-amount {
+    color: var(--money-red);
+}
+
+.tx-row.is-out .tx-amount {
+    color: var(--money-blue);
+}
+
+.tx-total {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    color: #222;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.tx-total:empty::before {
+    content: "00,000,000,000";
+    color: #c8c8c8;
+}
+
+.tx-total.is-negative {
+    color: var(--money-blue);
+}
+
+.tx-select {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #555;
+    border-radius: 2px;
+}
+
+/* "+" : 표(체크박스 칸을 뺀 폭)의 가운데에 놓는다 */
+.tx-wrap .add-item-btn {
+    width: min(163px, calc(100% - var(--tx-side)));
+    margin: clamp(10px, 1.8cqw, 14px) auto 0;
+    transform: translateX(calc(var(--tx-side) / -2));
+}
+
+
+
+/* 종이 폭이 600px 이하일 때(휴대폰, 1440px 이하 노트북): 금전 양식을 위아래로 쌓는다
+   (옆으로 나란히 두면 달성 현황 칸이 130px 정도로 좁아져 글이 한 줄에 몇 글자씩만 들어간다)
+   표 → 사진 → 달성 현황 → 입출금 내역 순서. 표 이름 칸은 두 줄로 줄바꿈해서 입력 칸을 넓게 쓴다. */
+@container goalpaper (max-width: 600px) {
+    .money-top {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .money-photo {
+        height: clamp(150px, 52cqw, 220px);
+    }
+
+    .money-table {
+        grid-template-columns: minmax(62px, 26%) minmax(0, 1fr);
+    }
+
+    .money-table .goal-table-label {
+        padding: 0 4px;
+        font-size: 12px;
+        line-height: 1.25;
+        white-space: normal;
+        word-break: keep-all;
+    }
+
+    /* 위아래로 쌓으면 고정 제목 줄의 "달성 현황 | 입출금 내역"이 어긋난다.
+       제목은 각 상자 위로 옮기고(스크롤과 함께 움직임), 고정 줄에는 '선택 삭제'만 남긴다. */
+    .money-heads {
+        grid-template-columns: minmax(0, 1fr);
+        margin-top: 12px;
+    }
+
+    .money-heads > h2,
+    .money-heads-right > h2 {
+        display: none;
+    }
+
+    .money-heads-right {
+        justify-content: flex-end;
+    }
+
+    .money-cols {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 0;
+    }
+
+    .money-status-box,
+    .tx-wrap {
+        position: relative;
+    }
+
+    .money-status-box::before,
+    .tx-wrap::before {
+        position: absolute;
+        top: -24px;
+        left: 0;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1;
+        color: #222;
+        pointer-events: none;
+    }
+
+    .money-status-box {
+        margin-top: 28px;
+        min-height: calc(var(--money-rule) * 10 + 14px);
+    }
+
+    .money-status-box::before {
+        content: "달성 현황";
+    }
+
+    .tx-wrap {
+        margin-top: 52px;
+    }
+
+    .tx-wrap::before {
+        content: "입출금 내역";
+    }
+}
+
+
 /* ---------- 4. 진도표 추가 메뉴 / 수정 패널 (인텔리제이 메뉴처럼) ---------- */
 .pm {
     position: fixed;
@@ -1539,123 +2239,789 @@ body.is-reordering-progress * {
 }
 
 
-/* ---------- 5. AI 자율 작성 ---------- */
+/* ---------- 5. AI 자율 작성 ----------
+   깃펜을 누르기 전에는 깃펜과 줄 노트만 보이고, 누르면 도우미 말풍선(알약 모양)과 입력칸이 나타난다. */
 .goal-panel[data-mode-panel="ai"] {
+    --ai-quill-w: clamp(52px, 9.2cqw, 72px);
+    --ai-gap: clamp(14px, 4.4cqw, 34px);
+    --ai-indent: calc(var(--ai-quill-w) + var(--ai-gap));  /* 말풍선이 깃펜 오른쪽에서 시작하는 위치 */
+    --ai-right: clamp(0px, 5.5cqw, 44px);                  /* 말풍선 오른쪽에 남기는 여백 (시안) */
+    --ai-rule: clamp(36px, 7.2cqw, 55px);                  /* 줄 노트의 줄 간격 */
     margin-right: var(--goal-scroll-gap);
-    padding: 0 calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 24px var(--goal-inner-l);
+    padding: 0 calc(var(--goal-pad-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 28px var(--goal-pad-l);
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-.ai-chat {
+.ai-top {
     display: flex;
-    flex-direction: column;
-    gap: 22px;
-    margin-top: 28px;
+    align-items: center;
+    gap: var(--ai-gap);
+    margin-top: clamp(14px, 3.2cqw, 26px);
+    min-height: calc(var(--ai-quill-w) * 0.74);
 }
 
-.chat-messages {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-}
-
-.chat-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.chat-row.is-user {
-    justify-content: flex-end;
-}
-
-.chat-face {
-    display: grid;
+/* 깃펜: 누르면 도우미가 나타난다 */
+.ai-quill {
     flex: 0 0 auto;
-    place-items: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-}
-
-.chat-face .face {
-    width: 26px;
-    height: 26px;
-}
-
-.bot-face {
-    background: #ffe9a8;
-    box-shadow: 0 0 12px 3px rgba(255, 218, 110, 0.6);
-}
-
-.user-face {
-    background: #dcdafc;
-    box-shadow: 0 0 12px 3px rgba(150, 140, 255, 0.35);
-}
-
-.chat-bubble {
-    min-width: 0;
-    max-width: min(440px, 100%);
-    padding: 9px 14px;
-    border: 1px solid #cfcfd8;
+    width: var(--ai-quill-w);
+    padding: 0;
+    border: 0;
     border-radius: 12px;
+    background: none;
+    cursor: pointer;
+    line-height: 0;
+}
+
+.quill {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.quill-glow {
+    transform-origin: 56px 30px;
+    animation: quill-glow 3.4s ease-in-out infinite;
+}
+
+@keyframes quill-glow {
+    0%,
+    100% {
+        opacity: 0.8;
+        transform: scale(0.96);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.06);
+    }
+}
+
+.quill-body {
+    fill: #fffef7;
+    stroke: #4a4a4a;
+    stroke-width: 1;
+    stroke-linejoin: round;
+}
+
+.quill-vein {
+    stroke: #cdc6b4;
+    stroke-width: 0.7;
+    stroke-linecap: round;
+}
+
+.quill-eye {
+    fill: #3b3b3b;
+}
+
+.quill-nib {
+    fill: #ffd21f;
+    stroke: #6e5400;
+    stroke-width: 0.8;
+    stroke-linejoin: round;
+}
+
+.quill-trail {
+    stroke: #a8a8a8;
+    stroke-width: 0.9;
+    stroke-linecap: round;
+}
+
+.ai-quill:hover .quill {
+    transform: translateY(-1px) rotate(-2deg);
+}
+
+.quill {
+    transition: transform 0.18s ease;
+}
+
+.ai-quill[aria-expanded="true"] .quill-glow {
+    animation: none;
+    opacity: 1;
+}
+
+/* 말풍선: 주황빛 테두리의 알약 */
+.ai-chat {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: var(--ai-right);
+}
+
+.ai-chat:not([hidden]) {
+    animation: ai-pill-in 0.28s ease-out both;
+}
+
+@keyframes ai-pill-in {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.ai-pill {
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    padding: clamp(8px, 1.4cqw, 11px) clamp(16px, 4.2cqw, 32px);
+    border: 2px solid #eaa583;
+    border-radius: 24px;
     background: #fff;
-    font-size: 13px;
+    font-size: clamp(11px, 1.65cqw, 12.5px);
     line-height: 1.6;
-    color: #6b4a2b;
+    color: #7a5a3b;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
 
-.chat-prompt {
-    width: min(310px, 100%);
-    min-height: 46px;
-    max-height: 160px;
-    padding: 9px 12px;
-    border: 1px solid #c8c8c8;
-    border-radius: 10px;
+.ai-chat .ai-pill {
+    width: 100%;
+}
+
+/* 대화 */
+.ai-thread {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0 var(--ai-right) 0 var(--ai-indent);
+}
+
+.ai-thread:not(:empty) {
+    margin-top: 14px;
+}
+
+.ai-msg {
+    display: flex;
+}
+
+.ai-msg.is-user {
+    justify-content: flex-end;
+}
+
+.ai-msg .ai-pill {
+    max-width: min(100%, 460px);
+}
+
+.ai-msg.is-user .ai-pill {
+    border-color: #cfcfdc;
+    background: #fafaff;
+    color: #4d4a5e;
+}
+
+.ai-msg.is-pending .ai-pill {
+    border-style: dashed;
+    color: #b79a80;
+}
+
+.ai-msg.is-error .ai-pill {
+    border-color: #e5b4a2;
+    color: #b0532f;
+}
+
+/* 입력칸 */
+.ai-compose {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin: 14px var(--ai-right) 0 var(--ai-indent);
+}
+
+.ai-compose:not([hidden]) {
+    animation: ai-pill-in 0.28s ease-out both;
+}
+
+.ai-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 42px;
+    max-height: 150px;
+    padding: 9px clamp(14px, 3.2cqw, 24px);
+    border: 2px solid #ddd6cd;
+    border-radius: 24px;
     outline: 0;
     background: #fff;
     font: inherit;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #333;
+    font-size: clamp(11px, 1.65cqw, 12.5px);
+    line-height: 1.6;
+    color: #4a3a2c;
     resize: none;
 }
 
-.chat-prompt::placeholder {
-    color: #b5b5b5;
+.ai-input::placeholder {
+    color: #c4b9ad;
 }
 
-.chat-prompt:focus-visible {
-    border-color: #a58a70;
+.ai-input:focus {
+    border-color: #eaa583;
 }
 
-.ai-help-text {
-    margin: 56px 0 0;
-    font-size: 12px;
-    line-height: 1.8;
-    color: #c3c3c3;
+.ai-send {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 2px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--goal-accent);
+    color: #fff;
+    cursor: pointer;
 }
 
-/* 도움말 아래 빈 공간 전체가 자유 메모 영역 */
-.free-memo {
+.ai-send svg {
+    width: 16px;
+    height: 16px;
+}
+
+.ai-send:disabled {
+    background: #e6dfd7;
+    cursor: default;
+}
+
+/* 도우미가 만든 양식 */
+.ai-form {
+    margin-top: clamp(20px, 3.4cqw, 28px);
+}
+
+/* 이름 칸은 직접 고쳐 쓰는 칸이라 너비를 고정하고, 글씨는 가운데에 둔다 */
+.ai-table {
+    grid-template-columns: clamp(84px, 17cqw, 132px) minmax(0, 1fr);
+}
+
+.ai-table .goal-table-label {
+    padding: 0;
+    justify-items: center;
+    text-align: center;
+    text-align-last: center;
+}
+
+/* 항목 한 줄(이름 칸 + 내용 칸)을 표 칸에 그대로 놓기 위한 껍데기 */
+.ai-row {
+    display: contents;
+}
+
+.ai-label {
     display: block;
     width: 100%;
-    min-height: 320px;
-    margin-top: 8px;
-    padding: 8px 0;
+    min-width: 0;
+    height: 100%;
+    min-height: 30px;
+    padding: 0 clamp(8px, 1.9cqw, 14px);
     border: 0;
     outline: 0;
     background: transparent;
     font: inherit;
-    font-size: 14px;
-    line-height: 1.8;
+    font-size: clamp(12.5px, 2.1cqw, 16px);
+    text-align: center;
+    text-align-last: center; /* 부모의 양쪽 맞춤이 입력칸 글씨를 늘이지 않게 */
+    color: #111;
+}
+
+.ai-label:focus {
+    background: rgba(255, 255, 255, 0.55);
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+.ai-value-cell {
+    position: relative;
+}
+
+.ai-value-cell input {
+    padding-right: 26px;
+}
+
+.ai-del {
+    position: absolute;
+    top: 50%;
+    right: 4px;
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    font-size: 11px;
+    line-height: 1;
+    color: #b8b0a6;
+    cursor: pointer;
+    opacity: 0.35;
+}
+
+.ai-del:hover {
+    background: #f1ece6;
+    color: #7a5532;
+}
+
+.ai-value-cell:hover .ai-del,
+.ai-value-cell:focus-within .ai-del,
+.ai-item:hover .ai-del,
+.ai-item:focus-within .ai-del,
+.ai-track:hover .ai-del,
+.ai-track:focus-within .ai-del,
+.ai-log-row:hover .ai-del,
+.ai-log-row:focus-within .ai-del,
+.ai-del:focus-visible {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .ai-del {
+        opacity: 0.8;
+    }
+}
+
+/* ----- 블록: [종류] 이름 ........ 삭제 ----- */
+.ai-blocks {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(22px, 3.6cqw, 30px);
+}
+
+.ai-blocks:not(:empty) {
+    margin-top: clamp(22px, 3.6cqw, 30px);
+}
+
+.ai-block-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.ai-block-kind {
+    flex: 0 0 auto;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: #f1ece6;
+    font-size: 10.5px;
+    line-height: 1.6;
+    color: #8a7360;
+    white-space: nowrap;
+}
+
+.ai-block-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 2px 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: clamp(12.5px, 1.95cqw, 14.5px);
+    font-weight: 700;
+    color: #333;
+}
+
+.ai-block-title::placeholder {
+    font-weight: 400;
+    color: #c9c2ba;
+}
+
+.ai-block-title:focus {
+    box-shadow: inset 0 -1px 0 var(--goal-accent);
+}
+
+/* 블록 삭제: 늘 보이는 작은 글씨 버튼 */
+.ai-block-del {
+    flex: 0 0 auto;
+    padding: 2px 6px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    font: inherit;
+    font-size: 11px;
+    color: #b8aea4;
+    cursor: pointer;
+}
+
+.ai-block-del:hover,
+.ai-block-del:focus-visible {
+    background: #fbeee8;
+    color: #c4502a;
+    outline: 0;
+}
+
+/* 표/습관표/기록표 아래의 "+ 줄" */
+.ai-row-add {
+    display: block;
+    margin: 6px auto 0;
+    padding: 2px 8px;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 11px;
+    color: #b3b3b3;
+    cursor: pointer;
+}
+
+.ai-row-add:hover,
+.ai-row-add:focus-visible {
+    color: #6d5844;
+    outline: 0;
+}
+
+/* ----- 습관표 / 기록표 (가로로 넘치면 블록 안에서만 옆으로 밀린다) ----- */
+.ai-grid-scroll {
+    overflow-x: auto;
+}
+
+.ai-grid {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: clamp(11.5px, 1.8cqw, 13px);
+}
+
+.ai-grid th,
+.ai-grid td {
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--goal-line);
+    background: #fff;
+    text-align: center;
+}
+
+.ai-grid thead th {
+    background: var(--goal-blue);
+}
+
+/* 줄 지우기 ✕: 습관표는 줄 이름 칸, 기록표는 마지막 칸 오른쪽 안에 */
+.ai-tracker tbody th,
+.ai-log .ai-last-cell {
+    position: relative;
+}
+
+.ai-tracker tbody th input,
+.ai-log .ai-last-cell input {
+    padding-right: 24px;
+}
+
+/* 체크리스트 줄의 ✕는 줄 끝 칸에 그대로 놓는다 */
+.ai-item .ai-del {
+    position: static;
+    transform: none;
+}
+
+.ai-grid input[type="text"] {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 30px;
+    padding: 0 6px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    text-align: center;
+    color: #1f1f1f;
+}
+
+.ai-grid input[type="text"]:focus {
+    background: #fffdf3;
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+.ai-grid input::placeholder {
+    color: #cfcfcf;
+}
+
+.ai-tracker {
+    min-width: calc(110px + var(--cols, 7) * 30px);
+}
+
+.ai-tracker .ai-lead,
+.ai-tracker tbody th {
+    width: 30%;
+}
+
+.ai-tracker tbody th input {
+    text-align: left;
+    font-weight: 600;
+}
+
+.ai-track-check {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    vertical-align: middle;
+    accent-color: #e9692c;
+    cursor: pointer;
+}
+
+.ai-log {
+    min-width: 300px;
+}
+
+.ai-log tbody td:first-child input {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ----- 진행도 ----- */
+.ai-progress {
+    padding: 12px 14px 10px;
+    border: 1px solid #858585;
+    background: #fff;
+}
+
+.ai-num-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.ai-num-field {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.ai-num-label {
+    font-size: 10.5px;
+    color: #9a8d80;
+}
+
+.ai-num,
+.ai-unit {
+    width: 100%;
+    min-width: 0;
+    height: 28px;
+    padding: 0 6px;
+    border: 0;
+    border-bottom: 1px solid #cfc6bc;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: clamp(12px, 1.9cqw, 14px);
+    font-weight: 600;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    color: #1f1f1f;
+}
+
+.ai-num:focus,
+.ai-unit:focus {
+    border-bottom-color: var(--goal-accent);
+}
+
+.ai-bar {
+    height: 10px;
+    margin-top: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #f1ece6;
+}
+
+.ai-bar-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #f3a77f, #e9692c);
+    transition: width 0.35s ease;
+}
+
+.ai-bar-text {
+    margin: 6px 0 0;
+    font-size: 11.5px;
+    color: #8a7360;
+    text-align: right;
+}
+
+/* ----- 메모 ----- */
+.ai-note {
+    display: block;
+    width: 100%;
+    min-height: 64px;
+    padding: 8px 12px;
+    border: 1px solid #858585;
+    outline: 0;
+    background: #fff;
+    font: inherit;
+    font-size: clamp(12px, 1.9cqw, 13.5px);
+    line-height: 1.6;
+    color: #1f1f1f;
+    resize: none;
+    field-sizing: content;
+}
+
+.ai-note:focus {
+    background: #fffdf3;
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+/* ----- 체크리스트 ----- */
+.ai-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ai-item {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 18px;
+    column-gap: 8px;
+    align-items: center;
+}
+
+.ai-check {
+    width: 18px;
+    height: 18px;
+    border: 1px solid #555;
+    border-radius: 2px;
+}
+
+.ai-item-text {
+    min-width: 0;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid #858585;
+    outline: 0;
+    background: #fff;
+    font: inherit;
+    font-size: clamp(11.5px, 1.8cqw, 13px);
+    font-weight: 600;
+    text-overflow: ellipsis;
+    color: #1f1f1f;
+}
+
+.ai-item-text::placeholder {
+    font-weight: 400;
+    color: #cfcfcf;
+}
+
+.ai-item-text:focus {
+    background: #fffdf3;
+    box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+.ai-item.is-done .ai-item-text {
+    background: #eaf5ea;
+    color: #7d8f7e;
+    text-decoration: line-through;
+}
+
+.ai-block .add-item-btn {
+    width: min(163px, 100%);
+    margin: 10px auto 0;
+}
+
+.ai-form-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 12px;
+    margin-top: 20px;
+}
+
+/* 만든 양식 모두 지우기 */
+.ai-form-reset {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.ai-reset {
+    padding: 2px 6px;
+    border: 0;
+    border-radius: 4px;
+    background: none;
+    font: inherit;
+    font-size: 11px;
+    color: #c9b9ad;
+    cursor: pointer;
+}
+
+.ai-reset:hover,
+.ai-reset:focus-visible {
+    background: #fbeee8;
+    color: #c4502a;
+    outline: 0;
+}
+
+/* 되돌리기 줄 */
+.ai-undo {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 7px 8px 7px 14px;
+    border-radius: 999px;
+    background: #4a3a2e;
+    font-size: 12px;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(60, 40, 25, 0.18);
+}
+
+.ai-undo[hidden] {
+    display: none;
+}
+
+.ai-undo-btn {
+    flex: 0 0 auto;
+    padding: 3px 10px;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #4a3a2e;
+    cursor: pointer;
+}
+
+.ai-undo-btn[hidden] {
+    display: none;
+}
+
+.ai-add {
+    padding: 3px 4px;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 11px;
+    color: #b3b3b3;
+    cursor: pointer;
+}
+
+.ai-add:hover {
+    color: #6d5844;
+}
+
+/* 줄 노트: 도움 없이 클릭하면 바로 쓸 수 있는 자유 메모 */
+.free-memo {
+    display: block;
+    width: 100%;
+    min-height: calc(var(--ai-rule) * 9);
+    margin-top: clamp(8px, 1.6cqw, 12px);
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    background-image: linear-gradient(to bottom, transparent calc(var(--ai-rule) - 1px), #e9e6e1 calc(var(--ai-rule) - 1px));
+    background-size: 100% var(--ai-rule);
+    background-attachment: local;
+    font: inherit;
+    font-size: clamp(13px, 2cqw, 15px);
+    line-height: var(--ai-rule);
     color: #444;
-    resize: vertical;
+    resize: none;
+    overflow: hidden;
 }
 
 .free-memo:focus-visible {
-    box-shadow: inset 0 0 0 1px #eee6dc;
+    box-shadow: none;
 }

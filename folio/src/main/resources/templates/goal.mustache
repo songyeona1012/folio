@@ -41,7 +41,7 @@
 
                     <header class="goal-heading">
                         <h1>목표 :</h1>
-                        <p>달성하고 싶은 목표가 있나요? 목표를 설정하고 도달 까지의 과정을 확인하며 기록해 보세요.</p>
+                        <p>달성하고 싶은 목표가 있나요? 목표를 설정하고 도달까지의 과정을 확인하며 기록해 보세요.</p>
                     </header>
 
                     <div class="goal-toolbar">
@@ -49,6 +49,11 @@
                             <label class="mode-option">
                                 <span>공부</span>
                                 <input type="radio" name="goalMode" value="form" checked>
+                                <i class="mode-radio" aria-hidden="true"></i>
+                            </label>
+                            <label class="mode-option">
+                                <span>금전</span>
+                                <input type="radio" name="goalMode" value="money">
                                 <i class="mode-radio" aria-hidden="true"></i>
                             </label>
                             <label class="mode-option">
@@ -150,25 +155,178 @@
                         </div>
                     </div>
 
-                    <!-- ───── AI 자율 작성 ───── -->
-                    <div class="goal-panel ai-scroll" data-mode-panel="ai" hidden>
-                        <div class="ai-chat">
-                            <div class="chat-row">
-                                <span class="chat-face bot-face"><svg class="face" aria-hidden="true"><use href="#icon-face"/></svg></span>
-                                <div class="chat-bubble">안녕하세요. 전 당신의 도우미입니다. 원하는 목표가 있다면 달성 까지의 계획을 세워드릴게요. 무엇을, 언제부터, 언제 까지 마치고 싶나요?</div>
+                    <!-- ───── 금전 ─────
+                         위쪽(남은 금액·표·사진)은 고정, 달성 현황과 입출금 내역은 제목 줄 아래부터 스크롤 -->
+                    <div class="goal-panel" data-mode-panel="money" hidden>
+
+                        <div class="money-top">
+                            <div class="money-main">
+                                <p class="money-remain">앞으로 남은 금액 : <b id="moneyRemain" class="is-empty">–</b></p>
+                                <p class="money-sum" aria-live="polite">
+                                    <span id="moneyCurrent" class="is-empty">–</span><i aria-hidden="true">/</i><span id="moneyGoalView" class="is-empty">–</span>
+                                </p>
+
+                                <div class="goal-table money-table">
+                                    <label class="goal-table-label" for="moneyStartDate">기간</label>
+                                    <div class="goal-table-cell goal-date-cell">
+                                        <input type="text" id="moneyStartDate" name="moneyStartDate" class="date-mask" inputmode="numeric"
+                                               placeholder="00.00.00" maxlength="8" autocomplete="off" aria-label="시작일 (연.월.일 숫자 6자리)">
+                                        <span aria-hidden="true">~</span>
+                                        <input type="text" id="moneyEndDate" name="moneyEndDate" class="date-mask" inputmode="numeric"
+                                               placeholder="00.00.00" maxlength="8" autocomplete="off" aria-label="종료일 (연.월.일 숫자 6자리)">
+                                    </div>
+
+                                    <label class="goal-table-label" for="moneyTarget">목표 금액</label>
+                                    <div class="goal-table-cell money-amount-cell">
+                                        <input type="text" id="moneyTarget" name="moneyTarget" class="money-input" inputmode="numeric"
+                                               placeholder="00,000,000,000" maxlength="16" autocomplete="off" aria-label="목표 금액 (1만원 이상 100억원 미만)">
+                                        <span class="money-won" aria-hidden="true">₩</span>
+                                    </div>
+
+                                    <label class="goal-table-label" for="moneyInitial">시작 금액</label>
+                                    <div class="goal-table-cell money-amount-cell">
+                                        <input type="text" id="moneyInitial" name="moneyInitial" class="money-input" inputmode="numeric"
+                                               placeholder="00,000,000,000" maxlength="16" autocomplete="off" aria-label="시작 금액">
+                                        <span class="money-won" aria-hidden="true">₩</span>
+                                    </div>
+
+                                    <label class="goal-table-label" for="moneyDeposit">입금 금액과 주기</label>
+                                    <div class="goal-table-cell money-cycle-cell">
+                                        <input type="text" id="moneyDeposit" name="moneyDeposit" class="money-input money-deposit" inputmode="numeric"
+                                               placeholder="00,000,000,000" maxlength="16" autocomplete="off" aria-label="한 번에 입금할 금액">
+                                        <span class="money-unit">₩ 씩</span>
+                                        <i class="money-slash" aria-hidden="true">/</i>
+                                        <input type="text" id="moneyCycle" name="moneyCycle" class="money-cycle" maxlength="30" autocomplete="off"
+                                               aria-label="입금 주기 (예: 매 달 4일, 매 주 월요일, 3일)">
+                                        <span class="money-unit">마다</span>
+                                    </div>
+                                </div>
+
+                                <p class="money-hint" id="moneyHint" role="status" hidden></p>
                             </div>
 
-                            <div class="chat-messages" id="chatMessages" aria-live="polite"></div>
-
-                            <div class="chat-row is-user">
-                                <textarea id="aiPrompt" class="chat-prompt" rows="2" placeholder="클릭하여 작성"
-                                          aria-label="도우미에게 보낼 메시지 (Enter로 전송, Shift+Enter로 줄바꿈)"></textarea>
-                                <span class="chat-face user-face"><svg class="face" aria-hidden="true"><use href="#icon-face"/></svg></span>
+                            <!-- 사진: 내 컴퓨터에서 올리기 / 외부 검색(새 탭에서 검색 후 복사·붙여넣기 또는 끌어다 놓기) -->
+                            <div class="money-photo" id="moneyPhoto">
+                                <img class="photo-img" id="moneyPhotoImg" alt="목표 사진" hidden referrerpolicy="no-referrer" draggable="false">
+                                <div class="photo-empty" id="moneyPhotoEmpty">
+                                    <button type="button" class="photo-pick" id="photoUploadBtn">내 컴퓨터에서 업로드</button>
+                                    <button type="button" class="photo-pick" id="photoSearchBtn">외부 검색</button>
+                                </div>
+                                <div class="photo-tools" id="photoTools" hidden>
+                                    <button type="button" class="photo-tool" id="photoChangeBtn">업로드</button>
+                                    <button type="button" class="photo-tool" id="photoSearchBtn2">외부 검색</button>
+                                    <button type="button" class="photo-tool" id="photoRemoveBtn">삭제</button>
+                                </div>
+                                <input type="file" id="photoFile" accept="image/*" hidden>
                             </div>
                         </div>
 
-                        <p class="ai-help-text">! 인공 지능의 도움 없이 이곳을 클릭하면 바로 자율 텍스트 작성이 가능합니다.</p>
-                        <textarea id="freeMemo" name="freeMemo" class="free-memo" aria-label="자유 메모"></textarea>
+                        <!-- 제목 줄: 스크롤해도 고정 -->
+                        <div class="money-heads">
+                            <h2>달성 현황</h2>
+                            <div class="money-heads-right">
+                                <h2>입출금 내역</h2>
+                                <button type="button" class="clear-selected" id="clearTxBtn" disabled>선택 삭제</button>
+                            </div>
+                        </div>
+
+                        <div class="money-scroll">
+                            <div class="money-cols">
+                                <!-- 달성 현황: 계산한 글이 자동으로 쓰이고, 고쳐 쓰면 그 내용대로 입력값이 바뀐다 -->
+                                <div class="money-status-box">
+                                    <div class="money-status" id="moneyStatus" role="textbox" aria-multiline="true"
+                                         data-placeholder="목표를 설정해 주세요."
+                                         aria-label="달성 현황. 날짜나 금액을 고쳐 쓰면 입력값에 반영돼요." spellcheck="false"></div>
+                                    <div class="money-apply" id="moneyApply" hidden>
+                                        <button type="button" class="money-apply-btn" id="moneyApplyBtn">적용하기</button>
+                                    </div>
+                                </div>
+
+                                <div class="tx-wrap">
+                                    <div class="tx-head" aria-hidden="true">
+                                        <span>일자</span><span>시간</span><span>입출금 유형</span><span>금액</span><span>총 액</span>
+                                    </div>
+                                    <div class="tx-list" id="txList"></div>
+                                    <button type="button" class="add-item-btn" id="addTxBtn" aria-label="입출금 내역 추가">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ───── AI 자율 작성 ─────
+                         깃펜을 누르면 도우미 말풍선과 입력칸이 나타난다. 그 전에는 깃펜과 줄만 보인다. -->
+                    <div class="goal-panel ai-scroll" data-mode-panel="ai" hidden>
+                        <div class="ai-top">
+                            <button type="button" class="ai-quill" id="aiQuill" aria-expanded="false" aria-controls="aiChat"
+                                    aria-label="깃펜 — 눌러서 양식 도우미 열기">
+                                <svg class="quill" viewBox="0 0 96 70" aria-hidden="true">
+                                    <defs>
+                                        <radialGradient id="quillGlow" cx="50%" cy="50%" r="50%">
+                                            <stop offset="0" stop-color="#ffcf4d" stop-opacity="0.72"/>
+                                            <stop offset="0.55" stop-color="#ffd978" stop-opacity="0.34"/>
+                                            <stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <circle class="quill-glow" cx="56" cy="30" r="28" fill="url(#quillGlow)"/>
+                                    <path class="quill-trail" d="M3 60 C16 56 24 51 33 52 C42 53 37 59 48 55 C53 53 55 52 58 51" fill="none"/>
+                                    <path class="quill-body" d="M52 46 C43 41 40 29 46 17 C48 12 54 9 58 6 C57 10 59 12 63 12 C66 12 68 10 69 8 C71 17 68 28 61 37 C59 41 56 44 52 46 Z"/>
+                                    <path class="quill-vein" d="M52 45 C53 36 56 25 63 14" fill="none"/>
+                                    <circle class="quill-eye" cx="52" cy="27" r="1.2"/>
+                                    <circle class="quill-eye" cx="57" cy="28" r="1.2"/>
+                                    <path class="quill-nib" d="M48 44 L54 42 L56 48 L50 54 Z"/>
+                                </svg>
+                            </button>
+
+                            <div class="ai-chat" id="aiChat" hidden>
+                                <div class="ai-pill ai-pill-bot" id="aiGreeting">작성하기 어렵다면 양식을 만들어 드릴게요! 어떤 목표를 가지고 계신가요?</div>
+                            </div>
+                        </div>
+
+                        <div class="ai-thread" id="chatMessages" aria-live="polite"></div>
+
+                        <div class="ai-compose" id="aiCompose" hidden>
+                            <textarea id="aiPrompt" class="ai-input" rows="1"
+                                      placeholder="클릭하여 작성  (예: 3개월 안에 토익 900점 받고 싶어요)"
+                                      aria-label="도우미에게 보낼 말 (Enter로 보내기, Shift+Enter로 줄바꿈)"></textarea>
+                            <button type="button" class="ai-send" id="aiSendBtn" aria-label="보내기" disabled>
+                                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M8.5 3.5L13 8l-4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- 지운 것을 되돌리는 줄 (블록 삭제, 양식 모두 지우기, 양식이 바뀌었을 때) -->
+                        <div class="ai-undo" id="aiUndo" role="status" aria-live="polite" hidden>
+                            <span class="ai-undo-text"></span>
+                            <button type="button" class="ai-undo-btn">되돌리기</button>
+                        </div>
+
+                        <!-- 도우미가 만들어 준 양식: 기간 + 블록들. 어떤 블록을 쓸지는 AI가 목표에 맞게 고른다. 모든 칸은 클릭해서 바로 고친다 -->
+                        <section class="ai-form" id="aiForm" aria-label="도우미가 만든 양식" hidden>
+                            <div class="goal-table ai-table ai-period">
+                                <label class="goal-table-label" for="aiStartDate">기간</label>
+                                <div class="goal-table-cell goal-date-cell">
+                                    <input type="text" id="aiStartDate" name="aiStartDate" class="date-mask" inputmode="numeric"
+                                           placeholder="00.00.00" maxlength="8" autocomplete="off" aria-label="시작일 (연.월.일 숫자 6자리)">
+                                    <span aria-hidden="true">~</span>
+                                    <input type="text" id="aiEndDate" name="aiEndDate" class="date-mask" inputmode="numeric"
+                                           placeholder="00.00.00" maxlength="8" autocomplete="off" aria-label="종료일 (연.월.일 숫자 6자리)">
+                                </div>
+                            </div>
+                            <div class="ai-blocks" id="aiBlocks"></div>
+                            <div class="ai-form-foot" role="group" aria-label="블록 추가">
+                                <button type="button" class="ai-add" data-add="table">+ 항목 표</button>
+                                <button type="button" class="ai-add" data-add="checklist">+ 체크리스트</button>
+                                <button type="button" class="ai-add" data-add="tracker">+ 습관표</button>
+                                <button type="button" class="ai-add" data-add="progress">+ 진행도</button>
+                                <button type="button" class="ai-add" data-add="log">+ 기록표</button>
+                                <button type="button" class="ai-add" data-add="note">+ 메모</button>
+                            </div>
+                            <div class="ai-form-reset">
+                                <button type="button" class="ai-reset" id="aiResetBtn">만든 양식 모두 지우기</button>
+                            </div>
+                        </section>
+
+                        <!-- 시안의 줄 노트: 도움 없이 이곳을 클릭하면 바로 자유롭게 쓸 수 있다 -->
+                        <textarea id="freeMemo" name="freeMemo" class="free-memo" aria-label="자유 메모 (줄 노트)"></textarea>
                     </div>
                 </form>
             </section>
@@ -280,6 +438,28 @@
             </span>
         </button>
         <input type="checkbox" class="goal-select-checkbox">
+    </div>
+</template>
+
+<!-- 금전: 입출금 내역 한 줄. 일자/시간/유형/금액은 클릭해서 바로 고치고, 총 액은 계산해서 채워진다.
+     줄은 일자·시간 순서대로 자동으로 놓인다(따로 정렬 기능은 없다). -->
+<template id="txRowTemplate">
+    <div class="tx-row">
+        <div class="tx-box">
+            <input type="text" class="tx-date" inputmode="numeric" maxlength="8" placeholder="00.00.00"
+                   aria-label="일자 (연.월.일 숫자 6자리)" autocomplete="off">
+            <input type="text" class="tx-time" inputmode="numeric" maxlength="5" placeholder="00:00"
+                   aria-label="시간 (시:분)" autocomplete="off">
+            <span class="tx-type" role="group" aria-label="입출금 유형">
+                <button type="button" class="tx-type-btn" data-type="IN" aria-pressed="false">입금</button>
+                <i aria-hidden="true">/</i>
+                <button type="button" class="tx-type-btn" data-type="OUT" aria-pressed="false">출금</button>
+            </span>
+            <input type="text" class="tx-amount" inputmode="numeric" maxlength="16" placeholder="00,000,000,000"
+                   aria-label="금액" autocomplete="off">
+            <div class="tx-total" aria-label="총 액"></div>
+        </div>
+        <input type="checkbox" class="tx-select" aria-label="삭제할 내역으로 선택">
     </div>
 </template>
 

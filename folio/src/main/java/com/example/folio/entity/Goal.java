@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 목표 한 건. 표(기간/진행 단위/학습 빈도/특이 사항/다짐), 진도표, 오늘의 공부 한 줄 리뷰를 함께 가진다.
+ * 금전 양식이면 목표 금액/시작 금액/입금 금액·주기/사진/입출금 내역을, AI 자율 작성이면 대화와 만들어진 양식(JSON)을 함께 가진다.
  */
 @Entity
 @Table(name = "goals")
@@ -65,11 +66,32 @@ public class Goal {
     private String cardColor;
 
     /**
-     * 작성 양식: STUDY(공부) 또는 AI(AI 자율 작성). 왼쪽 양식 바에서 고른 양식으로 만들어지고,
+     * 작성 양식: STUDY(공부), MONEY(금전) 또는 AI(AI 자율 작성). 왼쪽 양식 바에서 고른 양식으로 만들어지고,
      * 목록에서 다시 열 때 같은 양식으로 보여 주는 데 쓴다. 이 기능 이전에 만든 목표는 null → STUDY로 본다.
      */
     @Column(length = 10)
     private String formType;
+
+    /** 금전: 목표 금액(원). 1만원 이상 100억원 미만. */
+    private Long targetAmount;
+
+    /** 금전: 시작 금액(원). 이미 모아 둔 돈. */
+    private Long startAmount;
+
+    /** 금전: 한 번에 입금할 금액(원) */
+    private Long depositAmount;
+
+    /** 금전: 입금 주기를 사용자가 적은 그대로 ("매 달 4일", "주 2회" 등) */
+    @Column(length = 100)
+    private String depositCycle;
+
+    /** 금전: 사진 (화면에서 줄여 만든 data URL, 비어 있으면 사진 없음) */
+    @Lob
+    private String photo;
+
+    /** AI 자율 작성: 대화와 만들어진 양식을 화면이 JSON 문자열로 만들어 보낸 것 */
+    @Lob
+    private String aiForm;
 
     @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("sortOrder ASC")
@@ -80,6 +102,11 @@ public class Goal {
     @OrderBy("sortOrder ASC")
     @BatchSize(size = 50)
     private List<GoalNote> notes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "goal", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder ASC")
+    @BatchSize(size = 50)
+    private List<GoalTransaction> transactions = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -115,6 +142,27 @@ public class Goal {
         this.updatedAt = LocalDateTime.now();
     }
 
+    /** 금전 양식의 값을 한 번에 바꾼다. 다른 양식에서는 모두 null/빈 문자열로 비운다. */
+    public void changeMoney(Long targetAmount, Long startAmount, Long depositAmount, String depositCycle, String photo) {
+        this.targetAmount = targetAmount;
+        this.startAmount = startAmount;
+        this.depositAmount = depositAmount;
+        this.depositCycle = depositCycle;
+        this.photo = photo;
+    }
+
+    public void changeAiForm(String aiForm) {
+        this.aiForm = aiForm;
+    }
+
+    public void clearTransactions() {
+        transactions.clear();
+    }
+
+    public void addTransaction(LocalDate txDate, String txTime, String txType, long amount) {
+        transactions.add(new GoalTransaction(this, txDate, txTime, txType, amount, transactions.size()));
+    }
+
     public void clearProgressTables() {
         progressTables.clear();
     }
@@ -145,6 +193,13 @@ public class Goal {
     public String getFreeMemo() { return freeMemo; }
     public String getCardColor() { return cardColor; }
     public String getFormType() { return formType == null ? "STUDY" : formType; }
+    public Long getTargetAmount() { return targetAmount; }
+    public Long getStartAmount() { return startAmount; }
+    public Long getDepositAmount() { return depositAmount; }
+    public String getDepositCycle() { return depositCycle; }
+    public String getPhoto() { return photo; }
+    public String getAiForm() { return aiForm; }
+    public List<GoalTransaction> getTransactions() { return transactions; }
     public List<GoalProgressTable> getProgressTables() { return progressTables; }
     public List<GoalNote> getNotes() { return notes; }
     public LocalDateTime getCreatedAt() { return createdAt; }

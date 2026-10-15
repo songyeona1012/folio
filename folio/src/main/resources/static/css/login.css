@@ -1,10 +1,65 @@
 /* =========================================================
-   로그인
+   로그인 — 가죽 표지의 Folio
+   닫힌 책의 크기·위치(.loginScene / .closedBook)는 그대로라서
+   responsive.css의 모바일 규칙(7. 로그인)이 그대로 맞물린다.
+   표지 안의 글씨·간격은 책 너비(cqw)를 기준으로 잡아서 책 크기에 따라 함께 커지고 작아진다.
 ========================================================= */
 
 .loginMain {
     position: relative;
     overflow: hidden;
+}
+
+
+/* =========================================================
+   로그인 전 사이드바 (무명)
+========================================================= */
+
+.loginSide .guestImage {
+    border: 1px solid #bda898;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.loginSide .guestImage svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 3px 4px;
+}
+
+.loginSide .userInfo strong {
+    letter-spacing: 0.08em;
+}
+
+/* 사이드바가 좁아서 '마지막 수정 : XXXX.XX.XX'는 줄을 바꿔서 보여 준다 */
+.loginSide .userInfo span {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.loginSide .userInfo span:first-of-type {
+    white-space: nowrap;
+}
+
+.loginSide .teamName {
+    white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+    .loginSide .userInfo span {
+        font-size: 9px;
+    }
+
+    .loginSide .teamName {
+        font-size: 6.5px;
+    }
+}
+
+.loginSide .teamName {
+    font: italic 7.5px "IBM Plex Mono", ui-monospace, "Courier New", monospace;
 }
 
 
@@ -24,7 +79,7 @@
 
 
 /* =========================================================
-   펼쳐진 책
+   펼쳐진 책 (로그인하면 나타난다)
 ========================================================= */
 
 .openBook {
@@ -60,15 +115,11 @@
     transform-style: preserve-3d;
 }
 
-
-/* =========================================================
-   실제로 넘어가는 페이지
-========================================================= */
-
+/* 실제로 넘어가는 표지. 경첩은 표지의 왼쪽 끝 */
 .closedBookPage {
     position: absolute;
     inset: 0;
-    transform-origin: left center;
+    transform-origin: 4.4% center;
     transform-style: preserve-3d;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
@@ -76,137 +127,372 @@
     transform: rotateY(0deg);
 }
 
-
-/* =========================================================
-   닫힌 책 이미지
-========================================================= */
-
-.closedBookImage {
+/* 책 본체가 놓이는 자리 (예전 표지 그림의 종이 영역과 같은 위치·크기) */
+.bookBlock {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-    user-select: none;
-    pointer-events: none;
+    left: 4.4%;
+    top: 4.7%;
+    width: 91.5%;
+    height: 91.4%;
+    container-type: inline-size;
+    --ink: #6f4e32;
+    --line: #8c6b4b;
 }
 
 
 /* =========================================================
-   로그인 영역
+   종이 클립
 ========================================================= */
-.login-area {
+
+.paperclip {
     position: absolute;
-    left: 50%;
-    top: 40.5%;
-    transform: translateX(-50%);
-    z-index: 20;
+    top: -9.2cqw;
+    right: 6.4cqw;
+    width: 6cqw;
+    height: auto;
+    filter: drop-shadow(0 0.2cqw 0.35cqw rgba(60, 45, 30, 0.35));
+}
+
+
+/* =========================================================
+   책 모양: 그림자 → 윗면/옆면(종이 쪽) → 가죽 표지
+========================================================= */
+
+.bookShadow {
+    position: absolute;
+    inset: 0;
+    filter: drop-shadow(0 1.7cqw 1.9cqw rgba(125, 88, 70, 0.3));
+}
+
+.book {
+    position: absolute;
+    inset: 0;
+    /* 왼쪽 위와 오른쪽 아래 모서리를 비스듬히 깎아서 두께가 느껴지게 */
+    clip-path: polygon(1.3cqw 0, 100% 0, 100% calc(100% - 1.15cqw), calc(100% - 2.3cqw) 100%, 0 100%, 0 2cqw);
+    border-bottom-left-radius: 0.9cqw;
+    background: #120b03;
+}
+
+/* 윗면: 뒤표지의 어두운 선 → 종이 단면 → 표지 위의 검은 선 */
+.edgeTop {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1.3cqw;
+    background: linear-gradient(to bottom,
+            #3c3430 0 36%,
+            #6f6760 36% 46%,
+            #e2dcd6 46% 80%,
+            #120b03 80%);
+}
+
+/* 오른쪽 옆면: 종이를 쌓아 둔 단면 */
+.edgeRight {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 2.3cqw;
+    background: linear-gradient(to right,
+            #120b03 0 16%,
+            #77736d 16% 22%,
+            #efefec 22% 36%,
+            #d6cbc3 36% 50%,
+            #d3c8c0 50% 74%,
+            #e2d9d2 74% 82%,
+            #5f5549 82%);
+}
+
+/* 가죽 표지 */
+.cover {
+    position: absolute;
+    left: 0;
+    top: 1.3cqw;
+    right: 2.3cqw;
+    bottom: 0;
+    border-top-right-radius: 1.2cqw;
+    border-bottom-left-radius: 0.9cqw;
+    background:
+        radial-gradient(ellipse at 50% 46%, rgba(255, 220, 170, 0.045), transparent 70%),
+        url("/img/login_leather.jpg") center / cover no-repeat,
+        #322414;
+    box-shadow:
+        inset 0 0 5cqw rgba(0, 0, 0, 0.32),
+        inset -0.55cqw 0 0 #120b03;
+    color: #ddd9d6;
+}
+
+
+/* =========================================================
+   표지 글씨
+========================================================= */
+
+.coverTitle {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 31%;
+    margin: 0;
+    transform: translateY(-50%);
+    text-align: center;
+    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 18.8cqw;
+    line-height: 1;
+    letter-spacing: 0.055em;
+    color: #dcd9d7;
+    text-shadow: 0 0.12cqw 0.2cqw rgba(0, 0, 0, 0.45);
+    user-select: none;
+}
+
+.coverFoot {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 95.7%;
+    margin: 0;
+    transform: translateY(-50%);
+    text-align: center;
+    font: italic 400 max(8px, 1.55cqw) "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+    letter-spacing: 0.015em;
+    color: #d9d4cf;
+    user-select: none;
+}
+
+
+/* =========================================================
+   로그인 입력: 책에 붙은 하얀 라벨
+========================================================= */
+
+.loginForm {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 40.9%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 190px;
-    /* gap을 제거하고 각 요소의 margin으로 간격을 정밀하게 조절합니다. */
-    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* 책이 펼쳐질 때 입력 폼 자연스럽게 사라짐 */
-.loginScene.opening .login-area {
+.labelCard {
+    position: relative;
+    width: 34.9cqw;
+    box-sizing: border-box;
+    padding: 2.9cqw 4.1cqw 2.9cqw 4.3cqw;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25cqw;
+    border-radius: 0.2cqw;
+    background-color: #f6f7f6;
+    /* 종이 결: 아주 옅은 잡음 */
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45  0 0 0 0 0.42  0 0 0 0 0.38  0 0 0 0.16 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+    box-shadow:
+        0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.55),
+        inset 0 0 0.6cqw rgba(60, 50, 40, 0.16);
+}
+
+.labelRow {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9cqw;
+    padding-bottom: 0.1cqw;
+    border-bottom: max(1px, 0.25cqw) solid var(--line);
+    cursor: text;
+}
+
+.labelText {
+    flex: 0 0 auto;
+    font-family: "Noto Serif KR", "Gowun Batang", serif;
+    font-size: max(11px, 1.8cqw);
+    line-height: 1.5;
+    color: var(--ink);
+    white-space: pre;
+}
+
+/* "암 호"는 "저자명"과 글자 폭을 맞추려고 사이를 벌린다 */
+.labelSpread {
+    letter-spacing: 0.35em;
+    margin-right: -0.35em;
+}
+
+.labelInput {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: max(18px, 2.7cqw);
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font-family: "Noto Serif KR", "Gowun Batang", serif;
+    font-size: max(11px, 1.8cqw);
+    color: #4f3622;
+    caret-color: #e9692c;
+}
+
+.labelRow:focus-within {
+    border-bottom-color: #e9692c;
+}
+
+/* 크롬 자동완성의 하늘색 배경이 라벨을 덮지 않게 */
+.labelInput:-webkit-autofill {
+    -webkit-text-fill-color: #4f3622;
+    transition: background-color 9999s ease-out 0s;
+}
+
+/* 입력을 다 채우면 또렷해지는 들어가기 화살표 (Enter를 눌러도 같다) */
+.enterButton {
+    position: absolute;
+    right: 0.5cqw;
+    bottom: 0.5cqw;
+    width: 3.6cqw;
+    height: 3.6cqw;
+    padding: 0.5cqw;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink);
+    opacity: 0.3;
+    cursor: pointer;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.enterButton svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.loginForm.is-ready .enterButton {
+    opacity: 0.9;
+}
+
+.enterButton:hover,
+.enterButton:focus-visible {
+    opacity: 1;
+    background: rgba(140, 107, 75, 0.14);
+    outline: 0;
+}
+
+.enterButton:disabled {
+    cursor: default;
+}
+
+
+/* 회원가입(아직 준비 중) */
+.signupLink {
+    margin-top: 2.2cqw;
+    padding: 0.25cqw 0.2cqw 0.15cqw;
+    border: 0;
+    border-bottom: 1px solid rgba(220, 214, 208, 0.28);
+    background: none;
+    font-family: "Noto Serif KR", "Gowun Batang", serif;
+    font-size: max(10px, 1.5cqw);
+    line-height: 1.5;
+    white-space: nowrap;
+    color: #bdb5ac;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.signupLink:hover,
+.signupLink:focus-visible {
+    color: #fff;
+    border-bottom-color: rgba(255, 255, 255, 0.7);
+    outline: 0;
+}
+
+/* 안내 말(빈칸, 회원가입 준비 중) */
+.loginNote {
+    width: 80cqw;
+    margin: 0.8cqw 0 0;
+    min-height: 2em;
+    text-align: center;
+    font-family: "Noto Serif KR", "Gowun Batang", serif;
+    font-size: max(10.5px, 1.5cqw);
+    line-height: 1.6;
+    color: #f0c9a4;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.loginNote.is-visible {
+    opacity: 1;
+}
+
+/* 비어 있는 칸을 알려 줄 때 살짝 흔든다 */
+.labelRow.is-shaking {
+    animation: labelShake 0.36s ease;
+}
+
+@keyframes labelShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-0.6cqw); }
+    75% { transform: translateX(0.6cqw); }
+}
+
+
+/* 책이 좁을 때(휴대폰): 라벨을 넓히고 글씨를 키운다. 입력 글씨는 16px 이상이어야 iOS가 확대하지 않는다. */
+@container (max-width: 480px) {
+    .labelCard {
+        width: min(78cqw, 340px);
+        padding: 18px 46px 16px 20px;   /* 오른쪽은 들어가기 화살표 자리 */
+        gap: 14px;
+    }
+
+    .labelRow {
+        gap: 8px;
+        border-bottom-width: 1.5px;
+    }
+
+    .labelText,
+    .labelInput {
+        font-size: 16px;
+    }
+
+    .labelInput {
+        height: 28px;
+    }
+
+    .enterButton {
+        right: 8px;
+        bottom: 11px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .signupLink {
+        margin-top: 14px;
+        font-size: 13px;
+    }
+
+    .loginNote {
+        margin-top: 8px;
+        font-size: 12.5px;
+    }
+
+    .coverFoot {
+        font-size: 9px;
+    }
+}
+
+
+/* =========================================================
+   책 펼치기
+========================================================= */
+
+/* 책이 펼쳐질 때 라벨과 글씨는 먼저 부드럽게 사라진다 */
+.coverTitle,
+.coverFoot,
+.loginForm {
+    transition: opacity 0.3s ease;
+}
+
+.loginScene.opening .loginForm {
     opacity: 0;
     pointer-events: none;
-    transform: translateX(-50%) translateY(-10px);
 }
-
-/* =========================================================
-   저자명 + 아이디 입력
-========================================================= */
-.author-row {
-    position: relative;
-    width: 190px;
-    height: 50px;
-}
-
-.username-input {
-    position: absolute;
-    /* '저자명' 텍스트 바로 오른쪽에 자연스럽게 붙도록 간격 조절 */
-    left: 45px;
-
-    /* 밑줄이 텍스트 바로 아래에 위치하도록
-       top: 0 대신 bottom: 0을 사용하고 높이를 확 줄입니다. */
-    bottom: 0;
-    width: 145px;
-    height: 24px;
-
-    /* 글자와 밑줄 사이의 내부 여백(padding-bottom) 조절 */
-    padding: 0 4px 2px 4px;
-
-    border: none;
-    border-bottom: 1px solid #d8d1c9;
-    background: transparent;
-    outline: none;
-    color: #77716b;
-    font-family: "Noto Serif KR", serif;
-    font-size: 12px;
-    text-align: left;
-}
-
-.username-input:focus {
-    border-bottom-color: #e9692c;
-}
-
-/* =========================================================
-   패스워드
-========================================================= */
-.password-input {
-    width: 190px; /* 윗줄(author-row)과 동일한 너비로 맞춰 안정감 부여 */
-    height: 28px; /* 높이 대폭 축소 (50px -> 28px) */
-
-    margin-top: 15px; /* 위 입력창과의 간격 */
-    padding: 0 5px 4px 5px; /* 글자와 밑줄 사이 간격 */
-
-    border: none;
-    border-bottom: 1px solid #d8d1c9;
-    background: transparent;
-    outline: none;
-    text-align: center;
-    color: #77716b;
-    font-family: "Noto Serif KR", serif;
-    font-size: 11px; /* 글씨 크기를 10px에서 11px로 살짝 키워 가독성 확보 */
-}
-
-.password-input::placeholder {
-    color: #8d8881;
-}
-
-.password-input:focus {
-    border-bottom-color: #e9692c;
-}
-
-/* =========================================================
-   로그인 버튼
-========================================================= */
-.login-button {
-    width: 120px;
-    height: 42px; /* 버튼 높이를 살짝 줄여서 세련되게 */
-
-    margin-top: 25px; /* 패스워드와 버튼 사이 간격을 여유 있게 띄움 */
-
-    border: 1px solid #d8d1c9;
-    background: rgba(255, 255, 255, 0.35);
-    color: #77716b;
-    font-family: "Noto Serif KR", serif;
-    font-size: 11px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-}
-
-.login-button:hover {
-    background: rgba(255, 255, 255, 0.6);
-}
-
-
-/* =========================================================
-   펼치기 애니메이션 실행
-========================================================= */
 
 .loginScene.opening .closedBookPage {
     animation: bookOpen 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
@@ -216,38 +502,37 @@
     animation: openBookShow 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-
-/* =========================================================
-   책장 넘김 (자연스러운 3D 곡선 및 입체 그림자)
-========================================================= */
-
+/* 표지가 왼쪽으로 넘어가며 입체 그림자가 생긴다 */
 @keyframes bookOpen {
     0% {
         transform: rotateY(0deg) translateZ(0px);
-        filter: brightness(1) drop-shadow(0 8px 12px rgba(60, 45, 30, 0.15));
+        filter: brightness(1);
     }
     50% {
-        /* 책장이 수직에 도달할 때 휘어지는 입체감 및 입체 그림자 */
         transform: rotateY(-90deg) translateZ(25px);
-        filter: brightness(0.88) drop-shadow(20px 15px 25px rgba(60, 45, 30, 0.25));
+        filter: brightness(0.85) drop-shadow(20px 15px 25px rgba(60, 45, 30, 0.25));
     }
     100% {
         transform: rotateY(-180deg) translateZ(0px);
-        filter: brightness(1) drop-shadow(0 4px 8px rgba(60, 45, 30, 0.1));
+        filter: brightness(1);
     }
 }
 
-
-/* =========================================================
-   펼쳐진 책 등장 (표지가 90도 넘어간 후 부드럽게 등장)
-========================================================= */
-
+/* 표지가 90도 넘어간 뒤 펼쳐진 책이 나타난다 */
 @keyframes openBookShow {
     0%, 45% {
         opacity: 0;
     }
     100% {
         opacity: 1;
+    }
+}
+
+/* 움직임을 줄이도록 설정한 경우: 넘기지 않고 부드럽게 바뀐다 */
+@media (prefers-reduced-motion: reduce) {
+    @keyframes bookOpen {
+        from { opacity: 1; }
+        to { opacity: 0; }
     }
 }
 
