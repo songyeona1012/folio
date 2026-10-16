@@ -40,6 +40,8 @@ import tools.jackson.databind.json.JsonMapper;
  *        키  : folio.ai.gemini-key → 없으면 application.properties의 gemini.api.key(= 환경변수 GEMINI_API_KEY) → 없으면 환경변수 GEMINI_API_KEY
  *        모델: folio.ai.gemini-model → 없으면 gemini-3.8-flash
  *        키 모양(AIza... 또는 AQ....)은 가리지 않는다. 헤더 x-goog-api-key 로 보낸다.
+ *        모델이 몰려 있으면(503 high demand, 429 등) 키가 쓸 수 있는 다른 Flash 모델(Lite 포함)을 차례로 시도하고,
+ *        성공한 모델을 10분 동안 먼저 쓴다.
  *   3) OpenAI (팀 AiService와 같은 키 openai.api.key ← OPENAI_API_KEY, 같은 Responses API)
  *        모델: folio.goal.ai.model → 없으면 gpt-5-nano
  * 키가 하나도 없으면 isConfigured()가 false이고, 호출하는 쪽(GoalAiService)이 기본 규칙으로 대신한다.
@@ -144,6 +146,16 @@ public class GoalAiClient {
     private volatile String geminiModel;
     private final String geminiBase;
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+
+    /* Gemini가 "This model is currently experiencing high demand"(503)처럼 몰려 있을 때 쓰는 값들.
+       한 모델만 더 시도하면 그 모델도 몰려 있을 때가 많아서, 키가 쓸 수 있는 다른 모델을 몇 개 차례로 시도한다. */
+    private static final int GEMINI_FALLBACK_MAX = 4; // 첫 모델 말고 더 시도해 볼 모델 수
+    private static final long BUSY_FALLBACK_MILLIS = Duration.ofMinutes(10).toMillis(); // 대신 성공한 모델을 먼저 쓰는 시간
+    private static final long MODEL_LIST_MILLIS = Duration.ofMinutes(30).toMillis(); // 모델 목록을 기억해 두는 시간
+    private volatile String busyFallbackModel; // 몰림을 피해 마지막으로 성공한 모델 (없으면 null)
+    private volatile long busyFallbackUntil;
+    private volatile List<String> cachedGeminiModels; // 키가 쓸 수 있는 Flash 모델, 시도할 순서대로
+    private volatile long cachedGeminiModelsUntil;
 
     public GoalAiClient(
         @Value("${openai.api.key:}") String apiKey,
@@ -311,28 +323,16 @@ public class GoalAiClient {
 
         String responseBody;
         Map<String, String> auth = Map.of("x-goog-api-key", geminiKey);
+        String first = preferredGeminiModel();
         try {
-            responseBody = postJson("Gemini", geminiUrl(geminiModel), auth, body, 3);
+            responseBody = postJson("Gemini", geminiUrl(first), auth, body, 2);
         } catch (ApiStatusException e) {
-            // 이 키로는 쓸 수 없는 모델 이름(404)이거나, 이 모델이 계속 몰려 있으면(503/429)
-            // 키가 쓸 수 있는 다른 Flash 모델을 찾아 한 번 더 시도한다
+            // 이 키로는 쓸 수 없는 모델 이름(404)이거나, 이 모델이 계속 몰려 있으면(503/429 등)
+            // 키가 쓸 수 있는 다른 모델들을 차례로 시도한다. 키 오류(400/401/403)는 모델을 바꿔도 같아서 그대로 알린다.
             if (e.status() != 404 && !e.retryable()) {
                 throw e;
             }
-            String found = discoverGeminiModel(e.status() == 404 ? null : geminiModel);
-            if (found == null || found.equals(geminiModel)) {
-                throw e;
-            }
-            log.info(
-                "Gemini 모델 {} 이(가) 응답하지 않아(코드 {}) {} 로 시도합니다.",
-                geminiModel,
-                e.status(),
-                found
-            );
-            responseBody = postJson("Gemini", geminiUrl(found), auth, body, 2);
-            if (e.status() == 404) {
-                geminiModel = found; // 쓸 수 없는 이름이었을 때만 기억한다 (몰림은 잠깐이라 기본 모델을 유지)
-            }
+            responseBody = tryOtherGeminiModels(first, e, auth, body);
         }
         GeminiReply reply = jsonMapper.readValue(responseBody, GeminiReply.class);
 
@@ -369,8 +369,82 @@ public class GoalAiClient {
         return URI.create(geminiBase + "/models/" + modelName + ":generateContent");
     }
 
-    /** 키가 쓸 수 있는 모델 목록에서 generateContent 되는 Flash 모델 하나를 고른다 (정식 > 미리보기, Lite 아님 > Lite, 버전 높은 것). 없으면 null. */
-    private String discoverGeminiModel(String exclude) {
+    /** 몰림을 피해 최근에 성공한 모델이 있으면 그 모델부터, 아니면 설정한 모델부터 쓴다. */
+    private String preferredGeminiModel() {
+        String recent = busyFallbackModel;
+        return recent != null && System.currentTimeMillis() < busyFallbackUntil ? recent : geminiModel;
+    }
+
+    /**
+     * 첫 모델이 안 될 때: (첫 모델이 임시 모델이었다면) 설정한 모델 → 키가 쓸 수 있는 다른 Flash 모델 순서로
+     * 최대 GEMINI_FALLBACK_MAX개를 시도한다. 같은 모델의 별칭(-001, -latest)은 같이 몰려 있으므로 건너뛴다.
+     * 모두 안 되면 예외를 던지고, 호출하는 쪽(GoalAiService)이 기본 틀로 대신한다.
+     */
+    private String tryOtherGeminiModels(
+        String failedModel,
+        ApiStatusException firstError,
+        Map<String, String> auth,
+        Object body
+    ) {
+        List<String> candidates = new ArrayList<>();
+        if (!failedModel.equals(geminiModel)) {
+            candidates.add(geminiModel); // 임시 모델이 안 되면 원래 모델이 다시 괜찮아졌는지 본다
+        }
+        candidates.addAll(listGeminiModels());
+
+        java.util.Set<String> tried = new java.util.HashSet<>();
+        tried.add(family(failedModel));
+        ApiStatusException last = firstError;
+        int attempts = 0;
+        for (String candidate : candidates) {
+            if (attempts >= GEMINI_FALLBACK_MAX) {
+                break;
+            }
+            if (!tried.add(family(candidate))) {
+                continue;
+            }
+            attempts++;
+            log.info(
+                "Gemini 모델 {} 이(가) 응답하지 않아(코드 {}) {} 로 시도합니다.",
+                failedModel,
+                last.status(),
+                candidate
+            );
+            try {
+                String responseBody = postJson("Gemini", geminiUrl(candidate), auth, body, 2);
+                if (firstError.status() == 404 && failedModel.equals(geminiModel)) {
+                    geminiModel = candidate; // 설정한 이름을 쓸 수 없으면 계속 이 모델을 쓴다
+                }
+                if (candidate.equals(geminiModel)) {
+                    busyFallbackModel = null; // 원래 모델이 다시 된다
+                } else {
+                    busyFallbackModel = candidate; // 몰림은 잠깐이라 몇 분만 먼저 쓰고 다시 원래 모델로 돌아간다
+                    busyFallbackUntil = System.currentTimeMillis() + BUSY_FALLBACK_MILLIS;
+                }
+                return responseBody;
+            } catch (ApiStatusException e) {
+                if (e.status() != 404 && !e.retryable()) {
+                    throw e;
+                }
+                last = e;
+            }
+        }
+        if (failedModel.equals(busyFallbackModel)) {
+            busyFallbackModel = null;
+        }
+        // 다른 모델 이름이 없어서(404) 끝났다면, 사용자에게는 처음의 '몰림' 원인을 알려 주는 편이 정확하다
+        throw last.status() == 404 && firstError.retryable() ? firstError : last;
+    }
+
+    /**
+     * 키가 쓸 수 있는 generateContent용 Flash 모델 이름을 시도할 순서대로 돌려준다. 못 가져오면 빈 목록.
+     * 순서: 정식 > 미리보기, 그 안에서는 일반 모델과 Lite 모델을 번갈아 (Lite는 덜 몰린다), 버전 높은 것부터.
+     */
+    private List<String> listGeminiModels() {
+        List<String> cached = cachedGeminiModels;
+        if (cached != null && System.currentTimeMillis() < cachedGeminiModelsUntil) {
+            return cached;
+        }
         try {
             HttpRequest request = HttpRequest.newBuilder(URI.create(geminiBase + "/models?pageSize=200"))
                 .timeout(TIMEOUT)
@@ -378,38 +452,65 @@ public class GoalAiClient {
                 .GET()
                 .build();
             ModelList list = jsonMapper.readValue(execute("Gemini", request, 1), ModelList.class);
-            if (list.models() == null) {
-                return null;
+            List<String> names = list.models() == null
+                ? List.of()
+                : list
+                    .models()
+                    .stream()
+                    .filter(
+                        m ->
+                            m != null &&
+                            m.name() != null &&
+                            m.supportedGenerationMethods() != null &&
+                            m.supportedGenerationMethods().contains("generateContent")
+                    )
+                    .map(m -> m.name().replaceFirst("^models/", ""))
+                    .filter(
+                        n ->
+                            n.startsWith("gemini-") &&
+                            n.contains("flash") &&
+                            !n.matches(".*(image|tts|live|audio|embed|exp|robot|computer|customtools).*")
+                    )
+                    .distinct()
+                    .toList();
+
+            java.util.Comparator<String> newerFirst = java.util.Comparator.comparing(
+                GoalAiClient::versionOf,
+                java.util.Comparator.reverseOrder()
+            ).thenComparingInt(String::length);
+            List<String> ordered = new ArrayList<>();
+            for (boolean preview : new boolean[] { false, true }) {
+                List<String> regular = names
+                    .stream()
+                    .filter(n -> n.contains("preview") == preview && !n.contains("lite"))
+                    .sorted(newerFirst)
+                    .toList();
+                List<String> lite = names
+                    .stream()
+                    .filter(n -> n.contains("preview") == preview && n.contains("lite"))
+                    .sorted(newerFirst)
+                    .toList();
+                for (int i = 0; i < Math.max(regular.size(), lite.size()); i++) {
+                    if (i < regular.size()) {
+                        ordered.add(regular.get(i));
+                    }
+                    if (i < lite.size()) {
+                        ordered.add(lite.get(i));
+                    }
+                }
             }
-            return list
-                .models()
-                .stream()
-                .filter(
-                    m ->
-                        m != null &&
-                        m.name() != null &&
-                        m.supportedGenerationMethods() != null &&
-                        m.supportedGenerationMethods().contains("generateContent")
-                )
-                .map(m -> m.name().replaceFirst("^models/", ""))
-                .filter(n -> !n.equals(exclude))
-                .filter(
-                    n ->
-                        n.startsWith("gemini-") &&
-                        n.contains("flash") &&
-                        !n.matches(".*(image|tts|live|audio|embed|exp|robot|computer|customtools).*")
-                )
-                .max(
-                    java.util.Comparator.comparing((String n) -> !n.contains("preview"))
-                        .thenComparing(n -> !n.contains("lite"))
-                        .thenComparing(GoalAiClient::versionOf)
-                        .thenComparing(n -> -n.length())
-                )
-                .orElse(null);
+            cachedGeminiModels = List.copyOf(ordered);
+            cachedGeminiModelsUntil = System.currentTimeMillis() + MODEL_LIST_MILLIS;
+            return cachedGeminiModels;
         } catch (RuntimeException e) {
             log.warn("Gemini 모델 목록을 가져오지 못했어요: {}", e.toString());
-            return null;
+            return List.of();
         }
+    }
+
+    /** gemini-3.8-flash-001, gemini-3.8-flash-latest → gemini-3.8-flash (같은 모델의 다른 이름) */
+    private static String family(String name) {
+        return name.replaceFirst("-(\\d{3}|latest)$", "");
     }
 
     /** gemini-3.8-flash → 3.8 */

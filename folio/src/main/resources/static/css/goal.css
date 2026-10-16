@@ -1534,8 +1534,12 @@ body.is-reordering-progress * {
     width: 100%;
     min-width: 0;
     height: 100%;
-    padding: 0 3px;
+    padding: 0 2px;
     border: 0;
+    /* border: 0이 위 .tx-box > *의 칸 나눔 선까지 지워서 일자·시간·금액 칸에 세로줄이 없었다.
+       머리글(일자|시간|입출금 유형|금액|총 액)과 같은 자리에 선이 보이도록 오른쪽 선만 다시 긋는다.
+       (선 1px만큼 글자 칸이 좁아지지 않게 좌우 여백을 3px → 2px로 줄였다) */
+    border-right: 1px solid #b4b4b4;
     border-radius: 0;
     outline: 0;
     background: transparent;
@@ -1549,6 +1553,17 @@ body.is-reordering-progress * {
 .tx-box input:focus {
     background: #fffdf3;
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
+}
+
+/* 팀 공통 글씨(page-intro.css)의 ".notebook .goal-paper input { font-size: 12px }"가 이 표에도 들어오면
+   일자·시간·금액 칸만 12px로 커져서 --tx-fs 기준으로 나눈 열보다 넓어지고 일자가 잘린다(26.10.0…).
+   표 안의 입력 칸은 머리글·입출금 유형·총 액과 같은 표 글자 크기(--tx-fs)를 따르게 되돌린다.
+   (page-intro.css가 goal.css보다 뒤에 읽히므로 선택자를 한 단계 더 구체적으로 쓴다) */
+.notebook .goal-paper .tx-box input.tx-date,
+.notebook .goal-paper .tx-box input.tx-time,
+.notebook .goal-paper .tx-box input.tx-amount {
+    font-size: inherit;
+    line-height: normal;
 }
 .tx-date {
     letter-spacing: 0.06em;

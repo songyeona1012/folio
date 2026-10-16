@@ -327,8 +327,8 @@
                                     </button>
 
                                     <div class="ai-chat" id="aiChat" hidden>
-                                        <div class="ai-pill ai-pill-bot" id="aiGreeting">작성하기 어렵다면 양식을 만들어
-                                            드릴게요! 어떤 목표를 가지고 계신가요?</div>
+                                        {{! 말풍선(.ai-pill)은 white-space: pre-wrap이라 문장을 나눠 쓰면 줄바꿈과 들여쓰기가 그대로 보인다. 한 줄로 둘 것 }}
+                                        <div class="ai-pill ai-pill-bot" id="aiGreeting">작성하기 어렵다면 양식을 만들어 드릴게요! 어떤 목표를 가지고 계신가요?</div>
                                     </div>
                                 </div>
 
