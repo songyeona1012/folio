@@ -1,3 +1,4 @@
+// 화면에서 보낸 AI 요청을 서비스에 전달합니다.
 package com.example.folio.controller;
 
 import com.example.folio.dto.ScheduleDto;

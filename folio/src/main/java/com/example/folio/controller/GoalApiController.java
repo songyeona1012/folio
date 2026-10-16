@@ -1,8 +1,12 @@
+// 목표와 진행 기록의 조회·저장·삭제 요청을 처리합니다.
 package com.example.folio.controller;
 
 import com.example.folio.dto.GoalRequest;
 import com.example.folio.dto.GoalResponse;
 import com.example.folio.service.GoalService;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,10 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
 
 /**
  * goal.js가 호출하는 API.
@@ -81,7 +81,8 @@ public class GoalApiController {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> conflict(DataIntegrityViolationException e) {
         log.warn("목표를 저장/삭제하지 못했습니다. 연결된 데이터나 제약 조건을 확인하세요.", e);
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(Map.of("message", "연결된 데이터가 남아 있어 처리하지 못했어요. 서버 로그를 확인해 주세요."));
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+            Map.of("message", "연결된 데이터가 남아 있어 처리하지 못했어요. 서버 로그를 확인해 주세요.")
+        );
     }
 }

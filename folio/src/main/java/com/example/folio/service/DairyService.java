@@ -1,3 +1,4 @@
+// 일기 저장·조회·삭제와 기분 요약 데이터를 처리합니다.
 package com.example.folio.service;
 
 import com.example.folio.dto.DairyRatingRow;
@@ -7,11 +8,6 @@ import com.example.folio.dto.DairyYearSummary;
 import com.example.folio.entity.Dairy;
 import com.example.folio.entity.DairyType;
 import com.example.folio.repository.DairyRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -21,6 +17,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional(readOnly = true)
@@ -44,10 +44,11 @@ public class DairyService {
     /** 한 달 치 일기 목록 (월별 폴더) */
     public List<DairyResponse> findByMonth(int year, int month) {
         YearMonth ym = toYearMonth(year, month);
-        return dairyRepository.findByDateBetweenOrderByDateAsc(ym.atDay(1), ym.atEndOfMonth())
-                .stream()
-                .map(DairyResponse::from)
-                .toList();
+        return dairyRepository
+            .findByDateBetweenOrderByDateAsc(ym.atDay(1), ym.atEndOfMonth())
+            .stream()
+            .map(DairyResponse::from)
+            .toList();
     }
 
     /** 연간 요약: 월별 일기 수 + 별점 평균, 그리고 일기가 있는 달 폴더 */
@@ -70,7 +71,9 @@ public class DairyService {
         int[] ratingSums = new int[13];
 
         List<DairyRatingRow> rows = dairyRepository.findRatingsBetween(
-                LocalDate.of(year, 1, 1), LocalDate.of(year, 12, 31));
+            LocalDate.of(year, 1, 1),
+            LocalDate.of(year, 12, 31)
+        );
         for (DairyRatingRow row : rows) {
             int m = row.date().getMonthValue();
             counts[m]++;
@@ -97,10 +100,14 @@ public class DairyService {
         return new DairyYearSummary(year, shownMonths, months, folders);
     }
 
-    private static DairyYearSummary.Month monthSummary(int m, int[] counts, int[] ratedCounts, int[] ratingSums) {
-        Double average = ratedCounts[m] == 0
-                ? null
-                : Math.round(ratingSums[m] * 10.0 / ratedCounts[m]) / 10.0;
+    private static DairyYearSummary.Month monthSummary(
+        int m,
+        int[] counts,
+        int[] ratedCounts,
+        int[] ratingSums
+    ) {
+        Double average =
+            ratedCounts[m] == 0 ? null : Math.round((ratingSums[m] * 10.0) / ratedCounts[m]) / 10.0;
         return new DairyYearSummary.Month(m, counts[m], average);
     }
 
@@ -130,16 +137,16 @@ public class DairyService {
             throw badRequest("일기 내용을 한 줄 이상 적어주세요.");
         }
 
-        Dairy dairy = dairyRepository.findByDate(request.date())
-                .orElseGet(() -> new Dairy(request.date()));
+        Dairy dairy = dairyRepository.findByDate(request.date()).orElseGet(() -> new Dairy(request.date()));
         dairy.update(rating, type, content, hours, Boolean.TRUE.equals(request.isPrivate()));
         return DairyResponse.from(dairyRepository.save(dairy));
     }
 
     @Transactional
     public void delete(Long id) {
-        Dairy dairy = dairyRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이미 삭제된 일기예요."));
+        Dairy dairy = dairyRepository
+            .findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이미 삭제된 일기예요."));
         dairyRepository.delete(dairy);
     }
 
@@ -173,7 +180,9 @@ public class DairyService {
                 return;
             }
             if (text.length() > MAX_HOUR_LENGTH) {
-                throw badRequest(String.format("%02d시 기록은 %d자까지 쓸 수 있어요.", hour, MAX_HOUR_LENGTH));
+                throw badRequest(
+                    String.format("%02d시 기록은 %d자까지 쓸 수 있어요.", hour, MAX_HOUR_LENGTH)
+                );
             }
             result.put(hour, text);
         });

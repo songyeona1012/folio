@@ -1,5 +1,7 @@
 <!DOCTYPE html>
+{{! 달력 화면: 월/주 달력과 오른쪽 일정·메모 영역을 배치합니다. }}
 <html lang="ko">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +11,7 @@
         <link rel="stylesheet" href="/css/sidebar.css">
         <link rel="stylesheet" href="/css/responsive.css?v=1">
     </head>
+
     <body>
         <div class="appShell">
             {{> layout/sidebar}}
@@ -38,8 +41,10 @@
 
                                 <!-- 월간 / 주간 보기 전환 -->
                                 <div class="viewToggle" role="group" aria-label="달력 보기 방식">
-                                    <button type="button" data-cal-view="month" aria-pressed="true">월간</button>
-                                    <button type="button" data-cal-view="week" aria-pressed="false">주간</button>
+                                    <button type="button" data-cal-view="month" aria-pressed="true">월간
+                                    </button>
+                                    <button type="button" data-cal-view="week" aria-pressed="false">주간
+                                    </button>
                                 </div>
 
                                 <div class="cal-nav">
@@ -82,15 +87,19 @@
                                 <div class="management-category-heading">
                                     <h4 id="dashboardCategoryTitle">일상</h4>
                                     <details class="dashboardCategoryMenu">
-                                        <summary aria-label="관리 카테고리 선택" title="관리 카테고리 선택"><span></span></summary>
+                                        <summary aria-label="관리 카테고리 선택" title="관리 카테고리 선택"><span></span>
+                                        </summary>
                                         <div class="dashboardCategoryOptions">
                                             <button type="button" data-dashboard-category="daily">일상</button>
-                                            <button type="button" data-dashboard-category="subscription">구독</button>
-                                            <button type="button" data-dashboard-category="relationship">교체</button>
+                                            <button type="button" data-dashboard-category="subscription">구독
+                                            </button>
+                                            <button type="button" data-dashboard-category="relationship">교체
+                                            </button>
                                         </div>
                                     </details>
                                 </div>
-                                <ul class="dashboardManagementList" id="dashboardManagementList" aria-label="선택한 카테고리 관리 일정"></ul>
+                                <ul class="dashboardManagementList" id="dashboardManagementList"
+                                    aria-label="선택한 카테고리 관리 일정"></ul>
                             </div>
                             <div class="section">
                                 <h4>가장 가까운 건강 관리</h4>
@@ -137,4 +146,5 @@
         <script src="/js/main.js?v=3"></script>
 
     </body>
+
 </html>

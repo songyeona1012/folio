@@ -1,3 +1,4 @@
+// AI 없이도 사용할 수 있는 기본 목표 작성 양식을 만듭니다.
 package com.example.folio.service;
 
 import com.example.folio.dto.GoalAiFormRequest;
@@ -6,8 +7,6 @@ import com.example.folio.dto.GoalAiFormResponse.Block;
 import com.example.folio.dto.GoalAiFormResponse.Field;
 import com.example.folio.dto.GoalAiFormResponse.Item;
 import com.example.folio.dto.GoalAiFormResponse.Track;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.stereotype.Component;
 
 /**
  * AI 키가 없거나 AI를 부르지 못했을 때 쓰는 기본 규칙.
@@ -30,28 +30,52 @@ public class GoalBasicFormBuilder {
     private static final int BLOCK_MAX = 10;
 
     private static final Map<String, Integer> KOREAN_NUMBER = Map.ofEntries(
-        Map.entry("한", 1), Map.entry("두", 2), Map.entry("세", 3), Map.entry("네", 4), Map.entry("다섯", 5),
-        Map.entry("여섯", 6), Map.entry("일곱", 7), Map.entry("여덟", 8), Map.entry("아홉", 9), Map.entry("열", 10));
+        Map.entry("한", 1),
+        Map.entry("두", 2),
+        Map.entry("세", 3),
+        Map.entry("네", 4),
+        Map.entry("다섯", 5),
+        Map.entry("여섯", 6),
+        Map.entry("일곱", 7),
+        Map.entry("여덟", 8),
+        Map.entry("아홉", 9),
+        Map.entry("열", 10)
+    );
 
     private static final Pattern DURATION = Pattern.compile(
-        "(\\d{1,3}|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\\s*(개월|달|주일|주|년|일)(\\s*(안에|동안|내에|내로|까지|뒤에))?");
+        "(\\d{1,3}|한|두|세|네|다섯|여섯|일곱|여덟|아홉|열)\\s*(개월|달|주일|주|년|일)(\\s*(안에|동안|내에|내로|까지|뒤에))?"
+    );
 
     private static final Pattern AMOUNT = Pattern.compile(
         "(\\d{1,9}(?:\\.\\d{1,2})?)\\s*(kg|킬로그램|킬로|키로|km|킬로미터|점|권|시간|분|만원|원|회|번|개(?!월)|쪽|페이지|문제|%|퍼센트)",
-        Pattern.CASE_INSENSITIVE);
+        Pattern.CASE_INSENSITIVE
+    );
 
-    private static final Pattern WISH_TAIL = Pattern.compile("\\s*(\\S*?고\\s*)?싶(어요|어|습니다|네요|다)[.!?~]*$");
+    private static final Pattern WISH_TAIL = Pattern.compile(
+        "\\s*(\\S*?고\\s*)?싶(어요|어|습니다|네요|다)[.!?~]*$"
+    );
 
     private static final List<String> WEEK = List.of("월", "화", "수", "목", "금", "토", "일");
 
     /** 목표의 종류 */
-    private enum Kind { WEIGHT, STUDY, READING, EXERCISE, MONEY, GENERAL }
+    private enum Kind {
+        WEIGHT,
+        STUDY,
+        READING,
+        EXERCISE,
+        MONEY,
+        GENERAL,
+    }
 
     public GoalAiFormResponse build(GoalAiFormRequest request, LocalDate today, String notice) {
         String prefix = notice == null ? "" : notice + " ";
         String prompt = request.prompt() == null ? "" : request.prompt().trim();
 
-        if (request.current() != null && request.current().blocks() != null && !request.current().blocks().isEmpty()) {
+        if (
+            request.current() != null &&
+            request.current().blocks() != null &&
+            !request.current().blocks().isEmpty()
+        ) {
             return edit(request.current(), prompt, prefix);
         }
 
@@ -87,12 +111,18 @@ public class GoalBasicFormBuilder {
         List<Block> blocks = design(kind, title, period, prompt, 0);
 
         return new GoalAiFormResponse(
-            prefix + "'" + title + "'에 맞춰 " + describe(blocks) + "(으)로 양식을 만들었어요. 칸을 눌러 마음대로 고쳐 보세요.",
+            prefix +
+                "'" +
+                title +
+                "'에 맞춰 " +
+                describe(blocks) +
+                "(으)로 양식을 만들었어요. 칸을 눌러 마음대로 고쳐 보세요.",
             title,
             end == null ? null : today.toString(),
             end == null ? null : end.toString(),
             "BASIC",
-            blocks);
+            blocks
+        );
     }
 
     /* ---------- 이미 있는 양식 고치기 ---------- */
@@ -104,14 +134,17 @@ public class GoalBasicFormBuilder {
 
         String type = typeMentioned(text);
         boolean remove = text.matches(".*(지워|지우|삭제|빼|없애).*");
-        boolean redesign = text.matches(".*(다른양식|다른구성|다르게|새로|바꿔|바꾸|다시만들|다른거|다른것).*");
+        boolean redesign = text.matches(
+            ".*(다른양식|다른구성|다르게|새로|바꿔|바꾸|다시만들|다른거|다른것).*"
+        );
 
         if (remove && type != null) {
             int before = blocks.size();
             blocks.removeIf(block -> type.equals(block.type()));
-            reply = blocks.size() < before
-                ? "'" + nameOf(type) + "'을(를) 지웠어요."
-                : "지울 '" + nameOf(type) + "'이(가) 없어요.";
+            reply =
+                blocks.size() < before
+                    ? "'" + nameOf(type) + "'을(를) 지웠어요."
+                    : "지울 '" + nameOf(type) + "'이(가) 없어요.";
         } else if (type != null) {
             if (blocks.size() >= BLOCK_MAX) {
                 reply = "블록은 " + BLOCK_MAX + "개까지 둘 수 있어요. 쓰지 않는 블록을 먼저 지워 주세요.";
@@ -121,23 +154,39 @@ public class GoalBasicFormBuilder {
             }
         } else if (redesign) {
             Kind kind = kindOf(current.title() + " " + prompt);
-            int variant = Math.abs((current.title() + blocks.size()).hashCode()) % 2 + 1;
+            int variant = (Math.abs((current.title() + blocks.size()).hashCode()) % 2) + 1;
             blocks = design(kind, current.title(), "", current.title() + " " + prompt, variant);
-            reply = describe(blocks) + "(으)로 구성을 바꿔 봤어요. 마음에 들지 않으면 '되돌리기'를 눌러 주세요.";
+            reply =
+                describe(blocks) + "(으)로 구성을 바꿔 봤어요. 마음에 들지 않으면 '되돌리기'를 눌러 주세요.";
         } else {
             return new GoalAiFormResponse(
-                prefix + "지금은 인공지능 없이 기본 규칙으로만 고칠 수 있어서 양식은 그대로 두었어요. "
-                    + "'습관표 추가', '기록표 추가', '진행도 추가', '메모 추가', '체크리스트 빼 줘', '다른 양식' 같은 말을 알아들어요.",
-                current.title(), current.startDate(), current.endDate(), "BASIC", current.blocks());
+                prefix +
+                    "지금은 인공지능 없이 기본 규칙으로만 고칠 수 있어서 양식은 그대로 두었어요. " +
+                    "'습관표 추가', '기록표 추가', '진행도 추가', '메모 추가', '체크리스트 빼 줘', '다른 양식' 같은 말을 알아들어요.",
+                current.title(),
+                current.startDate(),
+                current.endDate(),
+                "BASIC",
+                current.blocks()
+            );
         }
 
-        return new GoalAiFormResponse(prefix + reply, current.title(), current.startDate(), current.endDate(), "BASIC", blocks);
+        return new GoalAiFormResponse(
+            prefix + reply,
+            current.title(),
+            current.startDate(),
+            current.endDate(),
+            "BASIC",
+            blocks
+        );
     }
 
     private static String typeMentioned(String text) {
         if (text.matches(".*(습관|요일|매일체크|출석).*")) return GoalAiFormResponse.TRACKER;
         if (text.matches(".*(기록표|기록|일지|로그).*")) return GoalAiFormResponse.LOG;
-        if (text.matches(".*(진행도|진행|진척|달성률|퍼센트|막대|그래프).*")) return GoalAiFormResponse.PROGRESS;
+        if (
+            text.matches(".*(진행도|진행|진척|달성률|퍼센트|막대|그래프).*")
+        ) return GoalAiFormResponse.PROGRESS;
         if (text.matches(".*(메모|노트|다짐|한마디).*")) return GoalAiFormResponse.NOTE;
         if (text.matches(".*(체크리스트|할일|해야할|단계).*")) return GoalAiFormResponse.CHECKLIST;
         if (text.matches(".*(항목|(?<!목)표).*")) return GoalAiFormResponse.TABLE; // "목표"의 표는 빼고
@@ -172,9 +221,15 @@ public class GoalBasicFormBuilder {
         String t = text == null ? "" : text.toLowerCase();
         if (t.matches(".*(감량|다이어트|체중|몸무게|살 ?빼|살을|kg|킬로|키로).*")) return Kind.WEIGHT;
         if (t.matches(".*(독서|책|권).*")) return Kind.READING;
-        if (t.matches(".*(저축|모으|모으기|적금|돈|만원|원 ).*") || t.matches(".*\\d+원.*")) return Kind.MONEY;
-        if (t.matches(".*(운동|달리기|러닝|헬스|마라톤|걷기|수영|요가|km|스쿼트|푸시업).*")) return Kind.EXERCISE;
-        if (t.matches(".*(공부|시험|자격증|토익|토플|점수|합격|기사|수능|과목|단어|영어|코딩|강의).*")) return Kind.STUDY;
+        if (
+            t.matches(".*(저축|모으|모으기|적금|돈|만원|원 ).*") || t.matches(".*\\d+원.*")
+        ) return Kind.MONEY;
+        if (
+            t.matches(".*(운동|달리기|러닝|헬스|마라톤|걷기|수영|요가|km|스쿼트|푸시업).*")
+        ) return Kind.EXERCISE;
+        if (
+            t.matches(".*(공부|시험|자격증|토익|토플|점수|합격|기사|수능|과목|단어|영어|코딩|강의).*")
+        ) return Kind.STUDY;
         return Kind.GENERAL;
     }
 
@@ -197,10 +252,24 @@ public class GoalBasicFormBuilder {
                 if (variant != 1) blocks.add(Block.note("다짐", ""));
             }
             case STUDY -> {
-                blocks.add(Block.table("목표 정리", List.of(new Field("목표", title), new Field("기간", period),
-                    new Field("하루 분량", ""), new Field("다짐", ""))));
+                blocks.add(
+                    Block.table(
+                        "목표 정리",
+                        List.of(
+                            new Field("목표", title),
+                            new Field("기간", period),
+                            new Field("하루 분량", ""),
+                            new Field("다짐", "")
+                        )
+                    )
+                );
                 if (target != null) blocks.add(Block.progress("점수", unit, null, target, null));
-                blocks.add(Block.checklist("단계별 계획", items("기초 다지기", "약한 부분 집중하기", "실전 문제 풀기", "마지막 점검하기")));
+                blocks.add(
+                    Block.checklist(
+                        "단계별 계획",
+                        items("기초 다지기", "약한 부분 집중하기", "실전 문제 풀기", "마지막 점검하기")
+                    )
+                );
                 blocks.add(tracker("공부 체크", "공부하기", "복습하기"));
             }
             case READING -> {
@@ -219,9 +288,28 @@ public class GoalBasicFormBuilder {
                 blocks.add(Block.note("팁", "입출금을 자세히 관리하려면 '금전' 양식도 써 보세요."));
             }
             default -> {
-                blocks.add(Block.table("목표 정리", List.of(new Field("목표", title), new Field("기간", period),
-                    new Field("실천 방법", ""), new Field("다짐", ""))));
-                blocks.add(Block.checklist("단계별 계획", items("지금 상태 확인하기", "이번 주에 할 일 정하기", "중간에 점검하기", "마무리하고 돌아보기")));
+                blocks.add(
+                    Block.table(
+                        "목표 정리",
+                        List.of(
+                            new Field("목표", title),
+                            new Field("기간", period),
+                            new Field("실천 방법", ""),
+                            new Field("다짐", "")
+                        )
+                    )
+                );
+                blocks.add(
+                    Block.checklist(
+                        "단계별 계획",
+                        items(
+                            "지금 상태 확인하기",
+                            "이번 주에 할 일 정하기",
+                            "중간에 점검하기",
+                            "마무리하고 돌아보기"
+                        )
+                    )
+                );
                 blocks.add(tracker("매일 체크", "계획한 만큼 해내기"));
             }
         }
@@ -229,7 +317,9 @@ public class GoalBasicFormBuilder {
         if (variant > 0) {
             // 다른 조합: 순서를 뒤집고, 없던 블록 하나를 더한다
             Collections.reverse(blocks);
-            boolean hasChecklist = blocks.stream().anyMatch(b -> GoalAiFormResponse.CHECKLIST.equals(b.type()));
+            boolean hasChecklist = blocks
+                .stream()
+                .anyMatch(b -> GoalAiFormResponse.CHECKLIST.equals(b.type()));
             boolean hasLog = blocks.stream().anyMatch(b -> GoalAiFormResponse.LOG.equals(b.type()));
             if (variant == 1 && !hasChecklist) {
                 blocks.add(Block.checklist("이번 주 할 일", items("", "", "")));
@@ -244,10 +334,22 @@ public class GoalBasicFormBuilder {
 
     private static Block defaultBlock(String type, Kind kind, String title) {
         return switch (type) {
-            case GoalAiFormResponse.TABLE -> Block.table("항목 표", List.of(new Field("목표", title == null ? "" : title), new Field("", "")));
+            case GoalAiFormResponse.TABLE -> Block.table(
+                "항목 표",
+                List.of(new Field("목표", title == null ? "" : title), new Field("", ""))
+            );
             case GoalAiFormResponse.CHECKLIST -> Block.checklist("체크리스트", items("", "", ""));
-            case GoalAiFormResponse.TRACKER -> tracker("습관표", kind == Kind.WEIGHT ? "운동하기" : "계획한 만큼 해내기");
-            case GoalAiFormResponse.PROGRESS -> Block.progress("진행도", kind == Kind.WEIGHT ? "kg" : "", 0d, null, 0d);
+            case GoalAiFormResponse.TRACKER -> tracker(
+                "습관표",
+                kind == Kind.WEIGHT ? "운동하기" : "계획한 만큼 해내기"
+            );
+            case GoalAiFormResponse.PROGRESS -> Block.progress(
+                "진행도",
+                kind == Kind.WEIGHT ? "kg" : "",
+                0d,
+                null,
+                0d
+            );
             case GoalAiFormResponse.LOG -> Block.log("기록표", List.of("날짜", "기록", "메모"), List.of());
             default -> Block.note("메모", "");
         };

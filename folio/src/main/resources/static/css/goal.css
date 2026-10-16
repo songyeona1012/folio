@@ -1,3 +1,4 @@
+/* 목표 목록·작성 양식·진행 기록·금전 목표·AI 작성 창의 스타일입니다. */
 /* =========================================================
    goal.css — 목표 페이지
    0. 공통   1. 왼쪽 페이지(목록)   2. 오른쪽 페이지(종이)
@@ -12,19 +13,18 @@
 .pm,
 .pe,
 .rm {
-    --pm-sub-w: 142px;             /* 만들기/수정 팝업의 최소 너비 (미리보기가 크면 자동으로 넓어진다) */
+    --pm-sub-w: 142px; /* 만들기/수정 팝업의 최소 너비 (미리보기가 크면 자동으로 넓어진다) */
     --goal-brown-900: #5c3716;
     --goal-brown-700: #7a5532;
     --goal-brown-500: #a58a70;
     --goal-accent: #e9692c;
     --goal-line: #3b3b3b;
     --goal-gray: #d9d9d9;
-    --goal-blue: #e1e7f6;          /* 표 이름 칸 / D-day 테두리 / 리뷰 날짜 칸 */
-    --goal-scroll-w: 14px;         /* 스크롤바 두께 */
+    --goal-blue: #e1e7f6; /* 표 이름 칸 / D-day 테두리 / 리뷰 날짜 칸 */
+    --goal-scroll-w: 14px; /* 스크롤바 두께 */
     box-sizing: border-box;
     font-family: inherit;
 }
-
 .goal-page *,
 .goal-paper *,
 .pm *,
@@ -32,7 +32,6 @@
 .rm * {
     box-sizing: border-box;
 }
-
 .goal-page [hidden],
 .goal-paper [hidden],
 .pm[hidden],
@@ -40,7 +39,6 @@
 .rm[hidden] {
     display: none !important;
 }
-
 .goal-page button,
 .goal-paper button,
 .pm button,
@@ -78,7 +76,6 @@ body {
     scrollbar-width: auto;
     scrollbar-color: auto;
 }
-
 .goal-list-scroll::-webkit-scrollbar,
 .item-scroll::-webkit-scrollbar,
 .money-scroll::-webkit-scrollbar,
@@ -87,25 +84,25 @@ body {
     width: var(--goal-scroll-w);
     height: var(--goal-scroll-w);
 }
-
 .goal-list-scroll::-webkit-scrollbar-track,
 .item-scroll::-webkit-scrollbar-track,
 .money-scroll::-webkit-scrollbar-track,
 .ai-scroll::-webkit-scrollbar-track {
-    background: linear-gradient(to right,
-    transparent calc(50% - 0.5px), var(--goal-track) calc(50% - 0.5px),
-    var(--goal-track) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    background: linear-gradient(
+        to right,
+        transparent calc(50% - 0.5px),
+        var(--goal-track) calc(50% - 0.5px),
+        var(--goal-track) calc(50% + 0.5px),
+        transparent calc(50% + 0.5px)
+    );
 }
-
 .progress-body::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
-
 .progress-body::-webkit-scrollbar-track {
     background: transparent;
 }
-
 .goal-list-scroll::-webkit-scrollbar-button,
 .item-scroll::-webkit-scrollbar-button,
 .money-scroll::-webkit-scrollbar-button,
@@ -115,7 +112,6 @@ body {
     width: 0;
     height: 0;
 }
-
 .goal-list-scroll::-webkit-scrollbar-thumb,
 .item-scroll::-webkit-scrollbar-thumb,
 .money-scroll::-webkit-scrollbar-thumb,
@@ -128,12 +124,15 @@ body {
     background-image:
         linear-gradient(var(--goal-grip), var(--goal-grip)),
         linear-gradient(var(--goal-grip), var(--goal-grip));
-    background-size: 4px 1px, 4px 1px;
-    background-position: center calc(50% - 2px), center calc(50% + 2px);
+    background-size:
+        4px 1px,
+        4px 1px;
+    background-position:
+        center calc(50% - 2px),
+        center calc(50% + 2px);
     background-repeat: no-repeat;
     box-shadow: inset 0 0 0 1px var(--goal-thumb-line);
 }
-
 .progress-body::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
     border-radius: 10px;
@@ -165,7 +164,6 @@ body {
     background-color: transparent;
     cursor: pointer;
 }
-
 .goal-select-checkbox:checked,
 .item-select:checked,
 .tx-select:checked,
@@ -177,7 +175,6 @@ body {
     background-repeat: no-repeat;
     background-size: 80%;
 }
-
 .goal-select-checkbox:focus-visible,
 .item-select:focus-visible,
 .tx-select:focus-visible,
@@ -196,7 +193,6 @@ body {
     outline-offset: 2px;
 }
 
-
 /* ---------- 1. 왼쪽 페이지 ---------- */
 .goal-page {
     container: goalpage / inline-size;
@@ -207,18 +203,15 @@ body {
     min-height: 0;
     color: var(--goal-brown-700);
 }
-
 .goal-heading {
     flex: 0 0 auto;
 }
-
 .goal-heading h1 {
     margin: 0 0 14px;
     font-size: clamp(30px, 2.6vw, 44px);
     line-height: 1.1;
     color: var(--goal-brown-900);
 }
-
 .goal-heading p {
     margin: 0;
     font-size: 14px;
@@ -242,7 +235,6 @@ body {
 .goal-list-footer {
     padding-right: var(--goal-scroll-w);
 }
-
 .goal-toolbar {
     flex: 0 0 auto;
     margin-top: 36px;
@@ -262,7 +254,6 @@ body {
     border-radius: 21px;
     background: #f0eeec;
 }
-
 .mode-option {
     position: relative;
     display: inline-flex;
@@ -273,14 +264,12 @@ body {
     white-space: nowrap;
     cursor: pointer;
 }
-
 .mode-option input {
     position: absolute;
     width: 1px;
     height: 1px;
     opacity: 0;
 }
-
 .mode-radio {
     display: inline-block;
     width: 15px;
@@ -289,17 +278,14 @@ body {
     border-radius: 50%;
     background: #fff;
 }
-
 .mode-option input:checked + .mode-radio {
     border-color: var(--goal-accent);
     background: radial-gradient(circle, var(--goal-accent) 0 3.5px, #fff 4px);
 }
-
 .mode-option input:focus-visible + .mode-radio {
     outline: 2px dashed var(--goal-accent);
     outline-offset: 2px;
 }
-
 .mode-new-goal {
     flex: 0 0 auto;
     margin-left: auto;
@@ -314,11 +300,9 @@ body {
     color: var(--goal-brown-700);
     cursor: pointer;
 }
-
 .mode-new-goal:hover {
     background: #fbf8f4;
 }
-
 .goal-list-label {
     justify-self: center;
     font-size: 12px;
@@ -335,13 +319,11 @@ body {
     overflow-y: auto;
     scrollbar-gutter: stable;
 }
-
 .goal-list {
     display: flex;
     flex-direction: column;
     gap: 19px;
 }
-
 .goal-empty {
     margin: 24px 0;
     font-size: 13px;
@@ -357,12 +339,10 @@ body {
     --card-bg: #fffbe6;
     --card-side: #fff5d2;
 }
-
 .goal-card-row[data-color="pink"] {
     --card-bg: #fff8f6;
     --card-side: #fff0ee;
 }
-
 .goal-card {
     display: grid;
     grid-template-columns: clamp(88px, 24.5%, 132px) minmax(0, 1fr);
@@ -387,7 +367,6 @@ body {
         0 0 7px 1px rgba(255, 126, 56, 0.65),
         0 0 18px 3px rgba(255, 140, 78, 0.35);
 }
-
 .goal-card-side {
     display: flex;
     align-items: center;
@@ -395,7 +374,6 @@ body {
     align-self: stretch;
     background: var(--card-side);
 }
-
 .goal-card-avatar {
     display: grid;
     place-items: center;
@@ -405,12 +383,10 @@ body {
     background: #fff;
     overflow: hidden;
 }
-
 .goal-card-avatar .face {
     width: 34px;
     height: 34px;
 }
-
 .goal-card-copy {
     display: flex;
     flex-direction: column;
@@ -418,7 +394,6 @@ body {
     min-width: 0;
     padding: 0 12px 0 18px;
 }
-
 .goal-card-title {
     overflow: hidden;
     font-size: 17px;
@@ -426,37 +401,31 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .goal-card-dates {
     display: flex;
     flex-wrap: wrap;
     gap: 2px 20px;
 }
-
 .goal-card-dates,
 .goal-card-updated {
     font-size: 11px;
     color: #a08a74;
 }
-
 .goal-card-updated {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
 .goal-select-checkbox {
     justify-self: center;
     width: 22px;
     height: 22px;
     border: 1.5px solid #8a5a3c;
 }
-
 .goal-list-footer {
     flex: 0 0 auto;
     margin-top: 6px;
 }
-
 #deleteSelectedGoalsBtn {
     grid-column: 2;
     justify-self: center;
@@ -468,7 +437,6 @@ body {
     white-space: nowrap;
     cursor: pointer;
 }
-
 #deleteSelectedGoalsBtn:disabled {
     color: #b7ada3;
     cursor: default;
@@ -481,38 +449,37 @@ body {
     .goal-list-footer {
         --goal-check-col: 64px;
     }
-
     .goal-mode-bar {
         gap: 6px 14px;
         padding: 6px 6px 6px 18px;
     }
-
     .mode-option {
         gap: 6px;
         font-size: 11px;
     }
-
     .mode-new-goal {
         padding: 0 14px;
         font-size: 11px;
     }
-
     .goal-card-title {
         font-size: 15px;
     }
 }
 
-
 /* ---------- 2. 오른쪽 페이지 (둥근 종이) ---------- */
 .goal-paper {
     container: goalpaper / inline-size;
-    --goal-pad-l: clamp(16px, 7.2cqw, 56px);      /* 제목 줄 왼쪽 여백 */
-    --goal-pad-r: clamp(24px, 9.6cqw, 74px);      /* 제목 줄 오른쪽 여백 (종이가 화면 끝까지 나오므로 조금 더 넓다) */
+    --goal-pad-l: clamp(16px, 7.2cqw, 56px); /* 제목 줄 왼쪽 여백 */
+    --goal-pad-r: clamp(
+        24px,
+        9.6cqw,
+        74px
+    ); /* 제목 줄 오른쪽 여백 (종이가 화면 끝까지 나오므로 조금 더 넓다) */
     --goal-inner-l: calc(var(--goal-pad-l) + 14px); /* 표·리뷰 등 본문은 제목 줄보다 조금 안쪽 */
     --goal-inner-r: calc(var(--goal-pad-r) + 14px);
-    --goal-bleed: 0px;                            /* 종이가 오른쪽 페이지 밖으로 나오는 길이. goal.js가 화면 오른쪽 끝에 맞춰 채운다 */
-    --goal-slide-from: 44px;                      /* 목표를 클릭하면 이만큼 오른쪽에서 시작해 왼쪽으로 들어온다 */
-    --goal-scroll-gap: 18px;                      /* 스크롤바를 종이 오른쪽 끝에서 띄우는 거리 */
+    --goal-bleed: 0px; /* 종이가 오른쪽 페이지 밖으로 나오는 길이. goal.js가 화면 오른쪽 끝에 맞춰 채운다 */
+    --goal-slide-from: 44px; /* 목표를 클릭하면 이만큼 오른쪽에서 시작해 왼쪽으로 들어온다 */
+    --goal-scroll-gap: 18px; /* 스크롤바를 종이 오른쪽 끝에서 띄우는 거리 */
     position: relative;
     display: flex;
     flex-direction: column;
@@ -534,19 +501,16 @@ body {
         opacity: 0.25;
         transform: translateX(var(--goal-slide-from));
     }
-
     to {
         opacity: 1;
         transform: none;
     }
 }
-
 .goal-paper.is-entering {
     animation: goal-paper-in 0.38s cubic-bezier(0.22, 0.7, 0.2, 1) both;
 }
 
-/* 참고: 예전에는 여기에 @media (prefers-reduced-motion: reduce) { animation: none } 이 있어서,
-   Windows의 "애니메이션 효과"가 꺼져 있으면(원격 접속·절전 상태 등 포함) 종이 모션과 진동이 전부 사라졌다.
+/* 참고: 예전에는 여기에 @media (prefers-reduced-motion: reduce) { animation: none }이 있어서, Windows의 "애니메이션 효과"가 꺼져 있으면(원격 접속·절전 상태 등 포함) 종이 모션과 진동이 전부 사라졌다.
    움직임이 작고(44px, 0.38초) 이 화면의 핵심 연출이라 항상 보이도록 이 예외를 뺐다. */
 
 .save-status {
@@ -557,11 +521,9 @@ body {
     color: #b9b0a6;
     pointer-events: none;
 }
-
 .save-status[data-state="error"] {
     color: #c0502a;
 }
-
 .goal-title-input {
     display: block;
     flex: 0 0 auto;
@@ -576,27 +538,22 @@ body {
     font-size: clamp(20px, 4.2cqw, 30px);
     color: #2f2a26;
 }
-
 .goal-title-input::placeholder {
     color: #d8d8d8;
 }
-
 .goal-title-input:focus-visible {
     border-bottom-color: var(--goal-accent);
 }
-
 .goal-panel {
     flex: 1 1 auto;
     min-height: 0;
 }
-
 
 /* ---------- 3. 공부 양식 ---------- */
 .goal-panel[data-mode-panel="form"] {
     display: flex;
     flex-direction: column;
 }
-
 .form-top {
     display: grid;
     flex: 0 0 auto;
@@ -614,7 +571,6 @@ body {
     border-top: 1px solid var(--goal-line);
     border-left: 1px solid var(--goal-line);
 }
-
 .goal-table-label,
 .goal-table-cell {
     min-width: 0;
@@ -622,7 +578,6 @@ body {
     border-right: 1px solid var(--goal-line);
     border-bottom: 1px solid var(--goal-line);
 }
-
 .goal-table-label {
     display: grid;
     align-content: center;
@@ -634,7 +589,6 @@ body {
     /*text-align-last: justify;*/
     white-space: nowrap;
 }
-
 .goal-table-cell {
     display: flex;
     align-items: center;
@@ -659,11 +613,9 @@ body {
     text-overflow: ellipsis;
     color: #1f1f1f;
 }
-
 .goal-table-cell input::placeholder {
     font-weight: 400;
 }
-
 .goal-table-cell input:focus-visible {
     background: #fffdf3;
 }
@@ -674,17 +626,14 @@ body {
     gap: 4px;
     padding: 0 4px;
 }
-
 .goal-date-cell input {
     flex: 1 1 0;
     padding: 0;
     letter-spacing: 0.12em;
 }
-
 .goal-date-cell input::placeholder {
     color: #c9c9c9;
 }
-
 .goal-date-cell span {
     flex: 0 0 auto;
     color: #333;
@@ -703,7 +652,6 @@ body {
     background: #fff;
     text-align: center;
 }
-
 .dday-count {
     font-size: clamp(20px, 5.1cqw, 36px);
     font-weight: 500;
@@ -711,7 +659,6 @@ body {
     white-space: nowrap;
     color: #111;
 }
-
 .dday-hint {
     margin: 0;
     font-size: clamp(8.5px, 1.4cqw, 10px);
@@ -735,13 +682,11 @@ body {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
     column-gap: var(--goal-col-gap);
 }
-
 .item-heads {
     flex: 0 0 auto;
     align-items: baseline;
     margin: clamp(18px, 3cqw, 26px) var(--goal-inner-r) 0 var(--goal-inner-l);
 }
-
 .item-section-head {
     display: flex;
     flex-wrap: wrap;
@@ -750,7 +695,6 @@ body {
     gap: 2px 8px;
     min-width: 0;
 }
-
 .item-section-head h2 {
     margin: 0;
     font-size: clamp(13px, 2.1cqw, 16px);
@@ -768,12 +712,10 @@ body {
     color: #b3b3b3;
     cursor: pointer;
 }
-
 .progress-add-btn:hover,
 .progress-add-btn[aria-expanded="true"] {
     color: #6d5844;
 }
-
 .clear-selected {
     padding: 0;
     border: 0;
@@ -783,7 +725,6 @@ body {
     color: #6d5844;
     cursor: pointer;
 }
-
 .clear-selected:disabled {
     color: #b0b0b0;
     cursor: default;
@@ -794,25 +735,22 @@ body {
     flex: 1 1 auto;
     min-height: 120px;
     margin: 12px var(--goal-scroll-gap) 0 0;
-    padding: 2px calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 22px var(--goal-inner-l);
+    padding: 2px calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 22px
+        var(--goal-inner-l);
     overflow-x: hidden;
     overflow-y: auto;
 }
-
 .item-cols {
     align-items: start;
 }
-
 .item-col {
     min-width: 0;
 }
-
 .item-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
-
 .add-item-btn {
     display: block;
     width: min(163px, 100%);
@@ -826,7 +764,6 @@ body {
     color: #333;
     cursor: pointer;
 }
-
 .add-item-btn:hover {
     background: #cfcfcf;
 }
@@ -838,7 +775,6 @@ body {
     gap: 22px;
     padding-top: 6px; /* 순서를 바꿀 때 나타나는 파란 선이 잘리지 않도록 */
 }
-
 .progress-block {
     position: relative;
 }
@@ -849,7 +785,6 @@ body {
     outline-offset: 7px;
     border-radius: 5px;
 }
-
 body.is-reordering-progress,
 body.is-reordering-progress * {
     cursor: grabbing !important;
@@ -872,7 +807,6 @@ body.is-reordering-progress * {
     line-height: 1.4;
     color: #333;
 }
-
 .progress-name {
     min-height: 1.4em;
     overflow: hidden;
@@ -883,20 +817,16 @@ body.is-reordering-progress * {
     -webkit-user-select: none;
     touch-action: none;
 }
-
 .progress-name:empty::before {
     content: attr(data-placeholder);
     color: #c4c4c4;
 }
-
 .progress-name:hover {
     color: #000;
 }
-
 .progress-name-input:focus {
     box-shadow: inset 0 -1px 0 var(--goal-accent);
 }
-
 .progress-body {
     min-width: 0;
     overflow-x: auto;
@@ -908,13 +838,12 @@ body.is-reordering-progress * {
     display: grid;
     grid-template-columns: repeat(var(--cols), minmax(14px, 24px));
     justify-content: start;
-    width: fit-content;   /* 자리가 모자라면 칸이 줄어든다 (칸 최소 14px). 그래도 모자라면 가로 스크롤 */
+    width: fit-content; /* 자리가 모자라면 칸이 줄어든다 (칸 최소 14px). 그래도 모자라면 가로 스크롤 */
     max-width: 100%;
     border-top: 1px solid #8f8f8f;
     border-left: 1px solid #8f8f8f;
     cursor: pointer;
 }
-
 .progress-cell {
     display: grid;
     place-items: center;
@@ -925,7 +854,6 @@ body.is-reordering-progress * {
     font-size: var(--cell-font, 10px);
     color: #555;
 }
-
 .progress-grid:hover .progress-cell:not(.is-done):not(.is-empty) {
     background: #eeeeee;
 }
@@ -954,13 +882,11 @@ body.is-reordering-progress * {
 .text-body {
     min-width: 0;
 }
-
 .text-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
-
 .text-row {
     position: relative;
     display: grid;
@@ -979,7 +905,6 @@ body.is-reordering-progress * {
     height: 1px;
     background: var(--goal-line);
 }
-
 .text-cell {
     display: block;
     width: 100%;
@@ -996,12 +921,10 @@ body.is-reordering-progress * {
     text-overflow: ellipsis;
     color: #1f1f1f;
 }
-
 .text-cell::placeholder {
     font-weight: 400;
     color: #cfcfcf;
 }
-
 .text-cell:focus {
     background: #fffdf3;
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
@@ -1037,7 +960,6 @@ body.is-reordering-progress * {
     transform: translate(-50%, -50%);
     background: radial-gradient(circle, #a3abc2 1.5px, transparent 1.9px) 0 0 / 5px 4px;
 }
-
 .text-handle:hover {
     background: #d3d8e4;
 }
@@ -1047,7 +969,6 @@ body.is-reordering-progress * {
     outline: 2px solid #2f78e8;
     outline-offset: 3px;
 }
-
 .text-row.is-dragging .text-handle {
     background: #c3cde8;
 }
@@ -1060,7 +981,6 @@ body.is-reordering-progress * {
     text-decoration-color: rgba(60, 90, 70, 0.55);
     color: #6f8575;
 }
-
 .text-check {
     width: 18px;
     height: 18px;
@@ -1091,13 +1011,11 @@ body.is-reordering-progress * {
     height: 1px;
     background: var(--goal-line);
 }
-
 .note-box {
     min-width: 0;
     border: 1px solid var(--goal-line);
     background: #fff;
 }
-
 .review-date {
     display: flex;
     align-items: center;
@@ -1113,7 +1031,6 @@ body.is-reordering-progress * {
 .review-date:focus-within {
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
 }
-
 .rd-part {
     width: 1.35em;
     padding: 0;
@@ -1124,15 +1041,12 @@ body.is-reordering-progress * {
     text-align: center;
     color: #333;
 }
-
 .rd-part::placeholder {
     color: #b3bbd2;
 }
-
 .review-date span {
     margin: 0 4px 0 1px;
 }
-
 .review-text {
     display: block;
     width: 100%;
@@ -1145,16 +1059,13 @@ body.is-reordering-progress * {
     font-size: 12px;
     color: #222;
 }
-
 .review-text::placeholder {
     color: #cfcfcf;
 }
-
 .review-text:focus {
     background: #fffdf3;
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
 }
-
 .note-row .item-select {
     width: 18px;
     height: 18px;
@@ -1162,20 +1073,18 @@ body.is-reordering-progress * {
     border: 1px solid #555;
 }
 
-
 /* ---------- 3-2. 금전 양식 ----------
    위쪽(남은 금액·표·사진)은 고정, 달성 현황과 입출금 내역은 제목 줄 아래부터 스크롤된다. */
 .goal-panel[data-mode-panel="money"] {
-    --money-yellow: #f5eebe;                          /* 표 이름 칸 / 사진 테두리 / 입출금 머리글 */
-    --money-status-w: clamp(128px, 23.5cqw, 204px);   /* 달성 현황 상자 너비 */
+    --money-yellow: #f5eebe; /* 표 이름 칸 / 사진 테두리 / 입출금 머리글 */
+    --money-status-w: clamp(128px, 23.5cqw, 204px); /* 달성 현황 상자 너비 */
     --money-gap: clamp(12px, 3.6cqw, 30px);
-    --money-rule: clamp(19px, 2.8cqw, 23px);          /* 달성 현황의 줄 간격 */
+    --money-rule: clamp(19px, 2.8cqw, 23px); /* 달성 현황의 줄 간격 */
     --money-red: #c4403b;
     --money-blue: #3566c9;
     display: flex;
     flex-direction: column;
 }
-
 .money-top {
     display: grid;
     flex: 0 0 auto;
@@ -1184,7 +1093,6 @@ body.is-reordering-progress * {
     align-items: stretch;
     margin: clamp(10px, 2.2cqw, 18px) var(--goal-inner-r) 0 var(--goal-inner-l);
 }
-
 .money-main {
     position: relative;
     min-width: 0;
@@ -1197,7 +1105,6 @@ body.is-reordering-progress * {
     line-height: 1.4;
     color: #8a6c50;
 }
-
 .money-remain b {
     margin-left: 5px;
     font-weight: 400;
@@ -1215,25 +1122,21 @@ body.is-reordering-progress * {
     white-space: nowrap;
     color: #111;
 }
-
 .money-sum i {
     font-style: normal;
     font-weight: 300;
 }
-
 .money-remain .is-empty,
 .money-sum .is-empty {
     color: #dcdcdc;
     font-weight: 700;
 }
-
 .money-table .goal-table-label {
     background: var(--money-yellow);
     justify-items: center;
     text-align: center;
     text-align-last: center; /* 시안: 표 이름은 늘여 맞추지 않고 가운데에 둔다 */
 }
-
 .money-table .goal-table-label,
 .money-table .goal-table-cell {
     min-height: clamp(30px, 4.6cqw, 36px);
@@ -1243,12 +1146,10 @@ body.is-reordering-progress * {
 .money-amount-cell {
     position: relative;
 }
-
 .money-amount-cell .money-input {
     padding: 0 clamp(26px, 4cqw, 34px); /* 오른쪽 ₩ 자리만큼 양쪽을 똑같이 비워서 숫자가 가운데에 놓인다 */
     letter-spacing: 0.1em;
 }
-
 .money-won {
     position: absolute;
     top: 50%;
@@ -1259,7 +1160,6 @@ body.is-reordering-progress * {
     color: #1f1f1f;
     pointer-events: none;
 }
-
 .money-input::placeholder,
 .money-cycle::placeholder {
     color: #c9c9c9;
@@ -1270,20 +1170,17 @@ body.is-reordering-progress * {
     gap: clamp(2px, 0.5cqw, 4px);
     padding: 0 clamp(6px, 1.4cqw, 10px) 0 0;
 }
-
 .money-cycle-cell .money-deposit {
     flex: 0 1 34%;
     padding: 0 2px;
     font-size: clamp(11px, 1.8cqw, 14px);
     letter-spacing: 0.06em;
 }
-
 .money-cycle-cell .money-cycle {
     flex: 1 1 0;
     padding: 0 2px;
     font-size: clamp(11px, 1.9cqw, 14.5px);
 }
-
 .money-unit {
     flex: 0 0 auto;
     font-size: clamp(10.5px, 1.9cqw, 14.5px);
@@ -1291,7 +1188,6 @@ body.is-reordering-progress * {
     white-space: nowrap;
     color: #333;
 }
-
 .money-slash {
     flex: 0 0 auto;
     margin: 0 clamp(2px, 0.6cqw, 5px);
@@ -1301,12 +1197,10 @@ body.is-reordering-progress * {
     line-height: 1;
     color: #222;
 }
-
 .money-input.is-invalid,
 .money-cycle.is-invalid {
     color: var(--money-red);
 }
-
 .money-input.is-shaking,
 .money-cycle.is-shaking,
 .tx-amount.is-shaking,
@@ -1328,7 +1222,6 @@ body.is-reordering-progress * {
     color: var(--goal-accent);
     pointer-events: none;
 }
-
 .money-hint.is-info {
     color: #8a6c50;
 }
@@ -1344,11 +1237,9 @@ body.is-reordering-progress * {
     background: #fff;
     overflow: hidden;
 }
-
 .money-photo.is-over {
     box-shadow: inset 0 0 0 3px rgba(233, 105, 44, 0.5);
 }
-
 .photo-img {
     position: absolute;
     inset: 0;
@@ -1357,14 +1248,12 @@ body.is-reordering-progress * {
     object-fit: contain;
     background: #fff;
 }
-
 .photo-empty {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
 }
-
 .photo-pick {
     padding: 6px 4px;
     border: 0;
@@ -1374,7 +1263,6 @@ body.is-reordering-progress * {
     color: #c0c0c0;
     cursor: pointer;
 }
-
 .photo-pick:hover {
     color: #6d5844;
 }
@@ -1388,7 +1276,6 @@ body.is-reordering-progress * {
     margin: 6px auto -6px;
     background: #d6d6d6;
 }
-
 .photo-tools {
     position: absolute;
     right: 0;
@@ -1403,12 +1290,10 @@ body.is-reordering-progress * {
     opacity: 0;
     transition: opacity 0.15s ease;
 }
-
 .money-photo:hover .photo-tools,
 .money-photo:focus-within .photo-tools {
     opacity: 1;
 }
-
 .photo-tool {
     padding: 3px 5px;
     border: 0;
@@ -1417,11 +1302,9 @@ body.is-reordering-progress * {
     color: #6d5844;
     cursor: pointer;
 }
-
 .photo-tool:hover {
     color: var(--goal-accent);
 }
-
 .photo-pick:focus-visible,
 .photo-tool:focus-visible,
 .tx-type-btn:focus-visible,
@@ -1442,7 +1325,6 @@ body.is-reordering-progress * {
     align-items: baseline;
     margin: clamp(24px, 3.9cqw, 31px) var(--goal-inner-r) 0 var(--goal-inner-l);
 }
-
 .money-heads h2 {
     margin: 0;
     font-size: clamp(13px, 2cqw, 15.5px);
@@ -1450,7 +1332,6 @@ body.is-reordering-progress * {
     white-space: nowrap;
     color: #222;
 }
-
 .money-heads-right {
     display: flex;
     align-items: baseline;
@@ -1458,16 +1339,15 @@ body.is-reordering-progress * {
     gap: 6px;
     min-width: 0;
 }
-
 .money-scroll {
     flex: 1 1 auto;
     min-height: 120px;
     margin: 12px var(--goal-scroll-gap) 0 0;
-    padding: 2px calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 22px var(--goal-inner-l);
+    padding: 2px calc(var(--goal-inner-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 22px
+        var(--goal-inner-l);
     overflow-x: hidden;
     overflow-y: auto;
 }
-
 .money-cols {
     display: grid;
     grid-template-columns: var(--money-status-w) minmax(0, 1fr);
@@ -1484,7 +1364,6 @@ body.is-reordering-progress * {
     border: 1px solid #b9aa62;
     background: #fff;
 }
-
 .money-status {
     flex: 1 1 auto;
     min-width: 0;
@@ -1495,13 +1374,16 @@ body.is-reordering-progress * {
     color: #222;
     overflow-wrap: anywhere;
     word-break: keep-all;
-    background-image: linear-gradient(to bottom, transparent calc(var(--money-rule) - 1px), #efebe0 calc(var(--money-rule) - 1px));
+    background-image: linear-gradient(
+        to bottom,
+        transparent calc(var(--money-rule) - 1px),
+        #efebe0 calc(var(--money-rule) - 1px)
+    );
     background-size: 100% var(--money-rule);
     background-origin: content-box;
     background-clip: content-box;
     cursor: text;
 }
-
 .money-status:focus {
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.45);
 }
@@ -1514,19 +1396,15 @@ body.is-reordering-progress * {
     text-align: center;
     color: #c6c6c6;
 }
-
 .ms-line {
     min-height: var(--money-rule);
 }
-
 .ms-line .hl-red {
     color: var(--money-red);
 }
-
 .ms-line .hl-blue {
     color: var(--money-blue);
 }
-
 .ms-note {
     color: #b3b3b3;
 }
@@ -1538,11 +1416,9 @@ body.is-reordering-progress * {
     justify-content: space-between;
     gap: 6px;
 }
-
 .ms-opt-text {
     min-width: 0;
 }
-
 .ms-radio {
     position: relative;
     flex: 0 0 auto;
@@ -1555,19 +1431,16 @@ body.is-reordering-progress * {
     user-select: none;
     -webkit-user-select: none;
 }
-
 .ms-radio[aria-checked="true"] {
     border-color: #b9795a;
     background: radial-gradient(circle, var(--goal-accent) 0 4.4px, #fff 4.9px);
 }
-
 .money-apply {
     flex: 0 0 auto;
     padding: 9px 0 11px;
     border-top: 1px solid #efebe0;
     text-align: center;
 }
-
 .money-apply-btn {
     padding: 5px 17px;
     border: 1px solid #cfe5cb;
@@ -1580,19 +1453,18 @@ body.is-reordering-progress * {
     color: #3d8d3a;
     cursor: pointer;
 }
-
 .money-apply-btn:hover {
     background: #e0f2dc;
 }
 
 /* ----- 입출금 내역: 일자 / 시간 / 입출금 유형 / 금액 / 총 액 ----- */
 .tx-wrap {
-    --tx-fs: clamp(10px, 1.6cqw, 12.5px);   /* 머리글과 줄이 같은 글자 크기를 기준으로 열을 나눈다 */
-    --tx-cols: calc(var(--tx-fs) * 5) calc(var(--tx-fs) * 3.8) calc(var(--tx-fs) * 6) minmax(0, 1fr) minmax(0, 1fr);
+    --tx-fs: clamp(10px, 1.6cqw, 12.5px); /* 머리글과 줄이 같은 글자 크기를 기준으로 열을 나눈다 */
+    --tx-cols: calc(var(--tx-fs) * 5) calc(var(--tx-fs) * 3.8) calc(var(--tx-fs) * 6) minmax(0, 1fr)
+        minmax(0, 1fr);
     --tx-side: 26px; /* 오른쪽 체크박스 칸 (연결선 8 + 간격 + 체크박스 18) */
     min-width: 0;
 }
-
 .tx-head,
 .tx-box {
     display: grid;
@@ -1600,7 +1472,6 @@ body.is-reordering-progress * {
     align-items: stretch;
     min-width: 0;
 }
-
 .tx-head {
     height: clamp(24px, 3.6cqw, 28px);
     margin-right: var(--tx-side);
@@ -1610,7 +1481,6 @@ body.is-reordering-progress * {
     font-weight: 600;
     color: #222;
 }
-
 .tx-head span {
     display: flex;
     align-items: center;
@@ -1620,18 +1490,15 @@ body.is-reordering-progress * {
     border-right: 1px solid #9c9468;
     white-space: nowrap;
 }
-
 .tx-head span:last-child {
     border-right: 0;
 }
-
 .tx-list {
     display: flex;
     flex-direction: column;
     gap: clamp(4px, 0.7cqw, 6px);
     margin-top: clamp(4px, 0.7cqw, 6px);
 }
-
 .tx-row {
     position: relative;
     display: grid;
@@ -1650,23 +1517,19 @@ body.is-reordering-progress * {
     height: 1px;
     background: var(--goal-line);
 }
-
 .tx-box {
     height: clamp(27px, 4.1cqw, 32px);
     border: 1px solid #2b2b2b;
     background: #fff;
     font-size: var(--tx-fs);
 }
-
 .tx-box > * {
     min-width: 0;
     border-right: 1px solid #b4b4b4;
 }
-
 .tx-box > :last-child {
     border-right: 0;
 }
-
 .tx-box input {
     width: 100%;
     min-width: 0;
@@ -1680,24 +1543,19 @@ body.is-reordering-progress * {
     text-align: center;
     color: #2a2a2a;
 }
-
 .tx-box input::placeholder {
     color: #c8c8c8;
 }
-
 .tx-box input:focus {
     background: #fffdf3;
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
 }
-
 .tx-date {
     letter-spacing: 0.06em;
 }
-
 .tx-time {
     letter-spacing: 0.04em;
 }
-
 .tx-type {
     display: flex;
     align-items: center;
@@ -1706,11 +1564,9 @@ body.is-reordering-progress * {
     white-space: nowrap;
     color: #444;
 }
-
 .tx-type i {
     font-style: normal;
 }
-
 .tx-type-btn {
     padding: 2px;
     border: 0;
@@ -1720,11 +1576,9 @@ body.is-reordering-progress * {
     color: #222;
     cursor: pointer;
 }
-
 .tx-type-btn:hover {
     background: #fbeee8;
 }
-
 .tx-type-btn[aria-pressed="true"] {
     background: #f9d9cc;
 }
@@ -1733,11 +1587,9 @@ body.is-reordering-progress * {
 .tx-row.is-in .tx-amount {
     color: var(--money-red);
 }
-
 .tx-row.is-out .tx-amount {
     color: var(--money-blue);
 }
-
 .tx-total {
     display: flex;
     align-items: center;
@@ -1747,16 +1599,13 @@ body.is-reordering-progress * {
     overflow: hidden;
     white-space: nowrap;
 }
-
 .tx-total:empty::before {
     content: "00,000,000,000";
     color: #c8c8c8;
 }
-
 .tx-total.is-negative {
     color: var(--money-blue);
 }
-
 .tx-select {
     width: 18px;
     height: 18px;
@@ -1771,8 +1620,6 @@ body.is-reordering-progress * {
     transform: translateX(calc(var(--tx-side) / -2));
 }
 
-
-
 /* 종이 폭이 600px 이하일 때(휴대폰, 1440px 이하 노트북): 금전 양식을 위아래로 쌓는다
    (옆으로 나란히 두면 달성 현황 칸이 130px 정도로 좁아져 글이 한 줄에 몇 글자씩만 들어간다)
    표 → 사진 → 달성 현황 → 입출금 내역 순서. 표 이름 칸은 두 줄로 줄바꿈해서 입력 칸을 넓게 쓴다. */
@@ -1780,15 +1627,12 @@ body.is-reordering-progress * {
     .money-top {
         grid-template-columns: minmax(0, 1fr);
     }
-
     .money-photo {
         height: clamp(150px, 52cqw, 220px);
     }
-
     .money-table {
         grid-template-columns: minmax(62px, 26%) minmax(0, 1fr);
     }
-
     .money-table .goal-table-label {
         padding: 0 4px;
         font-size: 12px;
@@ -1803,26 +1647,21 @@ body.is-reordering-progress * {
         grid-template-columns: minmax(0, 1fr);
         margin-top: 12px;
     }
-
     .money-heads > h2,
     .money-heads-right > h2 {
         display: none;
     }
-
     .money-heads-right {
         justify-content: flex-end;
     }
-
     .money-cols {
         grid-template-columns: minmax(0, 1fr);
         row-gap: 0;
     }
-
     .money-status-box,
     .tx-wrap {
         position: relative;
     }
-
     .money-status-box::before,
     .tx-wrap::before {
         position: absolute;
@@ -1834,25 +1673,20 @@ body.is-reordering-progress * {
         color: #222;
         pointer-events: none;
     }
-
     .money-status-box {
         margin-top: 28px;
         min-height: calc(var(--money-rule) * 10 + 14px);
     }
-
     .money-status-box::before {
         content: "달성 현황";
     }
-
     .tx-wrap {
         margin-top: 52px;
     }
-
     .tx-wrap::before {
         content: "입출금 내역";
     }
 }
-
 
 /* ---------- 4. 진도표 추가 메뉴 / 수정 패널 (인텔리제이 메뉴처럼) ---------- */
 .pm {
@@ -1861,14 +1695,14 @@ body.is-reordering-progress * {
     width: clamp(232px, 22vw, 296px);
     color: #333;
 }
-
 .pm-panel {
     padding: 6px;
     border-radius: 16px;
     background: #fff;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    box-shadow:
+        0 2px 12px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
 }
-
 .pm-item {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -1884,32 +1718,27 @@ body.is-reordering-progress * {
     color: inherit;
     cursor: pointer;
 }
-
 .pm-item strong {
     font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
 }
-
 .pm-desc {
     font-size: 9px;
     line-height: 1.4;
     color: #9a9a9a;
 }
-
 .pm-arrow {
     width: 9px;
     height: 11px;
     color: #9a9a9a;
 }
-
 .pm-arrow path {
     fill: none;
     stroke: currentColor;
     stroke-width: 1.1;
     stroke-linejoin: round;
 }
-
 .pm-item:hover,
 .pm-item.is-active {
     background: #f3f3f3;
@@ -1919,7 +1748,6 @@ body.is-reordering-progress * {
 .pm-item {
     position: relative;
 }
-
 .pm-item + .pm-item::before {
     content: "";
     position: absolute;
@@ -1929,14 +1757,12 @@ body.is-reordering-progress * {
     height: 1px;
     background: #efefef;
 }
-
 .pm-item:hover::before,
 .pm-item.is-active::before,
 .pm-item:hover + .pm-item::before,
 .pm-item.is-active + .pm-item::before {
     opacity: 0; /* 눌려 있는 항목 위아래의 선은 감춘다 */
 }
-
 .pm-item:hover .pm-arrow path,
 .pm-item.is-active .pm-arrow path {
     fill: currentColor;
@@ -1951,7 +1777,9 @@ body.is-reordering-progress * {
     padding: 4px 0 10px;
     border-radius: 18px;
     background: #fff;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    box-shadow:
+        0 2px 12px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(0, 0, 0, 0.04);
     color: #333;
 }
 
@@ -1962,11 +1790,9 @@ body.is-reordering-progress * {
     left: calc(100% - 4px);
     display: none;
 }
-
 .pm.has-sub .pm-sub.is-open {
     display: block;
 }
-
 .pm.is-flip .pm-sub {
     right: calc(100% - 4px);
     left: auto;
@@ -1983,7 +1809,6 @@ body.is-reordering-progress * {
     position: fixed;
     z-index: 1000;
 }
-
 .rm-delete {
     display: block;
     padding: 3px 7px;
@@ -1997,7 +1822,6 @@ body.is-reordering-progress * {
     color: #b4524c;
     cursor: pointer;
 }
-
 .rm-delete:hover {
     background: #fbe3e1;
 }
@@ -2019,21 +1843,17 @@ body.is-reordering-progress * {
     color: #8a8a8a;
     cursor: pointer;
 }
-
 .pm-close {
     display: none;
 }
-
 .pm.is-pinned .pm-close {
     display: block;
 }
-
 .pm.is-flip .pm-close,
 .pe.is-flip .pe-close {
     right: auto;
     left: -26px;
 }
-
 .pm-close:hover,
 .pe-close:hover {
     color: #c0502a;
@@ -2048,7 +1868,6 @@ body.is-reordering-progress * {
     white-space: nowrap;
     color: #888;
 }
-
 .pf-name strong {
     margin-left: 2px;
     font-size: 11px;
@@ -2063,12 +1882,10 @@ body.is-reordering-progress * {
     padding: 10px 12px 9px;
     cursor: text;
 }
-
 .pf-name-edit span {
     font-weight: 700;
     color: #666;
 }
-
 .pf-name-input {
     flex: 1 1 auto;
     width: 88px;
@@ -2081,15 +1898,12 @@ body.is-reordering-progress * {
     font-size: 10px;
     color: #222;
 }
-
 .pf-name-input::placeholder {
     color: #c8c8c8;
 }
-
 .pf-name-input:focus {
     box-shadow: 0 1px 0 var(--goal-accent);
 }
-
 .pf-row {
     display: flex;
     align-items: center;
@@ -2100,7 +1914,6 @@ body.is-reordering-progress * {
     font-size: 10px;
     white-space: nowrap;
 }
-
 .pf-field {
     width: 52px;
     height: 22px;
@@ -2114,11 +1927,9 @@ body.is-reordering-progress * {
     text-align: center;
     color: #222;
 }
-
 .pf-field::placeholder {
     color: #cfcfcf;
 }
-
 .pf-field:focus {
     box-shadow: 0 0 0 2px rgba(233, 105, 44, 0.3);
 }
@@ -2135,28 +1946,22 @@ body.is-reordering-progress * {
     100% {
         transform: translateX(0);
     }
-
     20% {
         transform: translateX(-4px);
     }
-
     40% {
         transform: translateX(4px);
     }
-
     60% {
         transform: translateX(-3px);
     }
-
     80% {
         transform: translateX(3px);
     }
 }
-
 .pf-field.is-shaking {
     animation: pf-shake 0.34s ease-in-out;
 }
-
 .pf-actions {
     display: flex;
     align-items: center;
@@ -2164,7 +1969,6 @@ body.is-reordering-progress * {
     gap: 10px;
     padding-top: 9px;
 }
-
 .pf-submit {
     padding: 3px 12px;
     border: 1px solid #c6d5f3;
@@ -2174,7 +1978,6 @@ body.is-reordering-progress * {
     color: #2c4680;
     cursor: pointer;
 }
-
 .pf-submit:hover:not(:disabled) {
     background: #d6e2fa;
 }
@@ -2186,7 +1989,6 @@ body.is-reordering-progress * {
     color: #b9b9b9;
     cursor: default;
 }
-
 .pf-delete {
     padding: 2px 0;
     border: 0;
@@ -2195,11 +1997,9 @@ body.is-reordering-progress * {
     color: #9d9d9d;
     cursor: pointer;
 }
-
 .pf-delete:hover {
     color: #c0502a;
 }
-
 .pf-error {
     margin: 6px 10px 0;
     font-size: 8px;
@@ -2207,30 +2007,25 @@ body.is-reordering-progress * {
     text-align: center;
     color: #d03b2a;
 }
-
 .pf-preview {
     margin: 9px 0 0;
     text-align: center;
 }
-
 .pf-preview-grid {
     display: inline-grid;
     grid-template-columns: repeat(var(--pc, 1), var(--cell, 8px));
     gap: 1px;
     max-width: 100%;
 }
-
 .pf-preview-grid i {
     display: block;
     width: var(--cell, 8px);
     height: var(--cell, 8px);
     background: #cfcfcf;
 }
-
 .pf-preview-grid i.off {
     background: #efefef;
 }
-
 .pf-preview-label {
     display: block;
     margin-top: 5px;
@@ -2238,21 +2033,19 @@ body.is-reordering-progress * {
     color: #b0b0b0;
 }
 
-
 /* ---------- 5. AI 자율 작성 ----------
    깃펜을 누르기 전에는 깃펜과 줄 노트만 보이고, 누르면 도우미 말풍선(알약 모양)과 입력칸이 나타난다. */
 .goal-panel[data-mode-panel="ai"] {
     --ai-quill-w: clamp(52px, 9.2cqw, 72px);
     --ai-gap: clamp(14px, 4.4cqw, 34px);
-    --ai-indent: calc(var(--ai-quill-w) + var(--ai-gap));  /* 말풍선이 깃펜 오른쪽에서 시작하는 위치 */
-    --ai-right: clamp(0px, 5.5cqw, 44px);                  /* 말풍선 오른쪽에 남기는 여백 (시안) */
-    --ai-rule: clamp(36px, 7.2cqw, 55px);                  /* 줄 노트의 줄 간격 */
+    --ai-indent: calc(var(--ai-quill-w) + var(--ai-gap)); /* 말풍선이 깃펜 오른쪽에서 시작하는 위치 */
+    --ai-right: clamp(0px, 5.5cqw, 44px); /* 말풍선 오른쪽에 남기는 여백 (시안) */
+    --ai-rule: clamp(36px, 7.2cqw, 55px); /* 줄 노트의 줄 간격 */
     margin-right: var(--goal-scroll-gap);
     padding: 0 calc(var(--goal-pad-r) - var(--goal-scroll-gap) - var(--goal-scroll-w)) 28px var(--goal-pad-l);
     overflow-x: hidden;
     overflow-y: auto;
 }
-
 .ai-top {
     display: flex;
     align-items: center;
@@ -2272,14 +2065,12 @@ body.is-reordering-progress * {
     cursor: pointer;
     line-height: 0;
 }
-
 .quill {
     display: block;
     width: 100%;
     height: auto;
     overflow: visible;
 }
-
 .quill-glow {
     transform-origin: 56px 30px;
     animation: quill-glow 3.4s ease-in-out infinite;
@@ -2291,51 +2082,42 @@ body.is-reordering-progress * {
         opacity: 0.8;
         transform: scale(0.96);
     }
-
     50% {
         opacity: 1;
         transform: scale(1.06);
     }
 }
-
 .quill-body {
     fill: #fffef7;
     stroke: #4a4a4a;
     stroke-width: 1;
     stroke-linejoin: round;
 }
-
 .quill-vein {
     stroke: #cdc6b4;
     stroke-width: 0.7;
     stroke-linecap: round;
 }
-
 .quill-eye {
     fill: #3b3b3b;
 }
-
 .quill-nib {
     fill: #ffd21f;
     stroke: #6e5400;
     stroke-width: 0.8;
     stroke-linejoin: round;
 }
-
 .quill-trail {
     stroke: #a8a8a8;
     stroke-width: 0.9;
     stroke-linecap: round;
 }
-
 .ai-quill:hover .quill {
     transform: translateY(-1px) rotate(-2deg);
 }
-
 .quill {
     transition: transform 0.18s ease;
 }
-
 .ai-quill[aria-expanded="true"] .quill-glow {
     animation: none;
     opacity: 1;
@@ -2347,7 +2129,6 @@ body.is-reordering-progress * {
     min-width: 0;
     margin-right: var(--ai-right);
 }
-
 .ai-chat:not([hidden]) {
     animation: ai-pill-in 0.28s ease-out both;
 }
@@ -2357,13 +2138,11 @@ body.is-reordering-progress * {
         opacity: 0;
         transform: translateX(-8px);
     }
-
     to {
         opacity: 1;
         transform: none;
     }
 }
-
 .ai-pill {
     display: block;
     width: fit-content;
@@ -2378,7 +2157,6 @@ body.is-reordering-progress * {
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
-
 .ai-chat .ai-pill {
     width: 100%;
 }
@@ -2390,34 +2168,27 @@ body.is-reordering-progress * {
     gap: 12px;
     margin: 0 var(--ai-right) 0 var(--ai-indent);
 }
-
 .ai-thread:not(:empty) {
     margin-top: 14px;
 }
-
 .ai-msg {
     display: flex;
 }
-
 .ai-msg.is-user {
     justify-content: flex-end;
 }
-
 .ai-msg .ai-pill {
     max-width: min(100%, 460px);
 }
-
 .ai-msg.is-user .ai-pill {
     border-color: #cfcfdc;
     background: #fafaff;
     color: #4d4a5e;
 }
-
 .ai-msg.is-pending .ai-pill {
     border-style: dashed;
     color: #b79a80;
 }
-
 .ai-msg.is-error .ai-pill {
     border-color: #e5b4a2;
     color: #b0532f;
@@ -2430,11 +2201,9 @@ body.is-reordering-progress * {
     gap: 8px;
     margin: 14px var(--ai-right) 0 var(--ai-indent);
 }
-
 .ai-compose:not([hidden]) {
     animation: ai-pill-in 0.28s ease-out both;
 }
-
 .ai-input {
     flex: 1 1 auto;
     min-width: 0;
@@ -2451,15 +2220,12 @@ body.is-reordering-progress * {
     color: #4a3a2c;
     resize: none;
 }
-
 .ai-input::placeholder {
     color: #c4b9ad;
 }
-
 .ai-input:focus {
     border-color: #eaa583;
 }
-
 .ai-send {
     display: grid;
     flex: 0 0 auto;
@@ -2474,12 +2240,10 @@ body.is-reordering-progress * {
     color: #fff;
     cursor: pointer;
 }
-
 .ai-send svg {
     width: 16px;
     height: 16px;
 }
-
 .ai-send:disabled {
     background: #e6dfd7;
     cursor: default;
@@ -2494,7 +2258,6 @@ body.is-reordering-progress * {
 .ai-table {
     grid-template-columns: clamp(84px, 17cqw, 132px) minmax(0, 1fr);
 }
-
 .ai-table .goal-table-label {
     padding: 0;
     justify-items: center;
@@ -2506,7 +2269,6 @@ body.is-reordering-progress * {
 .ai-row {
     display: contents;
 }
-
 .ai-label {
     display: block;
     width: 100%;
@@ -2523,20 +2285,16 @@ body.is-reordering-progress * {
     text-align-last: center; /* 부모의 양쪽 맞춤이 입력칸 글씨를 늘이지 않게 */
     color: #111;
 }
-
 .ai-label:focus {
     background: rgba(255, 255, 255, 0.55);
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
 }
-
 .ai-value-cell {
     position: relative;
 }
-
 .ai-value-cell input {
     padding-right: 26px;
 }
-
 .ai-del {
     position: absolute;
     top: 50%;
@@ -2556,12 +2314,10 @@ body.is-reordering-progress * {
     cursor: pointer;
     opacity: 0.35;
 }
-
 .ai-del:hover {
     background: #f1ece6;
     color: #7a5532;
 }
-
 .ai-value-cell:hover .ai-del,
 .ai-value-cell:focus-within .ai-del,
 .ai-item:hover .ai-del,
@@ -2586,18 +2342,15 @@ body.is-reordering-progress * {
     flex-direction: column;
     gap: clamp(22px, 3.6cqw, 30px);
 }
-
 .ai-blocks:not(:empty) {
     margin-top: clamp(22px, 3.6cqw, 30px);
 }
-
 .ai-block-head {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
 }
-
 .ai-block-kind {
     flex: 0 0 auto;
     padding: 1px 7px;
@@ -2608,7 +2361,6 @@ body.is-reordering-progress * {
     color: #8a7360;
     white-space: nowrap;
 }
-
 .ai-block-title {
     flex: 1 1 auto;
     min-width: 0;
@@ -2621,12 +2373,10 @@ body.is-reordering-progress * {
     font-weight: 700;
     color: #333;
 }
-
 .ai-block-title::placeholder {
     font-weight: 400;
     color: #c9c2ba;
 }
-
 .ai-block-title:focus {
     box-shadow: inset 0 -1px 0 var(--goal-accent);
 }
@@ -2643,7 +2393,6 @@ body.is-reordering-progress * {
     color: #b8aea4;
     cursor: pointer;
 }
-
 .ai-block-del:hover,
 .ai-block-del:focus-visible {
     background: #fbeee8;
@@ -2663,7 +2412,6 @@ body.is-reordering-progress * {
     color: #b3b3b3;
     cursor: pointer;
 }
-
 .ai-row-add:hover,
 .ai-row-add:focus-visible {
     color: #6d5844;
@@ -2674,14 +2422,12 @@ body.is-reordering-progress * {
 .ai-grid-scroll {
     overflow-x: auto;
 }
-
 .ai-grid {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
     font-size: clamp(11.5px, 1.8cqw, 13px);
 }
-
 .ai-grid th,
 .ai-grid td {
     height: 32px;
@@ -2690,7 +2436,6 @@ body.is-reordering-progress * {
     background: #fff;
     text-align: center;
 }
-
 .ai-grid thead th {
     background: var(--goal-blue);
 }
@@ -2700,7 +2445,6 @@ body.is-reordering-progress * {
 .ai-log .ai-last-cell {
     position: relative;
 }
-
 .ai-tracker tbody th input,
 .ai-log .ai-last-cell input {
     padding-right: 24px;
@@ -2711,7 +2455,6 @@ body.is-reordering-progress * {
     position: static;
     transform: none;
 }
-
 .ai-grid input[type="text"] {
     display: block;
     width: 100%;
@@ -2725,30 +2468,24 @@ body.is-reordering-progress * {
     text-align: center;
     color: #1f1f1f;
 }
-
 .ai-grid input[type="text"]:focus {
     background: #fffdf3;
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
 }
-
 .ai-grid input::placeholder {
     color: #cfcfcf;
 }
-
 .ai-tracker {
     min-width: calc(110px + var(--cols, 7) * 30px);
 }
-
 .ai-tracker .ai-lead,
 .ai-tracker tbody th {
     width: 30%;
 }
-
 .ai-tracker tbody th input {
     text-align: left;
     font-weight: 600;
 }
-
 .ai-track-check {
     width: 16px;
     height: 16px;
@@ -2757,11 +2494,9 @@ body.is-reordering-progress * {
     accent-color: #e9692c;
     cursor: pointer;
 }
-
 .ai-log {
     min-width: 300px;
 }
-
 .ai-log tbody td:first-child input {
     font-variant-numeric: tabular-nums;
 }
@@ -2772,25 +2507,21 @@ body.is-reordering-progress * {
     border: 1px solid #858585;
     background: #fff;
 }
-
 .ai-num-row {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 8px;
 }
-
 .ai-num-field {
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
 }
-
 .ai-num-label {
     font-size: 10.5px;
     color: #9a8d80;
 }
-
 .ai-num,
 .ai-unit {
     width: 100%;
@@ -2808,12 +2539,10 @@ body.is-reordering-progress * {
     font-variant-numeric: tabular-nums;
     color: #1f1f1f;
 }
-
 .ai-num:focus,
 .ai-unit:focus {
     border-bottom-color: var(--goal-accent);
 }
-
 .ai-bar {
     height: 10px;
     margin-top: 12px;
@@ -2821,7 +2550,6 @@ body.is-reordering-progress * {
     border-radius: 999px;
     background: #f1ece6;
 }
-
 .ai-bar-fill {
     width: 0;
     height: 100%;
@@ -2829,7 +2557,6 @@ body.is-reordering-progress * {
     background: linear-gradient(90deg, #f3a77f, #e9692c);
     transition: width 0.35s ease;
 }
-
 .ai-bar-text {
     margin: 6px 0 0;
     font-size: 11.5px;
@@ -2853,7 +2580,6 @@ body.is-reordering-progress * {
     resize: none;
     field-sizing: content;
 }
-
 .ai-note:focus {
     background: #fffdf3;
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
@@ -2865,21 +2591,18 @@ body.is-reordering-progress * {
     flex-direction: column;
     gap: 8px;
 }
-
 .ai-item {
     display: grid;
     grid-template-columns: 18px minmax(0, 1fr) 18px;
     column-gap: 8px;
     align-items: center;
 }
-
 .ai-check {
     width: 18px;
     height: 18px;
     border: 1px solid #555;
     border-radius: 2px;
 }
-
 .ai-item-text {
     min-width: 0;
     height: 34px;
@@ -2893,28 +2616,23 @@ body.is-reordering-progress * {
     text-overflow: ellipsis;
     color: #1f1f1f;
 }
-
 .ai-item-text::placeholder {
     font-weight: 400;
     color: #cfcfcf;
 }
-
 .ai-item-text:focus {
     background: #fffdf3;
     box-shadow: inset 0 0 0 1.5px rgba(233, 105, 44, 0.55);
 }
-
 .ai-item.is-done .ai-item-text {
     background: #eaf5ea;
     color: #7d8f7e;
     text-decoration: line-through;
 }
-
 .ai-block .add-item-btn {
     width: min(163px, 100%);
     margin: 10px auto 0;
 }
-
 .ai-form-foot {
     display: flex;
     flex-wrap: wrap;
@@ -2929,7 +2647,6 @@ body.is-reordering-progress * {
     justify-content: flex-end;
     margin-top: 6px;
 }
-
 .ai-reset {
     padding: 2px 6px;
     border: 0;
@@ -2940,7 +2657,6 @@ body.is-reordering-progress * {
     color: #c9b9ad;
     cursor: pointer;
 }
-
 .ai-reset:hover,
 .ai-reset:focus-visible {
     background: #fbeee8;
@@ -2965,11 +2681,9 @@ body.is-reordering-progress * {
     color: #fff;
     box-shadow: 0 3px 10px rgba(60, 40, 25, 0.18);
 }
-
 .ai-undo[hidden] {
     display: none;
 }
-
 .ai-undo-btn {
     flex: 0 0 auto;
     padding: 3px 10px;
@@ -2982,11 +2696,9 @@ body.is-reordering-progress * {
     color: #4a3a2e;
     cursor: pointer;
 }
-
 .ai-undo-btn[hidden] {
     display: none;
 }
-
 .ai-add {
     padding: 3px 4px;
     border: 0;
@@ -2996,7 +2708,6 @@ body.is-reordering-progress * {
     color: #b3b3b3;
     cursor: pointer;
 }
-
 .ai-add:hover {
     color: #6d5844;
 }
@@ -3011,7 +2722,11 @@ body.is-reordering-progress * {
     border: 0;
     outline: 0;
     background-color: transparent;
-    background-image: linear-gradient(to bottom, transparent calc(var(--ai-rule) - 1px), #e9e6e1 calc(var(--ai-rule) - 1px));
+    background-image: linear-gradient(
+        to bottom,
+        transparent calc(var(--ai-rule) - 1px),
+        #e9e6e1 calc(var(--ai-rule) - 1px)
+    );
     background-size: 100% var(--ai-rule);
     background-attachment: local;
     font: inherit;
@@ -3021,7 +2736,6 @@ body.is-reordering-progress * {
     resize: none;
     overflow: hidden;
 }
-
 .free-memo:focus-visible {
     box-shadow: none;
 }

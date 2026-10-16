@@ -1,3 +1,4 @@
+// 목표에 연결된 메모를 저장합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.Column;
@@ -9,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import java.time.LocalDate;
 
 /**
@@ -36,8 +36,7 @@ public class GoalNote {
     @Column(nullable = false)
     private int sortOrder;
 
-    protected GoalNote() {
-    }
+    protected GoalNote() {}
 
     GoalNote(Goal goal, LocalDate noteDate, String content, int sortOrder) {
         this.goal = goal;
@@ -46,8 +45,19 @@ public class GoalNote {
         this.sortOrder = sortOrder;
     }
 
-    public Long getId() { return id; }
-    public LocalDate getNoteDate() { return noteDate; }
-    public String getContent() { return content; }
-    public int getSortOrder() { return sortOrder; }
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getNoteDate() {
+        return noteDate;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
 }

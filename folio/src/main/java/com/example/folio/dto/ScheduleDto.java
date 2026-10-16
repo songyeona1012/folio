@@ -1,3 +1,4 @@
+// 일정 API에서 주고받는 입력·응답 구조를 모아 둡니다.
 package com.example.folio.dto;
 
 // 프론트엔드(main.mustache의 JS) 및 AI 파싱 결과와 주고받는 형태.
@@ -6,8 +7,15 @@ public class ScheduleDto {
 
     private Long id;
     private Long recurringId;
-    public Long getRecurringId() { return recurringId; }
-    public void setRecurringId(Long recurringId) { this.recurringId = recurringId; }
+
+    public Long getRecurringId() {
+        return recurringId;
+    }
+
+    public void setRecurringId(Long recurringId) {
+        this.recurringId = recurringId;
+    }
+
     private String title;
     private String date; // yyyy-MM-dd
     private String time; // HH:mm, 없으면 null

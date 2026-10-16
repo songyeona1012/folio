@@ -1,9 +1,9 @@
+// 저장된 일기를 화면에서 사용할 응답 형태로 전달합니다.
 package com.example.folio.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.example.folio.entity.Dairy;
 import com.example.folio.entity.DairyType;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -11,30 +11,30 @@ import java.util.TreeMap;
 
 /** 일기 응답 (preview는 월별 목록에서 보여줄 한 줄 미리보기) */
 public record DairyResponse(
-        Long id,
-        LocalDate date,
-        int rating,
-        DairyType type,
-        String content,
-        Map<Integer, String> hours,
-        @JsonProperty("isPrivate") boolean isPrivate,
-        String preview,
-        LocalDateTime updatedAt
+    Long id,
+    LocalDate date,
+    int rating,
+    DairyType type,
+    String content,
+    Map<Integer, String> hours,
+    @JsonProperty("isPrivate") boolean isPrivate,
+    String preview,
+    LocalDateTime updatedAt
 ) {
     private static final int PREVIEW_LENGTH = 40;
 
     public static DairyResponse from(Dairy dairy) {
         Map<Integer, String> hours = new TreeMap<>(dairy.getHours());
         return new DairyResponse(
-                dairy.getId(),
-                dairy.getDate(),
-                dairy.getRating(),
-                dairy.getType(),
-                dairy.getContent(),
-                hours,
-                dairy.isPrivate(),
-                preview(dairy.getType(), dairy.getContent(), hours),
-                dairy.getUpdatedAt()
+            dairy.getId(),
+            dairy.getDate(),
+            dairy.getRating(),
+            dairy.getType(),
+            dairy.getContent(),
+            hours,
+            dairy.isPrivate(),
+            preview(dairy.getType(), dairy.getContent(), hours),
+            dairy.getUpdatedAt()
         );
     }
 

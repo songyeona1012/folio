@@ -1,3 +1,4 @@
+// 관리 분석에서 사용할 일기 신호의 조회 방식을 정의합니다.
 package com.example.folio.service;
 
 import java.time.LocalDate;

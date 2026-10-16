@@ -1,3 +1,4 @@
+// 목표와 목표별 진행·메모·금전 기록을 저장하고 조회합니다.
 package com.example.folio.service;
 
 import com.example.folio.dto.GoalRequest;
@@ -5,13 +6,12 @@ import com.example.folio.dto.GoalResponse;
 import com.example.folio.entity.Goal;
 import com.example.folio.entity.GoalProgressTable;
 import com.example.folio.repository.GoalRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @Transactional(readOnly = true)
@@ -47,9 +47,7 @@ public class GoalService {
     }
 
     public List<GoalResponse> findAll() {
-        return goalRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(GoalResponse::from)
-                .toList();
+        return goalRepository.findAllByOrderByCreatedAtDesc().stream().map(GoalResponse::from).toList();
     }
 
     @Transactional
@@ -65,8 +63,9 @@ public class GoalService {
     public GoalResponse update(Long id, GoalRequest request) {
         validate(request);
 
-        Goal goal = goalRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("목표를 찾을 수 없어요."));
+        Goal goal = goalRepository
+            .findById(id)
+            .orElseThrow(() -> new NoSuchElementException("목표를 찾을 수 없어요."));
         apply(goal, request);
         return GoalResponse.from(goal);
     }
@@ -87,12 +86,19 @@ public class GoalService {
         if (request.title() != null && request.title().trim().length() > TITLE_MAX_LENGTH) {
             throw new IllegalArgumentException("목표명은 " + TITLE_MAX_LENGTH + "자까지 쓸 수 있어요.");
         }
-        if (request.formType() != null && !FORM_STUDY.equals(request.formType())
-                && !FORM_MONEY.equals(request.formType()) && !FORM_AI.equals(request.formType())) {
+        if (
+            request.formType() != null &&
+            !FORM_STUDY.equals(request.formType()) &&
+            !FORM_MONEY.equals(request.formType()) &&
+            !FORM_AI.equals(request.formType())
+        ) {
             throw new IllegalArgumentException("지원하지 않는 작성 양식이에요.");
         }
-        if (request.startDate() != null && request.endDate() != null
-                && request.startDate().isAfter(request.endDate())) {
+        if (
+            request.startDate() != null &&
+            request.endDate() != null &&
+            request.startDate().isAfter(request.endDate())
+        ) {
             throw new IllegalArgumentException("종료일이 시작일보다 빠를 수 없어요.");
         }
         if (request.progressTables() != null) {
@@ -103,8 +109,10 @@ public class GoalService {
     }
 
     private void validateMoney(GoalRequest request) {
-        if (request.targetAmount() != null
-                && (request.targetAmount() < MONEY_TARGET_MIN || request.targetAmount() >= MONEY_LIMIT)) {
+        if (
+            request.targetAmount() != null &&
+            (request.targetAmount() < MONEY_TARGET_MIN || request.targetAmount() >= MONEY_LIMIT)
+        ) {
             throw new IllegalArgumentException("목표 금액은 1만원 이상 100억원 미만으로 적어 주세요.");
         }
         checkAmount(request.startAmount(), "시작 금액");
@@ -175,7 +183,9 @@ public class GoalService {
             throw new IllegalArgumentException("지원하지 않는 진도표 종류예요.");
         }
         if (table.name() != null && table.name().trim().length() > PROGRESS_NAME_MAX_LENGTH) {
-            throw new IllegalArgumentException("표 이름은 " + PROGRESS_NAME_MAX_LENGTH + "자까지 쓸 수 있어요.");
+            throw new IllegalArgumentException(
+                "표 이름은 " + PROGRESS_NAME_MAX_LENGTH + "자까지 쓸 수 있어요."
+            );
         }
         if (KIND_TEXT.equals(table.kind())) {
             validateTextItems(table.items());
@@ -184,9 +194,13 @@ public class GoalService {
         if (table.total() < 1 || table.total() > PROGRESS_MAX) {
             throw new IllegalArgumentException("진도표의 수는 1~" + PROGRESS_MAX + " 사이여야 해요.");
         }
-        if (table.rows() < 1 || table.cols() < 1
-                || table.rows() > PROGRESS_MAX || table.cols() > PROGRESS_MAX
-                || (long) table.rows() * table.cols() < table.total()) {
+        if (
+            table.rows() < 1 ||
+            table.cols() < 1 ||
+            table.rows() > PROGRESS_MAX ||
+            table.cols() > PROGRESS_MAX ||
+            (long) table.rows() * table.cols() < table.total()
+        ) {
             throw new IllegalArgumentException("행 × 열이 수의 개수보다 작아요.");
         }
     }
@@ -196,11 +210,15 @@ public class GoalService {
             return;
         }
         if (items.size() > TEXT_ITEM_MAX) {
-            throw new IllegalArgumentException("글자형 진도표는 줄을 " + TEXT_ITEM_MAX + "개까지 만들 수 있어요.");
+            throw new IllegalArgumentException(
+                "글자형 진도표는 줄을 " + TEXT_ITEM_MAX + "개까지 만들 수 있어요."
+            );
         }
         for (GoalRequest.Item item : items) {
             if (item != null && item.text() != null && item.text().trim().length() > TEXT_ITEM_MAX_LENGTH) {
-                throw new IllegalArgumentException("한 줄은 " + TEXT_ITEM_MAX_LENGTH + "자까지 쓸 수 있어요.");
+                throw new IllegalArgumentException(
+                    "한 줄은 " + TEXT_ITEM_MAX_LENGTH + "자까지 쓸 수 있어요."
+                );
             }
         }
     }
@@ -208,33 +226,41 @@ public class GoalService {
     /** 요청 내용을 엔티티에 반영한다. 진도표와 한 줄 리뷰는 화면에 보이는 순서대로 통째로 교체한다. */
     private void apply(Goal goal, GoalRequest request) {
         goal.change(
-                request.title() == null ? "" : request.title().trim(),
-                normalizeFormType(request.formType()),
-                request.startDate(),
-                request.endDate(),
-                trim(request.goalUnit()),
-                trim(request.goalFrequency()),
-                trim(request.specialNotes()),
-                trim(request.goalPromise()),
-                request.freeMemo()
+            request.title() == null ? "" : request.title().trim(),
+            normalizeFormType(request.formType()),
+            request.startDate(),
+            request.endDate(),
+            trim(request.goalUnit()),
+            trim(request.goalFrequency()),
+            trim(request.specialNotes()),
+            trim(request.goalPromise()),
+            request.freeMemo()
         );
 
         goal.clearProgressTables();
         if (request.progressTables() != null) {
-            request.progressTables().stream()
-                    .filter(table -> table != null)
-                    .forEach(table -> addProgressTable(goal, table));
+            request
+                .progressTables()
+                .stream()
+                .filter(table -> table != null)
+                .forEach(table -> addProgressTable(goal, table));
         }
 
         goal.clearNotes();
         if (request.notes() != null) {
-            request.notes().stream()
-                    .filter(note -> note != null && StringUtils.hasText(note.text()))
-                    .forEach(note -> goal.addNote(note.date(), note.text().trim()));
+            request
+                .notes()
+                .stream()
+                .filter(note -> note != null && StringUtils.hasText(note.text()))
+                .forEach(note -> goal.addNote(note.date(), note.text().trim()));
         }
 
         applyMoney(goal, request);
-        goal.changeAiForm(FORM_AI.equals(goal.getFormType()) && StringUtils.hasText(request.aiForm()) ? request.aiForm() : null);
+        goal.changeAiForm(
+            FORM_AI.equals(goal.getFormType()) && StringUtils.hasText(request.aiForm())
+                ? request.aiForm()
+                : null
+        );
     }
 
     private static String normalizeFormType(String formType) {
@@ -252,20 +278,25 @@ public class GoalService {
             return;
         }
         goal.changeMoney(
-                request.targetAmount(),
-                request.startAmount(),
-                request.depositAmount(),
-                trim(request.depositCycle()),
-                StringUtils.hasText(request.photo()) ? request.photo().trim() : null
+            request.targetAmount(),
+            request.startAmount(),
+            request.depositAmount(),
+            trim(request.depositCycle()),
+            StringUtils.hasText(request.photo()) ? request.photo().trim() : null
         );
         if (request.transactions() != null) {
-            request.transactions().stream()
-                    .filter(tx -> tx != null)
-                    .forEach(tx -> goal.addTransaction(
-                            tx.date(),
-                            StringUtils.hasText(tx.time()) ? tx.time().trim() : null,
-                            TX_OUT.equals(tx.type()) ? TX_OUT : TX_IN,
-                            tx.amount()));
+            request
+                .transactions()
+                .stream()
+                .filter(tx -> tx != null)
+                .forEach(tx ->
+                    goal.addTransaction(
+                        tx.date(),
+                        StringUtils.hasText(tx.time()) ? tx.time().trim() : null,
+                        TX_OUT.equals(tx.type()) ? TX_OUT : TX_IN,
+                        tx.amount()
+                    )
+                );
         }
     }
 
@@ -274,9 +305,13 @@ public class GoalService {
         if (KIND_TEXT.equals(table.kind())) {
             GoalProgressTable saved = goal.addProgressTable(KIND_TEXT, trim(table.name()), 0, 0, 0);
             if (table.items() != null) {
-                table.items().stream()
-                        .filter(item -> item != null)
-                        .forEach(item -> saved.addItem(item.text() == null ? "" : item.text().trim(), item.done()));
+                table
+                    .items()
+                    .stream()
+                    .filter(item -> item != null)
+                    .forEach(item ->
+                        saved.addItem(item.text() == null ? "" : item.text().trim(), item.done())
+                    );
             }
             return;
         }

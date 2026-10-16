@@ -1,5 +1,7 @@
 <!DOCTYPE html>
+    {{! 로그인 화면과 회원가입 입력 창을 배치합니다. }}
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +11,9 @@
     <!-- 표지 글씨체: Folio(Cormorant Garamond) / 한글(Noto Serif KR) / 하단 문구(IBM Plex Mono) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=IBM+Plex+Mono:ital,wght@1,400&family=Noto+Serif+KR:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=IBM+Plex+Mono:ital,wght@1,400&family=Noto+Serif+KR:wght@400;500&display=swap"
+        rel="stylesheet">
 
     <!-- main과 동일한 공통 레이아웃 -->
     <link rel="stylesheet" href="/css/manage.css">
@@ -17,7 +21,7 @@
     <link rel="stylesheet" href="/css/sidebar.css">
 
     <!-- 로그인 전용 -->
-    <link rel="stylesheet" href="/css/login.css">
+    <link rel="stylesheet" href="/css/login.css?v=8">
 
     <!-- 반응형은 항상 맨 마지막에 (responsive.css 안내대로). 앞에 두면 login.css가 모바일 규칙을 덮어써서 책이 화면 밖으로 나간다. -->
     <link rel="stylesheet" href="/css/responsive.css?v=1">
@@ -32,19 +36,7 @@
 
         <div class="userProfile">
             <div class="profileImage guestImage">
-                <svg viewBox="0 0 62 66" aria-hidden="true">
-                    <g fill="none" stroke="#f26a21" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round">
-                        <!-- 깃펜 -->
-                        <path d="M18.5 52.5 C15 46 14.2 40 14.5 33 C15 27 19 22 24 18.5 C29 15 34 12.8 37 12.2 C39.5 11.8 41.2 12 41.6 12.6 C41.4 16 38 19.5 36 21.5 C34.5 22.8 33 23.5 32 23.6 L37.4 23.8 C37 26 35 28.3 30 30.5"/>
-                        <path d="M27.5 34 C25 37 21.5 39.5 20 41.5"/>
-                        <path d="M16.5 43.5 C17.5 44.5 19 45.5 20.2 47 C21 49.5 20.8 51.5 19.5 52.8 C18.5 52.2 17 50.5 16.5 48.5 C16.2 46.5 16.2 45 16.5 43.5Z"/>
-                        <path d="M18.5 33.5 C19.5 34.5 20.5 35 21.5 34.2 M21.5 32.6 C22 32.2 22.5 32.2 23 32.8"/>
-                        <!-- 쓰다 남은 선 -->
-                        <path d="M20 53.5 H28.5"/>
-                        <ellipse cx="33" cy="49.6" rx="3.8" ry="2.2" transform="rotate(-18 33 49.6)"/>
-                    </g>
-                    <path d="M34 52.6 C38 51.4 42.5 50.4 47 49.4" fill="none" stroke="#cfcbc7" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="3 1.6"/>
-                </svg>
+                <img src="/img/default-mascot.png" alt="폴리오 기본 프로필">
             </div>
             <div class="userInfo">
                 <strong>무 명</strong>
@@ -56,11 +48,11 @@
         <div class="sideLine"></div>
 
         <nav class="sideMenu">
-            <a href="/main">달력</a>
-            <a href="/dairy">일기</a>
-            <a href="/index">관리</a>
-            <a href="/goal">목표</a>
-            <a href="/setting">설정</a>
+            <a href="/login" aria-disabled="true">달력</a>
+            <a href="/login" aria-disabled="true">일기</a>
+            <a href="/login" aria-disabled="true">관리</a>
+            <a href="/login" aria-disabled="true">목표</a>
+            <a href="/login" aria-disabled="true">나의 정보</a>
         </nav>
 
         <p class="teamName">@ CREATED BY TEAM HIKING CLUB</p>
@@ -71,34 +63,70 @@
         <!-- main과 동일한 상단 영역 -->
         <div class="topBar"></div>
 
-        <section class="loginScene" id="loginScene">
+        <section class="notebook loginScene" id="loginScene">
+            <section class="signupPanel" id="signupPanel" role="dialog" aria-labelledby="signupTitle"
+                     hidden>
+                <form id="signupForm" class="signupCard">
+                    <button type="button" id="signupClose" class="signupClose" aria-label="회원가입 닫기">×
+                    </button>
+                    <h2 id="signupTitle">이름</h2>
+                    <input class="signupName" name="displayName" aria-label="이름" placeholder="이름"
+                           maxlength="40" required autocomplete="name">
+                    <label class="signupRow"><span>저자명 (ID) :</span>
+                        <input name="authorId" aria-label="저자명" minlength="2" maxlength="30" required
+                               autocomplete="username">
+                    </label>
+                    <div class="signupRow">
+                        <label for="signupPassword">암호 (PW) :</label>
+                        <input id="signupPassword" name="password" type="password" minlength="8"
+                               maxlength="128" required autocomplete="new-password">
+                        <button type="button" class="passwordEye" data-password="signupPassword"
+                                aria-label="누르는 동안 암호 보기">
+                            <img src="/img/eye-closed.png" alt="">
+                        </button>
+                    </div>
+                    <div class="signupRow">
+                        <label for="signupConfirm">암호 확인 :</label>
+                        <input id="signupConfirm" name="passwordConfirm" type="password" minlength="8"
+                               maxlength="128" required autocomplete="new-password">
+                        <button type="button" class="passwordEye" data-password="signupConfirm"
+                                aria-label="누르는 동안 확인 암호 보기">
+                            <img src="/img/eye-closed.png" alt="">
+                        </button>
+                    </div>
+                    <p class="signupHint">한글, 영어, 숫자 원하는 모든 것이 당신의 암호가 될 수 있습니다. 당신만의 암호를 등록해 보세요.</p>
+                    <p id="signupStatus" class="signupStatus" role="status" aria-live="polite"></p>
+                    <button type="submit" id="signupSubmit" class="signupSubmit">폴리오의 저자로
+                        등록하기</button>
+                </form>
+            </section>
+
+            <!-- 책이 펼쳐지는 동안 책 둘레의 그림자 (위치는 login.js 가 맞춘다) -->
+            <div class="spreadShadow" aria-hidden="true"></div>
 
             <!-- ====================================
-                 로그인하면 보여 줄 펼쳐진 책
-            ===================================== -->
+         로그인하면 보여 줄 펼쳐진 책 (main 의 책과 같은 그림, 다 펼쳐질 무렵 나타난다)
+    ===================================== -->
             <div class="openBook">
                 <img src="/img/notebook.png" alt="펼쳐진 Folio">
             </div>
 
             <!-- ====================================
-                 닫힌 책 (가죽 표지). 로그인하면 표지가 왼쪽으로 넘어간다.
-            ===================================== -->
+         닫힌 책 (가죽 표지). 로그인하면 표지가 왼쪽으로 넘어간다.
+    ===================================== -->
             <div class="closedBook">
                 <div class="closedBookPage">
 
                     <div class="bookBlock">
 
-                        <!-- 종이 클립: 책 윗면 뒤에 꽂혀 있다 -->
-                        <svg class="paperclip" viewBox="0 0 40 70" aria-hidden="true">
-                            <defs>
-                                <linearGradient id="clipMetal" x1="0" y1="0" x2="1" y2="0">
-                                    <stop offset="0" stop-color="#9fa4ad"/>
-                                    <stop offset="0.5" stop-color="#e4e6ea"/>
-                                    <stop offset="1" stop-color="#9fa4ad"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="M9 70 V19 C9 5 31 5 31 19 V56 C31 63 22 63 22 56 V28" fill="none" stroke="url(#clipMetal)" stroke-width="1.7" stroke-linecap="round"/>
-                            <path d="M15 70 V30 C15 24 19 24 19 30 V46" fill="none" stroke="url(#clipMetal)" stroke-width="1.3" stroke-linecap="round"/>
+                        <!-- 종이 클립: 책 윗면 뒤의 속지에 꽂혀 있다. 펼치면 속지와 함께 넘어가 왼쪽 쪽에 꽂힌다 -->
+                        <svg class="paperclip" viewBox="0 0 40 96" aria-hidden="true">
+                            <path d="M14 24 V64 C14 74 26 74 26 64 V14 C26 2 6 2 6 14 V80 C6 96 34 96 34 80 V34"
+                                  fill="none" stroke="#8a8f98" stroke-width="2.3" stroke-linecap="round"
+                                  stroke-linejoin="round" />
+                            <path d="M14 24 V64 C14 74 26 74 26 64 V14 C26 2 6 2 6 14 V80 C6 96 34 96 34 80 V34"
+                                  fill="none" stroke="#eceef1" stroke-width="0.9" stroke-linecap="round"
+                                  stroke-linejoin="round" transform="translate(-0.5 -0.5)" />
                         </svg>
 
                         <div class="bookShadow">
@@ -118,22 +146,32 @@
                                         <div class="labelCard">
                                             <label class="labelRow" for="username">
                                                 <span class="labelText">저자명 :</span>
-                                                <input type="text" id="username" class="labelInput" name="username"
-                                                       autocomplete="username" spellcheck="false" maxlength="30">
+                                                <input type="text" id="username" class="labelInput"
+                                                       name="username" autocomplete="username"
+                                                       spellcheck="false" maxlength="30">
                                             </label>
                                             <label class="labelRow" for="password">
                                                 <span class="labelText labelSpread">암 호 :</span>
-                                                <input type="password" id="password" class="labelInput" name="password"
+                                                <input type="password" id="password"
+                                                       class="labelInput" name="password"
                                                        autocomplete="current-password" maxlength="50">
                                             </label>
-                                            <button type="submit" class="enterButton" id="loginButton" aria-label="로그인하고 책 펼치기">
-                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            <button type="submit" class="enterButton" id="loginButton"
+                                                    aria-label="로그인하고 책 펼치기">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path d="M5 12h13M13 6l6 6-6 6" fill="none"
+                                                          stroke="currentColor" stroke-width="1.6"
+                                                          stroke-linecap="round"
+                                                          stroke-linejoin="round" />
+                                                </svg>
                                             </button>
                                         </div>
 
-                                        <button type="button" class="signupLink" id="signupLink">폴리오의 저자가 되기</button>
+                                        <button type="button" class="signupLink" id="signupLink">폴리오의
+                                            저자가 되기</button>
 
-                                        <p class="loginNote" id="loginNote" role="status" aria-live="polite"></p>
+                                        <p class="loginNote" id="loginNote" role="status"
+                                           aria-live="polite"></p>
 
                                     </form>
 
@@ -154,7 +192,8 @@
     </main>
 </div>
 
-<script src="/js/login.js"></script>
+<script src="/js/login.js?v=8"></script>
 
 </body>
+
 </html>

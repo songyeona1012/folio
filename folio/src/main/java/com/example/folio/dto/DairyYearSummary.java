@@ -1,3 +1,4 @@
+// 연도별 일기 목록과 기분 그래프에 필요한 요약을 전달합니다.
 package com.example.folio.dto;
 
 import java.util.List;
@@ -11,12 +12,10 @@ import java.util.List;
  * @param folders     일기를 한 편 이상 쓴 달만 (월 오름차순)
  */
 public record DairyYearSummary(int year, int shownMonths, List<Month> months, List<Month> folders) {
-
     /**
      * @param month         1~12
      * @param count         그 달에 쓴 일기 수
      * @param averageRating 별점 평균 (별점을 준 일기가 없으면 null)
      */
-    public record Month(int month, int count, Double averageRating) {
-    }
+    public record Month(int month, int count, Double averageRating) {}
 }

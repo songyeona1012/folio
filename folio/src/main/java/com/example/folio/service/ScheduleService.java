@@ -1,3 +1,4 @@
+// 달력 일정의 조회·변경과 관리 일정 연결을 담당합니다.
 package com.example.folio.service;
 
 import com.example.folio.dto.ScheduleDto;
@@ -180,14 +181,16 @@ public class ScheduleService {
 
         List<Schedule> list = start.isAfter(end)
             ? List.of()
-            : scheduleRepository.findByDateBetween(start, end).stream()
-            .filter(s -> !s.isCancelled())
-            .collect(Collectors.toList());
+            : scheduleRepository
+                  .findByDateBetween(start, end)
+                  .stream()
+                  .filter(s -> !s.isCancelled())
+                  .collect(Collectors.toList());
 
         int total = list.size();
         int completed = (int) list.stream().filter(Schedule::isCompleted).count();
 
-        summary.put("completionRate", total == 0 ? null : (int) Math.round(completed * 100.0 / total));
+        summary.put("completionRate", total == 0 ? null : (int) Math.round((completed * 100.0) / total));
         summary.put("completedCount", completed);
         summary.put("totalCount", total);
     }
@@ -195,7 +198,8 @@ public class ScheduleService {
     // 2. 혼잡도: 오늘부터 7일간 미완료 일정을 날짜 + 시간대별로 세어 가장 몰린 곳을 알려줌
     private String buildCongestion(LocalDate today) {
         List<Schedule> list = scheduleRepository
-            .findByDateBetween(today, today.plusDays(CONGESTION_DAYS - 1)).stream()
+            .findByDateBetween(today, today.plusDays(CONGESTION_DAYS - 1))
+            .stream()
             .filter(s -> !s.isCancelled() && !s.isCompleted())
             .sorted(byDateThenTime())
             .collect(Collectors.toList());
@@ -204,7 +208,7 @@ public class ScheduleService {
             return "앞으로 일주일 동안 예정된 일정이 없어요.";
         }
 
-        Map<String, Integer> slotCounts = new LinkedHashMap<>();   // "날짜|시간대" → 개수
+        Map<String, Integer> slotCounts = new LinkedHashMap<>(); // "날짜|시간대" → 개수
         Map<LocalDate, Integer> dayCounts = new LinkedHashMap<>(); // 날짜 → 개수
 
         for (Schedule s : list) {
@@ -228,7 +232,9 @@ public class ScheduleService {
 
         if (slotMax >= CROWDED_SLOT_COUNT) {
             String[] parts = busiestSlot.split("\\|");
-            return dayLabel(LocalDate.parse(parts[0]), today) + " " + parts[1] + "에 일정이 밀집되어있습니다.";
+            return (
+                dayLabel(LocalDate.parse(parts[0]), today) + " " + parts[1] + "에 일정이 밀집되어있습니다."
+            );
         }
 
         // 시간대로는 안 몰렸지만 하루 전체로 많은 날
@@ -264,25 +270,33 @@ public class ScheduleService {
         }
 
         Schedule s = next.get();
-        String when = dayLabel(s.getDate(), today) + (s.getTime() != null ? " " + formatTime(s.getTime()) : "");
+        String when =
+            dayLabel(s.getDate(), today) + (s.getTime() != null ? " " + formatTime(s.getTime()) : "");
 
         return "[" + when + "] " + s.getTitle();
     }
 
     // 4. 가장 가까운 건강 관리: category = "health" 인 미완료 일정 중 가장 가까운 것
     private void fillNextHealth(Map<String, Object> summary, LocalDate today) {
-        Optional<Schedule> health = scheduleRepository
-            .findFirstByCategoryAndDateGreaterThanEqualAndCompletedFalseAndCancelledFalseOrderByDateAscTimeAsc(
-                "health", today);
+        Optional<Schedule> health =
+            scheduleRepository.findFirstByCategoryAndDateGreaterThanEqualAndCompletedFalseAndCancelledFalseOrderByDateAscTimeAsc(
+                "health",
+                today
+            );
 
         summary.put("nextHealthTitle", health.map(Schedule::getTitle).orElse(null));
-        summary.put("nextHealthDays", health.map(s -> (int) ChronoUnit.DAYS.between(today, s.getDate())).orElse(null));
+        summary.put(
+            "nextHealthDays",
+            health.map(s -> (int) ChronoUnit.DAYS.between(today, s.getDate())).orElse(null)
+        );
     }
 
     // 날짜순, 같은 날이면 시간순 (시간 없는 일정은 뒤로)
     private Comparator<Schedule> byDateThenTime() {
-        return Comparator.comparing(Schedule::getDate)
-            .thenComparing(Schedule::getTime, Comparator.nullsLast(Comparator.naturalOrder()));
+        return Comparator.comparing(Schedule::getDate).thenComparing(
+            Schedule::getTime,
+            Comparator.nullsLast(Comparator.naturalOrder())
+        );
     }
 
     // 오늘 / 내일 / 모레 / 10월 3일(토)
@@ -293,8 +307,14 @@ public class ScheduleService {
         if (diff == 1) return "내일";
         if (diff == 2) return "모레";
 
-        return date.getMonthValue() + "월 " + date.getDayOfMonth() + "일("
-            + date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN) + ")";
+        return (
+            date.getMonthValue() +
+            "월 " +
+            date.getDayOfMonth() +
+            "일(" +
+            date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.KOREAN) +
+            ")"
+        );
     }
 
     // 12시 전 = 오전, 18시 전 = 오후, 그 이후 = 저녁

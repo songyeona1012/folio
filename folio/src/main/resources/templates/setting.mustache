@@ -1,37 +1,104 @@
 <!DOCTYPE html>
+{{! 나의 정보 화면: 왼쪽 암호 확인과 오른쪽 프로필 편집을 배치합니다. }}
 <html lang="ko">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>폴리오 - 설정</title>
+        <title>폴리오 - 나의 정보</title>
         <link rel="stylesheet" href="/css/manage.css">
         <link rel="stylesheet" href="/css/sidebar.css">
         <link rel="stylesheet" href="/css/calendar.css">
+        <link rel="stylesheet" href="/css/myinfo.css">
+        <link rel="stylesheet" href="/css/page-intro.css?v=1">
     </head>
+
     <body>
         <div class="appShell">
-            {{! 컨트롤러에서 pageTitle="설정", navSetting=true 를 내려주세요 }}
             {{> layout/sidebar}}
             <main class="mainArea">
                 <div class="topBar"></div>
-                <section class="notebook">
-                    {{! 컨트롤러에서 bookmarks = BookmarkLayout.of(4) 를 내려주세요 (설정 = 왼쪽 4개, 오른쪽 0개) }}
+                <section class="notebook myInfoBook">
                     {{> layout/bookLayout}}
-
-                    <section class="leftPage">
-                        <div class="placeholder-page">
-                            <h2>설정</h2>
-                            <p>설정 화면이 들어갈 자리입니다.</p>
+                    <section class="leftPage myInfoIntro">
+                        <header>
+                            <h1>나의 정보 :</h1>
+                            <p>무언가 바뀌셨나요? 나의 정보 수정을 통해 닉네임이나 프로필 등을 바꿔보세요.</p>
+                        </header>
+                        <form id="verifyForm" class="verifyForm">
+                            <p id="verifyIntro">아직은 수정할 수 없습니다.
+                                <br>당신이 저자 “{{userName}}”가 맞나요?
+                            </p>
+                            <label for="currentPassword">암호를 입력해 주세요.</label>
+                            <div class="verifyInput">
+                                <input id="currentPassword" type="password" autocomplete="current-password"
+                                    maxlength="128" required aria-label="현재 암호">
+                                <button type="button" class="myInfoEye" data-password="currentPassword"
+                                    aria-label="누르는 동안 현재 암호 보기">
+                                    <img src="/img/eye-closed.png" alt="">
+                                </button>
+                                <button type="submit" id="verifyButton">확인</button>
+                            </div>
+                        </form>
+                        <div id="editWelcome" class="editWelcome" hidden>
+                            <p id="welcomeText"></p>
+                            <p>수정이 완료되었다면 “기억하기” 버튼을 눌러주세요.</p>
+                            <small>저장 버튼을 누르기 전에 이 페이지를 벗어나면 변경 사항이 저장되지
+                                않습니다.</small>
                         </div>
+                        <p id="profileStatus" role="status" aria-live="polite"></p>
+                        <button type="submit" form="profileForm" id="rememberButton" class="rememberButton"
+                            hidden>기억하기</button>
                     </section>
-
-                    <section class="rightPage">
-                        <div class="placeholder-page">
-                            <p>준비 중이에요</p>
-                        </div>
+                    <section class="rightPage myInfoEditor">
+                        <form id="profileForm">
+                            <fieldset id="profileFields" disabled inert>
+                                <div class="myInfoPhoto">
+                                    <img id="profilePreview" src="{{profileImage}}" alt="현재 프로필 사진">
+                                    <div class="photoActions">
+                                        <label for="profileFile">프로필 사진 변경</label>
+                                        <input type="file" id="profileFile" accept="image/png,image/jpeg">
+                                        <button type="button" id="profileReset">기본 마스코트</button>
+                                        <small>PNG·JPG,
+                                            2MB 이하</small>
+                                    </div>
+                                </div>
+                                <div class="myInfoCard">
+                                    <input id="profileName" class="myInfoName" value="{{userName}}"
+                                        maxlength="40" required aria-label="이름" autocomplete="name">
+                                    <label class="myInfoRow"><span>저자명 (ID) :</span>
+                                        <input id="profileAuthorId" value="{{userEmail}}" minlength="2"
+                                            maxlength="30" required autocomplete="username">
+                                    </label>
+                                    <div class="myInfoRow">
+                                        <label for="newPassword">암호 (PW) :</label>
+                                        <input id="newPassword" type="password" minlength="8" maxlength="128"
+                                            autocomplete="new-password">
+                                        <button type="button" class="myInfoEye" data-password="newPassword"
+                                            aria-label="누르는 동안 새 암호 보기">
+                                            <img src="/img/eye-closed.png" alt="">
+                                        </button>
+                                    </div>
+                                    <div class="myInfoRow">
+                                        <label for="confirmPassword">암호 확인 :</label>
+                                        <input id="confirmPassword" type="password" maxlength="128"
+                                            autocomplete="new-password">
+                                        <button type="button" class="myInfoEye"
+                                            data-password="confirmPassword" aria-label="누르는 동안 확인 암호 보기">
+                                            <img src="/img/eye-closed.png" alt="">
+                                        </button>
+                                    </div>
+                                    <p>한글, 영어, 숫자 원하는 모든 것이 당신의 암호가 될 수 있습니다. 당신만의 암호를 등록해 보세요.</p>
+                                </div>
+                            </fieldset>
+                        </form>
+                        <button type="button" id="withdrawButton" class="withdrawButton" disabled>회원
+                            탈퇴</button>
                     </section>
                 </section>
             </main>
         </div>
+        <script src="/js/profile.js"></script>
     </body>
+
 </html>

@@ -1,5 +1,7 @@
 <!DOCTYPE html>
+{{! 일기 화면: 왼쪽 그래프·폴더와 오른쪽 일기 작성 영역입니다. }}
 <html lang="ko">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +12,9 @@
         <link rel="stylesheet" href="/css/diary.css">
         <link rel="stylesheet" href="/css/diary-extra.css?v=4">
         <link rel="stylesheet" href="/css/responsive.css?v=1">
+        <link rel="stylesheet" href="/css/page-intro.css?v=1">
     </head>
+
     <body>
         <div class="appShell">
             {{! 컨트롤러에서 pageTitle="일기", navDairy=true 를 내려주세요 }}
@@ -39,7 +43,8 @@
                             <div class="moodBox isEmpty" id="moodBox">
                                 <div class="moodScroll" id="moodScroll">
                                     <div class="moodTrack" id="moodTrack">
-                                        <div class="moodChart" id="moodChart" role="img" aria-label="일별 기분 그래프"></div>
+                                        <div class="moodChart" id="moodChart" role="img"
+                                            aria-label="일별 기분 그래프"></div>
                                         <div class="moodLabels" id="moodLabels"></div>
                                     </div>
                                 </div>
@@ -83,15 +88,19 @@
                                 </div>
 
                                 <div class="monthSheetFoot">
-                                    <div class="deleteBubble" id="deleteBubble" role="alertdialog" aria-labelledby="deleteBubbleText" hidden>
-                                        <p id="deleteBubbleText">정말로 삭제할 건가요?<br>삭제된 기록은 복구되지 않습니다.</p>
+                                    <div class="deleteBubble" id="deleteBubble" role="alertdialog"
+                                        aria-labelledby="deleteBubbleText" hidden>
+                                        <p id="deleteBubbleText">정말로 삭제할 건가요?
+                                            <br>삭제된 기록은 복구되지 않습니다.
+                                        </p>
                                         <div class="deleteBubbleActions">
                                             <button type="button" class="deleteYes" id="deleteYes">예</button>
                                             <span aria-hidden="true">/</span>
                                             <button type="button" class="deleteNo" id="deleteNo">아니요</button>
                                         </div>
                                     </div>
-                                    <button type="button" class="selectDeleteBtn" id="selectDeleteBtn" disabled>선택 삭제</button>
+                                    <button type="button" class="selectDeleteBtn" id="selectDeleteBtn"
+                                        disabled>선택 삭제</button>
                                 </div>
                             </div>
 
@@ -126,16 +135,22 @@
 
                                 <div class="starRating" id="starRating" data-value="0" role="radiogroup"
                                     aria-label="오늘의 기분 별점">
-                                    <span class="star" data-value="1" role="radio" tabindex="0" aria-label="1점">★</span>
-                                    <span class="star" data-value="2" role="radio" tabindex="-1" aria-label="2점">★</span>
-                                    <span class="star" data-value="3" role="radio" tabindex="-1" aria-label="3점">★</span>
-                                    <span class="star" data-value="4" role="radio" tabindex="-1" aria-label="4점">★</span>
-                                    <span class="star" data-value="5" role="radio" tabindex="-1" aria-label="5점">★</span>
+                                    <span class="star" data-value="1" role="radio" tabindex="0"
+                                        aria-label="1점">★</span>
+                                    <span class="star" data-value="2" role="radio" tabindex="-1"
+                                        aria-label="2점">★</span>
+                                    <span class="star" data-value="3" role="radio" tabindex="-1"
+                                        aria-label="3점">★</span>
+                                    <span class="star" data-value="4" role="radio" tabindex="-1"
+                                        aria-label="4점">★</span>
+                                    <span class="star" data-value="5" role="radio" tabindex="-1"
+                                        aria-label="5점">★</span>
                                 </div>
                                 <input type="hidden" id="diaryRatingValue" name="rating" value="0">
                             </div>
 
-                            <button type="button" class="diaryDateHint" id="diaryDateHint">클릭하여 날짜 입력 ex) 00.00.00</button>
+                            <button type="button" class="diaryDateHint" id="diaryDateHint">클릭하여 날짜 입력 ex)
+                                00.00.00</button>
                             <input type="date" class="diaryDateInput" id="diaryDateInput" aria-label="일기 날짜"
                                 tabindex="-1">
                         </div>
@@ -164,7 +179,8 @@
 
                         <div class="diarySaveRow">
 
-                            <button type="button" class="diaryDeleteBtn" id="diaryDeleteBtn" hidden>삭제</button>
+                            <button type="button" class="diaryDeleteBtn" id="diaryDeleteBtn" hidden>삭제
+                            </button>
                             <button type="button" class="diarySaveBtn" id="diarySaveBtn">저장</button>
                         </div>
                     </section>
@@ -174,4 +190,5 @@
 
         <script src="/js/dairy.js?v=5"></script>
     </body>
+
 </html>

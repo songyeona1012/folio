@@ -1,1 +1,2 @@
+// Gradle 프로젝트의 이름을 지정합니다.
 rootProject.name = 'folio'

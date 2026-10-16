@@ -1,10 +1,11 @@
+// 관리 카테고리의 시작일과 반복 주기 규칙을 저장합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-public class RecurringRule {
+public class RecurringRule extends OwnedRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,3 +1,4 @@
+// 주기 규칙을 실제 일정으로 만들고 완료 기록을 관리합니다.
 package com.example.folio.service;
 
 import com.example.folio.entity.*;
@@ -39,9 +40,14 @@ public class RecurringService {
 
     public List<RuleView> list() {
         Map<Long, Integer> completion = new HashMap<>();
-        schedules.summarizeCompletion(LocalDate.now()).forEach(summary ->
-            completion.put(summary.getRuleId(), (int) Math.round(100.0 * summary.getDone() / summary.getTotal()))
-        );
+        schedules
+            .summarizeCompletion(LocalDate.now())
+            .forEach(summary ->
+                completion.put(
+                    summary.getRuleId(),
+                    (int) Math.round((100.0 * summary.getDone()) / summary.getTotal())
+                )
+            );
         return rules
             .findAll()
             .stream()
@@ -157,31 +163,29 @@ public class RecurringService {
     }
 
     public synchronized void ensureHistory(LocalDate through) {
-        tx.executeWithoutResult(status -> rules.findAll().forEach(r -> {
-            if (!r.startDate.isAfter(through)) materialize(r, r.startDate, through);
-        }));
+        tx.executeWithoutResult(status ->
+            rules.findAll().forEach(r -> {
+                if (!r.startDate.isAfter(through)) materialize(r, r.startDate, through);
+            })
+        );
     }
 
     private void materialize(RecurringRule r, LocalDate start, LocalDate end) {
         // Repair older generic categories without changing completion or cancellation records.
         var existing = schedules.findByRecurringIdAndDateGreaterThanEqual(r.id, start);
-        existing.stream().filter(item -> !item.getDate().isAfter(end) && !r.category.equals(item.getCategory()))
-            .forEach(item -> { item.setCategory(r.category); schedules.save(item); });
+        existing
+            .stream()
+            .filter(item -> !item.getDate().isAfter(end) && !r.category.equals(item.getCategory()))
+            .forEach(item -> {
+                item.setCategory(r.category);
+                schedules.save(item);
+            });
 
         for (long i = 0; i < 75000; i++) {
             LocalDate date = r.occurrence(i);
             if (date.isAfter(end)) break;
-            if (
-                date.isBefore(start) ||
-                schedules.existsByRecurringIdAndDate(r.id, date)
-            ) continue;
-            Schedule s = new Schedule(
-                r.title,
-                date,
-                null,
-                r.category,
-                false
-            );
+            if (date.isBefore(start) || schedules.existsByRecurringIdAndDate(r.id, date)) continue;
+            Schedule s = new Schedule(r.title, date, null, r.category, false);
             s.setRecurringId(r.id);
             schedules.save(s);
         }

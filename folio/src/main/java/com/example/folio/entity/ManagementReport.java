@@ -1,9 +1,10 @@
+// 사용자별로 생성된 기간별 관리 기록지를 저장합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.*;
 
 @Entity
-public class ManagementReport {
+public class ManagementReport extends OwnedRecord {
 
     @Id
     public String id;

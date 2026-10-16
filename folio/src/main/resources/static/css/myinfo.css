@@ -1,0 +1,353 @@
+/* 나의 정보의 암호 확인 영역과 사진·명함·저장 버튼을 꾸밉니다. */
+.myInfoIntro {
+    overflow-y: auto;
+    color: #624325;
+    font-family: inherit;
+    padding-top: 4%;
+}
+.myInfoIntro header {
+    position: relative;
+}
+.myInfoIntro h1 {
+    font-size: 21px;
+    margin: 0 0 14px;
+}
+.myInfoIntro header p {
+    font-size: 10px;
+    line-height: 1.7;
+    max-width: 88%;
+}
+.verifyForm {
+    margin-top: 28px;
+    padding: 0 10px;
+    max-width: 350px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.verifyForm label {
+    display: block;
+    margin: 20px 0 14px;
+}
+.verifyInput {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+}
+.verifyInput input {
+    width: 70%;
+    min-width: 0;
+    height: 30px;
+    border: 1px solid #e6e5e3;
+    background: #fafafa;
+    box-sizing: border-box;
+    font: inherit;
+    color: #624325;
+    padding: 4px 8px;
+}
+#verifyButton {
+    border: 1px solid #dbcbbb;
+    border-radius: 4px;
+    background: #faf8f4;
+    color: #624325;
+    font: inherit;
+    font-size: 11px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+.myInfoEye {
+    border: 0;
+    background: none;
+    padding: 4px;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+}
+.myInfoEye img {
+    width: 19px;
+    height: 11px;
+    object-fit: contain;
+    display: block;
+}
+.editWelcome {
+    margin: 44px 10px 12px;
+    font-size: 13px;
+    line-height: 1.65;
+}
+.editWelcome small {
+    color: #ee945d;
+    font-size: 9px;
+}
+#profileStatus {
+    min-height: 20px;
+    margin: 18px 10px;
+    font-size: 12px;
+    color: #a84c3e;
+    line-height: 1.5;
+}
+.rememberButton {
+    display: block;
+    width: 240px;
+    max-width: 85%;
+    height: 43px;
+    min-height: 43px;
+    flex-shrink: 0;
+    margin: 36px auto 0;
+    border: 0;
+    background: url("/img/profile-save.png") center/100% 100% no-repeat;
+    color: transparent;
+    font: inherit;
+    cursor: pointer;
+}
+.rememberButton[hidden],
+.editWelcome[hidden] {
+    display: none;
+}
+.rememberButton:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+.myInfoEditor {
+    padding: 4% 5% 3% 4%;
+    box-sizing: border-box;
+    overflow: auto;
+}
+.myInfoEditor fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}
+.myInfoEditor fieldset:disabled {
+    opacity: 1;
+}
+.myInfoPhoto {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin: 12px 0 25px 9%;
+}
+#profilePreview {
+    width: 112px;
+    height: 125px;
+    object-fit: contain;
+    background: #fff;
+    border: 1px solid #e3d8cb;
+    border-radius: 2px;
+    box-sizing: border-box;
+    padding: 6px;
+}
+.photoActions {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    max-width: 150px;
+    font-size: 10px;
+    color: #9d8872;
+}
+.photoActions input {
+    width: 100%;
+    font: inherit;
+}
+.photoActions button {
+    border: 1px solid #d8c9b8;
+    background: #fffdf9;
+    color: #624325;
+    border-radius: 4px;
+    padding: 4px;
+    font: inherit;
+    cursor: pointer;
+}
+.myInfoEditor fieldset:disabled .photoActions {
+    visibility: hidden;
+}
+.myInfoCard {
+    transform: rotate(-7deg);
+    transform-origin: center;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 32px 28px 28px;
+    background: url("/img/signup-card.png") center/100% 100% no-repeat;
+    color: #624325;
+}
+.myInfoName {
+    border: 0 !important;
+    background: transparent !important;
+    font: inherit;
+    font-size: 25px !important;
+    width: 100%;
+    padding: 0 !important;
+    margin-bottom: 22px;
+    color: #624325;
+}
+.myInfoRow {
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr) 23px;
+    gap: 5px;
+    align-items: center;
+    margin: 9px 0;
+    font-size: 12px;
+}
+.myInfoRow input {
+    width: 100%;
+    height: 25px;
+    min-width: 0;
+    box-sizing: border-box;
+    background: #f8f8f8;
+    border: 1px solid #eeece9;
+    font: inherit;
+    padding: 2px 5px;
+    color: #624325;
+}
+.myInfoCard p {
+    font-size: 8px;
+    color: #adb5b7;
+    line-height: 1.8;
+    margin-top: 22px;
+}
+.myInfoEditor input:disabled {
+    color: #624325;
+    -webkit-text-fill-color: #624325;
+    opacity: 1;
+}
+.myInfoEditor input:focus-visible,
+.verifyInput input:focus-visible {
+    outline: 1px solid #c9a888;
+    outline-offset: 2px;
+}
+@media (max-width: 1100px) {
+    .myInfoRow {
+        grid-template-columns: 75px minmax(0, 1fr) 20px;
+        font-size: 10px;
+    }
+    .myInfoCard {
+        padding: 25px 22px;
+    }
+    .verifyForm {
+        margin-top: 28px;
+    }
+    .myInfoPhoto {
+        margin-left: 5%;
+    }
+    #profilePreview {
+        width: 90px;
+        height: 100px;
+    }
+}
+@media (max-height: 700px) {
+    .verifyForm {
+        margin-top: 28px;
+    }
+    .editWelcome {
+        margin-top: 22px;
+    }
+    .rememberButton {
+        margin-top: 20px;
+    }
+    .myInfoIntro {
+        overflow-y: auto;
+    }
+}
+@media (max-width: 700px) {
+    .myInfoBook {
+        height: auto !important;
+        min-height: 1100px;
+    }
+    .myInfoIntro,
+    .myInfoEditor {
+        position: relative !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        width: 85% !important;
+        margin: auto;
+    }
+    .myInfoEditor {
+        padding: 35px 5%;
+    }
+    .myInfoCard {
+        transform: rotate(-4deg);
+    }
+}
+
+/* Match the reference: an empty oval beside the introductory line, and actual eyelash icons. */
+.myInfoIntro header p {
+    max-width: 88%;
+}
+.myInfoBook .myInfoEye {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline-offset: 2px;
+    border-radius: 0;
+    min-width: 0;
+    min-height: 0;
+    padding: 3px;
+    width: 25px;
+    height: 20px;
+}
+.myInfoBook .myInfoEye img {
+    display: block;
+    width: 19px;
+    height: 12px;
+    object-fit: contain;
+}
+.myInfoCard p {
+    white-space: nowrap;
+    font-size: clamp(5px, 0.43vw, 8px);
+    margin-left: -7px;
+    margin-right: -7px;
+}
+.myInfoCard {
+    padding-bottom: 26px;
+}
+.myInfoEditor .withdrawButton {
+    display: block;
+    margin: 35px 8% 0 auto;
+    padding: 6px 0;
+    border: 0;
+    background: transparent;
+    color: #624325;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+.myInfoEditor .withdrawButton:hover:not(:disabled) {
+    text-decoration: underline;
+}
+.myInfoEditor .withdrawButton:disabled {
+    color: #b4a99e;
+    cursor: default;
+}
+
+/* Empty feedback must not reserve space above the save button. */
+#profileStatus:empty {
+    display: none;
+}
+
+.myInfoIntro {
+    padding-bottom: 20px;
+}
+/* Keep the introduction, verification and save areas spaced like the reference. */
+.myInfoIntro header p {
+    max-width: 100%;
+}
+
+.verifyForm,
+.editWelcome {
+    flex-shrink: 0;
+}
+
+#welcomeText {
+    white-space: pre-line;
+}
+
+.editWelcome p {
+    margin: 0 0 16px;
+}
+
+@media (max-height: 700px) {
+    .myInfoIntro .rememberButton {
+        margin-top: 24px;
+    }
+}

@@ -1,3 +1,4 @@
+// 목표 작성 양식과 금전 목표에 필요한 AI 요청을 받습니다.
 package com.example.folio.controller;
 
 import com.example.folio.dto.GoalAiFormRequest;
@@ -6,14 +7,13 @@ import com.example.folio.dto.GoalAiMoneyRequest;
 import com.example.folio.dto.GoalAiMoneyResponse;
 import com.example.folio.service.GoalAiException;
 import com.example.folio.service.GoalAiService;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 /**
  * 목표 화면(goal.js)이 호출하는 AI API.

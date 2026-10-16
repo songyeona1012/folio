@@ -1,15 +1,10 @@
+// 목표 작성에 필요한 AI 응답을 요청하고 화면용 데이터로 정리합니다.
 package com.example.folio.service;
 
 import com.example.folio.dto.GoalAiFormRequest;
 import com.example.folio.dto.GoalAiFormResponse;
 import com.example.folio.dto.GoalAiMoneyRequest;
 import com.example.folio.dto.GoalAiMoneyResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayDeque;
@@ -17,6 +12,11 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 /**
  * 목표 화면의 AI 기능.
@@ -57,7 +57,7 @@ public class GoalAiService {
     private static final int MONEY_TEXT_MAX_LENGTH = 300;
     private static final int MONEY_MESSAGE_MAX_LENGTH = 80;
     private static final int CYCLE_MAX_LENGTH = 30;
-    private static final long TARGET_MIN = 10_000L;          // 목표 금액은 최소 1만원
+    private static final long TARGET_MIN = 10_000L; // 목표 금액은 최소 1만원
     private static final long AMOUNT_LIMIT = 10_000_000_000L; // 100억원 미만
 
     /** AI 사용량을 지키는 제한: 1분에 이만큼까지만 (서버 전체 합계) */
@@ -84,15 +84,25 @@ public class GoalAiService {
         }
 
         // AI에 보내기 전에 줄인다: 대화는 최근 몇 개만, 지금 양식도 같은 길이 제한으로 (토큰 절약)
-        List<GoalAiFormRequest.Message> history = request.history() == null ? List.of()
-            : request.history().stream()
-            .filter(item -> item != null && item.text() != null)
-            .map(item -> new GoalAiFormRequest.Message(item.role(), cut(item.text(), HISTORY_TEXT_MAX_LENGTH)))
-            .toList();
+        List<GoalAiFormRequest.Message> history =
+            request.history() == null
+                ? List.of()
+                : request
+                      .history()
+                      .stream()
+                      .filter(item -> item != null && item.text() != null)
+                      .map(item ->
+                          new GoalAiFormRequest.Message(
+                              item.role(),
+                              cut(item.text(), HISTORY_TEXT_MAX_LENGTH)
+                          )
+                      )
+                      .toList();
         GoalAiFormRequest cleaned = new GoalAiFormRequest(
             request.prompt().trim(),
             history.subList(Math.max(0, history.size() - HISTORY_MAX), history.size()),
-            cleanCurrent(request.current()));
+            cleanCurrent(request.current())
+        );
         LocalDate today = LocalDate.now();
 
         if (!ai.isConfigured()) {
@@ -104,7 +114,13 @@ public class GoalAiService {
             return sanitize(ai.generateForm(cleaned, today));
         } catch (Exception e) {
             log.warn("AI로 양식을 만들지 못해 기본 틀로 대신합니다: {}", e.toString());
-            return sanitize(basic.build(cleaned, today, "인공지능과 연결이 원활하지 않아 기본 틀로 만들었어요. (" + reasonOf(e) + ")"));
+            return sanitize(
+                basic.build(
+                    cleaned,
+                    today,
+                    "인공지능과 연결이 원활하지 않아 기본 틀로 만들었어요. (" + reasonOf(e) + ")"
+                )
+            );
         }
     }
 
@@ -116,18 +132,27 @@ public class GoalAiService {
         }
         if (!ai.isConfigured()) {
             // 화면이 이 상태 코드를 보고 "서버에 키가 필요해요"라고 안내한다 (팀 AiService.parseSchedule과 같은 방식)
-            throw new GoalAiException(HttpStatus.SERVICE_UNAVAILABLE,
-                "AI 기능을 사용하려면 GEMINI_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY 중 하나를 환경변수로 설정해주세요.");
+            throw new GoalAiException(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "AI 기능을 사용하려면 GEMINI_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY 중 하나를 환경변수로 설정해주세요."
+            );
         }
 
-        GoalAiMoneyRequest.Current current = request.current() == null ? null : new GoalAiMoneyRequest.Current(
-            validDate(request.current().startDate()),
-            validDate(request.current().endDate()),
-            amountOrNull(request.current().targetAmount(), 0),
-            amountOrNull(request.current().startAmount(), 0),
-            amountOrNull(request.current().depositAmount(), 0),
-            cut(request.current().depositCycle(), CYCLE_MAX_LENGTH));
-        GoalAiMoneyRequest cleaned = new GoalAiMoneyRequest(cut(request.text(), MONEY_TEXT_MAX_LENGTH), current);
+        GoalAiMoneyRequest.Current current =
+            request.current() == null
+                ? null
+                : new GoalAiMoneyRequest.Current(
+                      validDate(request.current().startDate()),
+                      validDate(request.current().endDate()),
+                      amountOrNull(request.current().targetAmount(), 0),
+                      amountOrNull(request.current().startAmount(), 0),
+                      amountOrNull(request.current().depositAmount(), 0),
+                      cut(request.current().depositCycle(), CYCLE_MAX_LENGTH)
+                  );
+        GoalAiMoneyRequest cleaned = new GoalAiMoneyRequest(
+            cut(request.text(), MONEY_TEXT_MAX_LENGTH),
+            current
+        );
 
         checkRate();
         try {
@@ -140,7 +165,10 @@ public class GoalAiService {
 
     /** 화면에 보여줄 짧은 실패 이유. 우리가 만든 문구(응답 코드 등)만 그대로 보이고, 키나 요청 내용은 들어 있지 않다. */
     private static String reasonOf(Exception e) {
-        String text = e instanceof IllegalStateException && e.getMessage() != null ? e.getMessage() : "AI 답을 읽지 못했어요";
+        String text =
+            e instanceof IllegalStateException && e.getMessage() != null
+                ? e.getMessage()
+                : "AI 답을 읽지 못했어요";
         text = text.replaceAll("\\s+", " ").trim();
         if (text.length() > 140) {
             text = text.substring(0, 140) + "…";
@@ -163,7 +191,10 @@ public class GoalAiService {
             recentCalls.pollFirst();
         }
         if (recentCalls.size() >= CALLS_PER_MINUTE) {
-            throw new GoalAiException(HttpStatus.TOO_MANY_REQUESTS, "요청이 너무 많아요. 잠시 뒤에 다시 보내 주세요.");
+            throw new GoalAiException(
+                HttpStatus.TOO_MANY_REQUESTS,
+                "요청이 너무 많아요. 잠시 뒤에 다시 보내 주세요."
+            );
         }
         recentCalls.addLast(now);
     }
@@ -178,7 +209,8 @@ public class GoalAiService {
             cut(current.title(), TITLE_MAX_LENGTH),
             validDate(current.startDate()),
             validDate(current.endDate()),
-            cleanBlocks(current.blocks()));
+            cleanBlocks(current.blocks())
+        );
     }
 
     /** 길이·개수 제한, 모르는 블록 종류 제거, 올바른 날짜만. */
@@ -194,7 +226,8 @@ public class GoalAiService {
             startDate,
             endDate,
             raw.source(),
-            cleanBlocks(raw.blocks()));
+            cleanBlocks(raw.blocks())
+        );
     }
 
     static List<GoalAiFormResponse.Block> cleanBlocks(List<GoalAiFormResponse.Block> blocks) {
@@ -221,20 +254,31 @@ public class GoalAiService {
         String title = cut(block.title(), BLOCK_TITLE_MAX_LENGTH);
         switch (block.type().trim().toLowerCase(Locale.ROOT)) {
             case GoalAiFormResponse.TABLE -> {
-                List<GoalAiFormResponse.Field> rows = nonNull(block.rows()).stream()
-                    .map(row -> new GoalAiFormResponse.Field(cut(row.label(), FIELD_LABEL_MAX_LENGTH), cut(row.value(), FIELD_VALUE_MAX_LENGTH)))
+                List<GoalAiFormResponse.Field> rows = nonNull(block.rows())
+                    .stream()
+                    .map(row ->
+                        new GoalAiFormResponse.Field(
+                            cut(row.label(), FIELD_LABEL_MAX_LENGTH),
+                            cut(row.value(), FIELD_VALUE_MAX_LENGTH)
+                        )
+                    )
                     .filter(row -> !row.label().isEmpty() || !row.value().isEmpty())
                     .limit(FIELD_MAX)
                     .toList();
                 return rows.isEmpty() && title.isEmpty() ? null : GoalAiFormResponse.Block.table(title, rows);
             }
             case GoalAiFormResponse.CHECKLIST -> {
-                List<GoalAiFormResponse.Item> items = nonNull(block.items()).stream()
-                    .map(item -> new GoalAiFormResponse.Item(cut(item.text(), ITEM_TEXT_MAX_LENGTH), item.done()))
+                List<GoalAiFormResponse.Item> items = nonNull(block.items())
+                    .stream()
+                    .map(item ->
+                        new GoalAiFormResponse.Item(cut(item.text(), ITEM_TEXT_MAX_LENGTH), item.done())
+                    )
                     .filter(item -> !item.text().isEmpty())
                     .limit(ITEM_MAX)
                     .toList();
-                return items.isEmpty() && title.isEmpty() ? null : GoalAiFormResponse.Block.checklist(title, items);
+                return items.isEmpty() && title.isEmpty()
+                    ? null
+                    : GoalAiFormResponse.Block.checklist(title, items);
             }
             case GoalAiFormResponse.TRACKER -> {
                 List<String> columns = columnNames(block.columns(), TRACKER_COLUMN_MAX);
@@ -242,16 +286,27 @@ public class GoalAiService {
                     columns = List.of("월", "화", "수", "목", "금", "토", "일");
                 }
                 int size = columns.size();
-                List<GoalAiFormResponse.Track> tracks = nonNull(block.tracks()).stream()
-                    .map(track -> new GoalAiFormResponse.Track(cut(track.label(), FIELD_LABEL_MAX_LENGTH), fit(track.checks(), size)))
+                List<GoalAiFormResponse.Track> tracks = nonNull(block.tracks())
+                    .stream()
+                    .map(track ->
+                        new GoalAiFormResponse.Track(
+                            cut(track.label(), FIELD_LABEL_MAX_LENGTH),
+                            fit(track.checks(), size)
+                        )
+                    )
                     .filter(track -> !track.label().isEmpty() || track.checks().contains(Boolean.TRUE))
                     .limit(TRACKER_ROW_MAX)
                     .toList();
                 return GoalAiFormResponse.Block.tracker(title, columns, tracks);
             }
             case GoalAiFormResponse.PROGRESS -> {
-                return GoalAiFormResponse.Block.progress(title, cut(block.unit(), UNIT_MAX_LENGTH),
-                    number(block.start()), number(block.target()), number(block.current()));
+                return GoalAiFormResponse.Block.progress(
+                    title,
+                    cut(block.unit(), UNIT_MAX_LENGTH),
+                    number(block.start()),
+                    number(block.target()),
+                    number(block.current())
+                );
             }
             case GoalAiFormResponse.LOG -> {
                 List<String> columns = columnNames(block.columns(), LOG_COLUMN_MAX);
@@ -259,11 +314,17 @@ public class GoalAiService {
                     columns = List.of("날짜", "기록");
                 }
                 int size = columns.size();
-                List<List<String>> entries = nonNull(block.entries()).stream()
+                List<List<String>> entries = nonNull(block.entries())
+                    .stream()
                     .map(entry -> {
                         List<String> cells = new ArrayList<>();
                         for (int i = 0; i < size; i++) {
-                            cells.add(cut(entry != null && i < entry.size() ? entry.get(i) : "", LOG_CELL_MAX_LENGTH));
+                            cells.add(
+                                cut(
+                                    entry != null && i < entry.size() ? entry.get(i) : "",
+                                    LOG_CELL_MAX_LENGTH
+                                )
+                            );
                         }
                         return (List<String>) cells;
                     })
@@ -283,11 +344,17 @@ public class GoalAiService {
     }
 
     private static <T> List<T> nonNull(List<T> list) {
-        return list == null ? List.of() : list.stream().filter(item -> item != null).toList();
+        return list == null
+            ? List.of()
+            : list
+                  .stream()
+                  .filter(item -> item != null)
+                  .toList();
     }
 
     private static List<String> columnNames(List<String> columns, int max) {
-        return nonNull(columns).stream()
+        return nonNull(columns)
+            .stream()
             .map(name -> cut(name, COLUMN_NAME_MAX_LENGTH))
             .limit(max)
             .toList();
@@ -323,7 +390,8 @@ public class GoalAiService {
             amountOrNull(raw.targetAmount(), TARGET_MIN),
             amountOrNull(raw.startAmount(), 0),
             amountOrNull(raw.depositAmount(), 1),
-            cycle.isEmpty() || cycle.length() > CYCLE_MAX_LENGTH ? null : cycle);
+            cycle.isEmpty() || cycle.length() > CYCLE_MAX_LENGTH ? null : cycle
+        );
     }
 
     private static Long amountOrNull(Long value, long min) {

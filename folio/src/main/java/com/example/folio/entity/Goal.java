@@ -1,3 +1,4 @@
+// 목표의 기본 정보와 하위 진행 기록을 연결합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.CascadeType;
@@ -11,13 +12,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.BatchSize;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.hibernate.annotations.BatchSize;
 
 /**
  * 목표 한 건. 표(기간/진행 단위/학습 빈도/특이 사항/다짐), 진도표, 오늘의 공부 한 줄 리뷰를 함께 가진다.
@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 @Entity
 @Table(name = "goals")
-public class Goal {
+public class Goal extends OwnedRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -114,8 +114,7 @@ public class Goal {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public Goal() {
-    }
+    public Goal() {}
 
     @PrePersist
     void onCreate() {
@@ -128,8 +127,17 @@ public class Goal {
     }
 
     /** 표에 적는 기본 정보를 한 번에 바꾼다. 수정 시각도 함께 갱신한다. */
-    public void change(String title, String formType, LocalDate startDate, LocalDate endDate, String goalUnit,
-                       String goalFrequency, String specialNotes, String goalPromise, String freeMemo) {
+    public void change(
+        String title,
+        String formType,
+        LocalDate startDate,
+        LocalDate endDate,
+        String goalUnit,
+        String goalFrequency,
+        String specialNotes,
+        String goalPromise,
+        String freeMemo
+    ) {
         this.title = title;
         this.formType = formType;
         this.startDate = startDate;
@@ -143,7 +151,13 @@ public class Goal {
     }
 
     /** 금전 양식의 값을 한 번에 바꾼다. 다른 양식에서는 모두 null/빈 문자열로 비운다. */
-    public void changeMoney(Long targetAmount, Long startAmount, Long depositAmount, String depositCycle, String photo) {
+    public void changeMoney(
+        Long targetAmount,
+        Long startAmount,
+        Long depositAmount,
+        String depositCycle,
+        String photo
+    ) {
         this.targetAmount = targetAmount;
         this.startAmount = startAmount;
         this.depositAmount = depositAmount;
@@ -169,7 +183,15 @@ public class Goal {
 
     /** 진도표를 맨 뒤에 붙이고 돌려준다. 글자형이면 돌려받은 표에 addItem()으로 줄을 채운다. */
     public GoalProgressTable addProgressTable(String kind, String name, int total, int rows, int cols) {
-        GoalProgressTable table = new GoalProgressTable(this, kind, name, total, rows, cols, progressTables.size());
+        GoalProgressTable table = new GoalProgressTable(
+            this,
+            kind,
+            name,
+            total,
+            rows,
+            cols,
+            progressTables.size()
+        );
         progressTables.add(table);
         return table;
     }
@@ -182,26 +204,91 @@ public class Goal {
         notes.add(new GoalNote(this, noteDate, content, notes.size()));
     }
 
-    public Long getId() { return id; }
-    public String getTitle() { return title; }
-    public LocalDate getStartDate() { return startDate; }
-    public LocalDate getEndDate() { return endDate; }
-    public String getGoalUnit() { return goalUnit; }
-    public String getGoalFrequency() { return goalFrequency; }
-    public String getSpecialNotes() { return specialNotes; }
-    public String getGoalPromise() { return goalPromise; }
-    public String getFreeMemo() { return freeMemo; }
-    public String getCardColor() { return cardColor; }
-    public String getFormType() { return formType == null ? "STUDY" : formType; }
-    public Long getTargetAmount() { return targetAmount; }
-    public Long getStartAmount() { return startAmount; }
-    public Long getDepositAmount() { return depositAmount; }
-    public String getDepositCycle() { return depositCycle; }
-    public String getPhoto() { return photo; }
-    public String getAiForm() { return aiForm; }
-    public List<GoalTransaction> getTransactions() { return transactions; }
-    public List<GoalProgressTable> getProgressTables() { return progressTables; }
-    public List<GoalNote> getNotes() { return notes; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public String getGoalUnit() {
+        return goalUnit;
+    }
+
+    public String getGoalFrequency() {
+        return goalFrequency;
+    }
+
+    public String getSpecialNotes() {
+        return specialNotes;
+    }
+
+    public String getGoalPromise() {
+        return goalPromise;
+    }
+
+    public String getFreeMemo() {
+        return freeMemo;
+    }
+
+    public String getCardColor() {
+        return cardColor;
+    }
+
+    public String getFormType() {
+        return formType == null ? "STUDY" : formType;
+    }
+
+    public Long getTargetAmount() {
+        return targetAmount;
+    }
+
+    public Long getStartAmount() {
+        return startAmount;
+    }
+
+    public Long getDepositAmount() {
+        return depositAmount;
+    }
+
+    public String getDepositCycle() {
+        return depositCycle;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public String getAiForm() {
+        return aiForm;
+    }
+
+    public List<GoalTransaction> getTransactions() {
+        return transactions;
+    }
+
+    public List<GoalProgressTable> getProgressTables() {
+        return progressTables;
+    }
+
+    public List<GoalNote> getNotes() {
+        return notes;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 }
