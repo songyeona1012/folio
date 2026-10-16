@@ -73,8 +73,6 @@
     height: calc(100vh - 45px);
     margin: 15px auto 0;
     overflow: visible;
-    perspective: 2000px;
-    transform-style: preserve-3d;
 }
 
 
@@ -111,7 +109,8 @@
     width: auto;
     aspect-ratio: 754 / 954;
     z-index: 10;
-    perspective: 2000px;
+    /* 값이 클수록 원근이 약해 넘어가는 종이가 화면 쪽으로 커지지 않는다 */
+    perspective: 3600px;
     transform-style: preserve-3d;
 }
 
@@ -120,11 +119,11 @@
     position: absolute;
     inset: 0;
     transform-origin: 4.4% center;
-    transform-style: preserve-3d;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    will-change: transform, filter;
-    transform: rotateY(0deg);
+    /* 평소에는 평평하게 둔다: 3D 로 두면 입력칸·버튼 클릭이 책 표지에 가로채인다. 열리기 시작할 때만 3D 로 바꾼다 */
+    transform-style: flat;
+    will-change: transform;
+    /* 평소에는 변형 없이 또렷하게. 열리기 시작하면 login.js 가 각도와 깊이를 넣는다 */
+    transform: none;
 }
 
 /* 책 본체가 놓이는 자리 (예전 표지 그림의 종이 영역과 같은 위치·크기) */
@@ -135,6 +134,8 @@
     width: 91.5%;
     height: 91.4%;
     container-type: inline-size;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     --ink: #6f4e32;
     --line: #8c6b4b;
 }
@@ -181,10 +182,10 @@
     top: 0;
     height: 1.3cqw;
     background: linear-gradient(to bottom,
-            #3c3430 0 36%,
-            #6f6760 36% 46%,
-            #e2dcd6 46% 80%,
-            #120b03 80%);
+    #3c3430 0 36%,
+    #6f6760 36% 46%,
+    #e2dcd6 46% 80%,
+    #120b03 80%);
 }
 
 /* 오른쪽 옆면: 종이를 쌓아 둔 단면 */
@@ -195,13 +196,13 @@
     bottom: 0;
     width: 2.3cqw;
     background: linear-gradient(to right,
-            #120b03 0 16%,
-            #77736d 16% 22%,
-            #efefec 22% 36%,
-            #d6cbc3 36% 50%,
-            #d3c8c0 50% 74%,
-            #e2d9d2 74% 82%,
-            #5f5549 82%);
+    #120b03 0 16%,
+    #77736d 16% 22%,
+    #efefec 22% 36%,
+    #d6cbc3 36% 50%,
+    #d3c8c0 50% 74%,
+    #e2d9d2 74% 82%,
+    #5f5549 82%);
 }
 
 /* 가죽 표지 */
@@ -480,6 +481,11 @@
 
 /* =========================================================
    책 펼치기
+   1) 가죽 표지가 왼쪽으로 넘어가며 안쪽 면(속지 색)이 보인다.
+   2) 속지가 한 장씩, 휘어지며 왼쪽으로 넘어간다.
+   3) 마지막 장이 넘어가면 /main 으로 이동한다.
+   표지·속지의 각도, 휘어짐, 빛 받는 정도는 login.js 가 매 프레임 계산해서 넣는다.
+   (속지는 login.js 가 .leaf 를 만들어 넣는다.)
 ========================================================= */
 
 /* 책이 펼쳐질 때 라벨과 글씨는 먼저 부드럽게 사라진다 */
@@ -495,44 +501,173 @@
 }
 
 .loginScene.opening .closedBookPage {
-    animation: bookOpen 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transform-style: preserve-3d;
 }
 
-.loginScene.opening .openBook {
-    animation: openBookShow 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* ----- 표지의 안쪽 면: 속지와 같은 종이색, 바깥쪽 세 변에 가죽 테두리 ----- */
+.coverBack {
+    position: absolute;
+    left: 4.4%;
+    top: 4.7%;
+    width: 91.5%;
+    height: 91.4%;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    background: url("/img/login_leather.jpg") center / cover no-repeat, #322414;
+    border-top-left-radius: 0.6%;
+    border-bottom-left-radius: 0.6%;
 }
 
-/* 표지가 왼쪽으로 넘어가며 입체 그림자가 생긴다 */
-@keyframes bookOpen {
-    0% {
-        transform: rotateY(0deg) translateZ(0px);
-        filter: brightness(1);
-    }
-    50% {
-        transform: rotateY(-90deg) translateZ(25px);
-        filter: brightness(0.85) drop-shadow(20px 15px 25px rgba(60, 45, 30, 0.25));
-    }
-    100% {
-        transform: rotateY(-180deg) translateZ(0px);
-        filter: brightness(1);
-    }
+/* 뒤집혀 있어서 이 상자의 오른쪽이 책등 쪽이다 → 테두리는 왼쪽·위·아래에만 */
+.coverBack::before {
+    content: "";
+    position: absolute;
+    top: 1.7%;
+    bottom: 1.7%;
+    left: 2.2%;
+    right: 0;
+    background: linear-gradient(to left, #f2eee9, #f9f8f6 28%);
+    box-shadow: inset 0 0 1.2% rgba(60, 40, 20, 0.18);
 }
 
-/* 표지가 90도 넘어간 뒤 펼쳐진 책이 나타난다 */
-@keyframes openBookShow {
-    0%, 45% {
-        opacity: 0;
+/* 넘어가는 동안 면이 빛을 받는 정도 (--dim 은 login.js 가 넣는다) */
+.bookBlock::after,
+.coverBack::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--dim, 0);
+    background: #1c1108;
+}
+
+/* ----- 속지 ----- */
+
+/* 펼쳐진 책의 오른쪽 쪽과 같은 자리·크기. 표지와 같은 축(책등)을 중심으로 넘어간다 */
+.leaf {
+    position: absolute;
+    left: 4.4%;
+    top: 4.1%;
+    width: 91.5%;
+    height: 91.7%;
+    pointer-events: none;
+}
+
+.leaf {
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg) translateZ(var(--z, 1px));
+    visibility: hidden;
+}
+
+.loginScene.opening .leaf {
+    visibility: visible;
+}
+
+/* 한 장을 세로로 여러 조각으로 잘라 이어 붙여서, 넘어가는 동안 조금씩 휘게 한다 */
+.leaf > .strip {
+    width: calc(100% / var(--n) + 1px);
+}
+
+.strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    transform-origin: left center;
+    transform-style: preserve-3d;
+}
+
+.strip > .strip {
+    left: calc(100% - 1px); /* 조각 사이가 1px 겹쳐서 틈이 비치지 않는다 */
+    width: 100%;
+}
+
+.face {
+    position: absolute;
+    inset: 0;
+    background: #f9f8f6;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.face.back {
+    transform: rotateY(180deg);
+}
+
+/* 면이 비스듬할수록 어두워진다. 조각의 왼쪽 끝(--d0)과 오른쪽 끝(--d1)의 어두운 정도를 login.js 가 넣고,
+   그 사이는 그라데이션으로 이어서 휜 종이처럼 매끄럽게 보인다. 뒷면은 좌우가 뒤집혀 있어 방향도 반대로. */
+.face::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(90, 65, 40, var(--d0, 0)), rgba(90, 65, 40, var(--d1, 0)));
+}
+
+/* 종이 끝의 얇은 두께 */
+.strip.tip > .face.front {
+    box-shadow: inset -1px 0 0 rgba(70, 50, 30, 0.22);
+}
+
+.strip.tip > .face.back {
+    box-shadow: inset 1px 0 0 rgba(70, 50, 30, 0.22);
+}
+
+.face.back::after {
+    background: linear-gradient(to left, rgba(90, 65, 40, var(--d0, 0)), rgba(90, 65, 40, var(--d1, 0)));
+}
+
+/* 떠 있는 속지가 바로 아래 쪽에 드리우는 그림자. 아래 쪽 면 위에 얹혀 있다 (left 는 login.js 가 넣는다) */
+.pageCast {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    opacity: 0;
+    background: linear-gradient(to right, rgba(60, 40, 20, 0.5), rgba(60, 40, 20, 0.18) 35%, rgba(60, 40, 20, 0));
+    /* 아래 장이 막 휘기 시작해도 그 면에 묻히지 않도록 넉넉히 띄운다 */
+    transform: translateZ(14px);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    pointer-events: none;
+}
+
+/* 좁은 화면(responsive.css 의 모바일 기준과 같은 900px): 펼친 두 쪽이 들어가지 않는다.
+   표지와 속지가 왼쪽 화면 밖으로 넘어가고, 책 크기만큼의 빈 쪽이 남는다. */
+@media (max-width: 900px) {
+    .openBook {
+        display: none;
     }
-    100% {
-        opacity: 1;
+
+    .leaf.base .face {
+        box-shadow: 0 2px 14px rgba(120, 90, 70, 0.28);
     }
 }
 
 /* 움직임을 줄이도록 설정한 경우: 넘기지 않고 부드럽게 바뀐다 */
 @media (prefers-reduced-motion: reduce) {
-    @keyframes bookOpen {
+    .leaf {
+        display: none;
+    }
+
+    .loginScene.opening .closedBookPage {
+        animation: bookFade 0.5s ease forwards;
+    }
+
+    .loginScene.opening .openBook {
+        animation: openBookShow 0.4s ease forwards;
+    }
+
+    @keyframes bookFade {
         from { opacity: 1; }
-        to { opacity: 0; }
+        to   { opacity: 0; }
+    }
+
+    @keyframes openBookShow {
+        from { opacity: 0; }
+        to   { opacity: 1; }
     }
 }
 
