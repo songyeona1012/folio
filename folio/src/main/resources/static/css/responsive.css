@@ -1,3 +1,4 @@
+/* 작은 화면에서 페이지와 입력 양식이 배치되는 반응형 규칙입니다. */
 /* =========================================================
    responsive.css — 반응형 (태블릿 / 모바일)
    - 모든 페이지에서 CSS 중 "맨 마지막"에 불러오세요.
@@ -28,28 +29,23 @@
     body {
         min-width: 0;
     }
-
     body .sideBar {
         width: 128px;
         flex-basis: 128px;
     }
-
     body .userProfile {
         padding: 20px 12px 12px;
         gap: 7px;
     }
-
     body .profileImage {
         width: 34px;
         height: 34px;
         flex-basis: 34px;
         font-size: 26px;
     }
-
     body .userInfo strong {
         font-size: 13px;
     }
-
     body .sideMenu {
         padding: 0 16px;
         font-size: 14px;
@@ -60,7 +56,6 @@
    900px 이하 : 모바일 레이아웃
    ========================================================= */
 @media (max-width: 900px) {
-
     /* ---------- 0. 페이지 전체를 세로 스크롤로 ---------- */
     html,
     body {
@@ -69,12 +64,10 @@
         overflow-x: hidden;
         overflow-y: auto;
     }
-
     body {
         min-width: 0;
         background: var(--m-paper);
     }
-
     .appShell {
         flex-direction: column;
         height: auto;
@@ -82,12 +75,10 @@
         min-height: 100dvh;
         overflow: visible;
     }
-
     .mainArea {
         height: auto;
         overflow: visible;
     }
-
     .topBar {
         display: none;
     }
@@ -103,7 +94,7 @@
         width: 100%;
         height: auto;
         flex: 0 0 auto;
-        padding: 14px 52px 0 var(--m-gutter);   /* 오른쪽은 클립 자리 */
+        padding: 14px 52px 0 var(--m-gutter); /* 오른쪽은 클립 자리 */
         border: 0;
         border-bottom: 1px solid var(--m-paper-line);
         background: rgba(250, 250, 249, 0.96);
@@ -118,18 +109,16 @@
         width: auto;
         padding-bottom: 12px;
         color: var(--orange, #e9692c);
-        font-family: 'Cormorant Garamond', 'Gowun Batang', serif;
+        font-family: "Cormorant Garamond", "Gowun Batang", serif;
         font-size: 17px;
         font-weight: 600;
         letter-spacing: 0.04em;
     }
-
     body .userProfile,
     body .sideLine,
     body .teamName {
         display: none;
     }
-
     body .sideMenu {
         display: flex;
         flex: 1;
@@ -159,11 +148,18 @@
         transform: translateY(8px);
         transition: transform 0.15s ease;
     }
-
-    body .sideMenu a[href="/main"]  { --tab-color: #d9def1; }
-    body .sideMenu a[href="/dairy"] { --tab-color: #d6e5d4; }
-    body .sideMenu a[href="/index"] { --tab-color: #f6d3c2; }
-    body .sideMenu a[href="/goal"]  { --tab-color: #e5e4e1; }
+    body .sideMenu a[href="/main"] {
+        --tab-color: #d9def1;
+    }
+    body .sideMenu a[href="/dairy"] {
+        --tab-color: #d6e5d4;
+    }
+    body .sideMenu a[href="/index"] {
+        --tab-color: #f6d3c2;
+    }
+    body .sideMenu a[href="/goal"] {
+        --tab-color: #e5e4e1;
+    }
 
     /* 설정은 오른쪽 클립으로 들어가므로 탭에서는 숨김 */
     body .sideMenu a[href="/setting"] {
@@ -179,7 +175,6 @@
         transform: translateY(0);
         box-shadow: 0 -2px 6px rgba(60, 50, 40, 0.08);
     }
-
     body .sideMenu a:not(.selected):hover {
         transform: translateY(4px);
     }
@@ -194,7 +189,6 @@
         margin: 0 auto;
         padding-bottom: 40px;
     }
-
     .notebookImage,
     .bookmark {
         display: none;
@@ -210,7 +204,6 @@
         width: 22px;
         height: 64px;
     }
-
     .clip,
     .clipLink .clip {
         position: static;
@@ -235,7 +228,6 @@
         padding: 28px var(--m-gutter) 8px;
         overflow: visible;
     }
-
     .notebook > .rightPage {
         padding-top: 20px;
         border-top: 1px dashed var(--m-paper-line);
@@ -250,15 +242,12 @@
         gap: 2px 12px;
         justify-content: flex-start;
     }
-
     .brand-row h1 {
         font-size: 26px;
     }
-
     .brand-row .rate {
         font-size: 11px;
     }
-
     .briefing {
         font-size: 11.5px;
         margin-bottom: 14px;
@@ -272,29 +261,24 @@
         margin: 0;
         padding: 22px 5% 26px;
     }
-
     .cal-head {
         flex-wrap: wrap;
         row-gap: 6px;
         padding: 8px 4px;
     }
-
     .weekdays,
     .grid {
         padding-left: 2px;
         padding-right: 2px;
     }
-
     .day .num {
         font-size: 12px;
     }
-
     .day .tag {
         max-width: 100%;
         font-size: 7.5px;
         padding: 1px 2px;
     }
-
     .grid.isWeek .day .tag {
         font-size: 8.5px;
     }
@@ -303,26 +287,21 @@
     .rightPage:has(#rightDashboard) {
         padding-bottom: 8px;
     }
-
     .rightDashboard {
         flex: none;
         overflow: visible;
     }
-
     .rightDashboard .section.grow {
         flex: none;
         overflow: visible;
     }
-
     .rightDashboard .today-list {
         flex: none;
         max-height: 360px;
     }
-
     .natural-schedule {
         margin-bottom: 28px;
     }
-
     .natural-schedule .add-pill {
         font-size: 12px;
     }
@@ -342,16 +321,13 @@
         overflow: hidden !important;
         filter: drop-shadow(0 -8px 24px rgba(60, 50, 40, 0.18));
     }
-
     .memoPanel,
     .memoPanel * {
         font-size: 13px !important;
     }
-
     .memoPanel .memoDate {
         font-size: 15px !important;
     }
-
     .memoInner {
         padding: 9% 10% 10%;
     }
@@ -361,17 +337,14 @@
         right: 2%;
         bottom: 2%;
     }
-
     .penButton {
         width: 70px;
         height: 136px;
     }
-
     .penPalette {
         right: 64px;
         bottom: 12px;
     }
-
     .toast {
         max-width: calc(100vw - 32px);
         white-space: normal;
@@ -385,68 +358,62 @@
     .diaryLeftPage h1 {
         font-size: 22px;
     }
-
     .yearNav .yearLabel {
         font-size: 15px;
     }
-
     .moodBox {
         height: 180px;
     }
-
     .folderGrid {
         grid-template-columns: repeat(3, 1fr);
         gap: 18px 16px;
         max-height: none;
         padding: 10px 4px;
     }
-
     .folderItem .folderCaption {
         font-size: 8px;
     }
-
     .folderItem .folderNum {
         font-size: 13px;
     }
-
     .monthView {
         margin: 12px 0 0;
     }
-
     .monthSheet {
         height: min(460px, 80vh);
         padding: 18px 14px 12px;
     }
-
     .monthSheetHead {
         flex-wrap: wrap;
         gap: 6px;
         margin-bottom: 14px;
     }
-
-    .monthTable .colDay { width: 13%; }
-    .monthTable .colSummary { width: 45%; }
-    .monthTable .colRating { width: 28%; }
-    .monthTable .colSelect { width: 14%; }
-
+    .monthTable .colDay {
+        width: 13%;
+    }
+    .monthTable .colSummary {
+        width: 45%;
+    }
+    .monthTable .colRating {
+        width: 28%;
+    }
+    .monthTable .colSelect {
+        width: 14%;
+    }
     .rowStars {
         font-size: 10px;
         letter-spacing: 0;
     }
-
     .formTabBtn {
         font-size: 11px;
         padding: 8px 6px;
     }
-
     .plainNoteText {
         min-height: 320px;
     }
-
     .timetableGrid {
         max-height: 420px;
     }
-
     .timetableRow input {
         min-width: 0;
         width: 100%;
@@ -458,29 +425,24 @@
     .managementApp .managementIntro {
         font-size: 11px;
     }
-
     .managementApp .categoryGrid {
         flex: none;
         grid-template-rows: auto;
         gap: 18px 14px;
     }
-
     .managementApp .categoryCard,
     .managementApp .categoryColumn .categoryCard {
         min-height: 210px;
     }
-
     .managementApp .largeMemo,
     .managementApp[data-view="detail"] .largeMemo {
         flex: none;
         min-height: 460px;
     }
-
     .managementApp .editorPage,
     .managementApp .analysisPage {
         overflow: visible !important;
     }
-
     .appStatus {
         max-width: calc(100vw - 32px);
     }
@@ -491,19 +453,15 @@
     .goal-page {
         height: auto;
     }
-
     .goal-heading h1 {
         font-size: 28px;
     }
-
     .goal-heading p {
         font-size: 13px;
     }
-
     .goal-toolbar {
         margin-top: 22px;
     }
-
     .goal-list-scroll {
         flex: none;
         max-height: 420px;
@@ -518,12 +476,10 @@
         border-radius: 24px;
         overflow: visible;
     }
-
     .goal-paper .item-scroll {
         flex: none;
         max-height: 60vh;
     }
-
     .goal-panel[data-mode-panel="ai"] {
         max-height: 70vh;
     }
@@ -537,7 +493,6 @@
         height: calc(100dvh - 90px);
         margin-top: 16px;
     }
-
     .closedBook {
         left: 0;
         right: 0;
@@ -554,21 +509,17 @@
     :root {
         --m-gutter: 16px;
     }
-
     body .sideBar {
         gap: 6px;
         padding-right: 44px;
     }
-
     body .pageTitle {
         font-size: 14px;
     }
-
     body .sideMenu {
         gap: 4px;
         font-size: 12px;
     }
-
     .clipLink {
         right: 8px;
         width: 18px;
@@ -579,11 +530,9 @@
     .viewToggle {
         margin-left: 0;
     }
-
     .viewToggle + .cal-nav {
         margin-left: auto;
     }
-
     .cal-head .weekRange {
         order: 5;
         flex-basis: 100%;
@@ -593,7 +542,6 @@
     .timetableGrid {
         grid-template-columns: 1fr;
     }
-
     .monthSheetHelp {
         font-size: 9px;
     }
@@ -602,7 +550,6 @@
     .managementApp .categoryGrid {
         grid-template-columns: 1fr;
     }
-
     .managementApp .managementHeading {
         flex-wrap: wrap;
     }
@@ -611,23 +558,19 @@
     .form-top {
         grid-template-columns: 1fr;
     }
-
     .dday-box {
         flex-direction: row;
         justify-content: space-between;
         padding: 8px 14px;
     }
-
     .item-heads,
     .item-cols {
         grid-template-columns: 1fr;
         row-gap: 14px;
     }
-
     .goal-card {
         height: 84px;
     }
-
     .goal-card-title {
         font-size: 15px;
     }

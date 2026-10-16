@@ -1,8 +1,8 @@
+// 일기 저장 요청으로 받은 날짜·본문·별점·작성 양식을 전달합니다.
 package com.example.folio.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.example.folio.entity.DairyType;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -19,11 +19,10 @@ import java.util.Map;
  * }
  */
 public record DairyRequest(
-        LocalDate date,
-        Integer rating,
-        DairyType type,
-        String content,
-        Map<Integer, String> hours,
-        @JsonProperty("isPrivate") Boolean isPrivate
-) {
-}
+    LocalDate date,
+    Integer rating,
+    DairyType type,
+    String content,
+    Map<Integer, String> hours,
+    @JsonProperty("isPrivate") Boolean isPrivate
+) {}

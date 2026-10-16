@@ -1,3 +1,4 @@
+// 금전 목표의 입출금 기록을 저장합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.Column;
@@ -9,7 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import java.time.LocalDate;
 
 /**
@@ -44,8 +44,7 @@ public class GoalTransaction {
     @Column(nullable = false)
     private int sortOrder;
 
-    protected GoalTransaction() {
-    }
+    protected GoalTransaction() {}
 
     GoalTransaction(Goal goal, LocalDate txDate, String txTime, String txType, long amount, int sortOrder) {
         this.goal = goal;
@@ -56,10 +55,27 @@ public class GoalTransaction {
         this.sortOrder = sortOrder;
     }
 
-    public Long getId() { return id; }
-    public LocalDate getTxDate() { return txDate; }
-    public String getTxTime() { return txTime; }
-    public String getTxType() { return txType; }
-    public long getAmount() { return amount; }
-    public int getSortOrder() { return sortOrder; }
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getTxDate() {
+        return txDate;
+    }
+
+    public String getTxTime() {
+        return txTime;
+    }
+
+    public String getTxType() {
+        return txType;
+    }
+
+    public long getAmount() {
+        return amount;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
 }

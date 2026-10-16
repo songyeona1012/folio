@@ -1,3 +1,4 @@
+{{! 여러 화면에서 함께 사용하는 사용자 정보와 탭 메뉴입니다. }}
 {{!
     templates/layout/sidebar.mustache
 
@@ -7,17 +8,17 @@
     컨트롤러(Model)에서 반드시 내려줘야 하는 값
     --------------------------------------------------
     pageTitle      : 사이드바 상단 좌측 소제목 (예: "달력", "관리")
-    userEmoji      : 프로필 이모지 (예: "🐹")
+    profileImage   : 프로필 이미지 주소 (기본 마스코트 또는 사용자 사진)
     userName       : 사용자 이름 (예: "송연아")
-    userEmail      : 사용자 이메일
-    lastLogin      : 마지막 접속일 (예: "2026.09.21")
+    userEmail      : 로그인에 사용하는 저자명
+    lastModified   : 마지막 수정일 (예: "2026.10.15")
 
     아래 5개는 boolean. 현재 페이지에 해당하는 것 하나만 true로 내려주세요.
     (Mustache는 값 비교가 안 되기 때문에 페이지별로 직접 켜줘야 합니다)
     navMain        : 달력(/main) 선택 여부
     navDairy       : 일기(/dairy) 선택 여부
     navIndex       : 관리(/index) 선택 여부
-    navFriend      : 친구(/friend) 선택 여부
+    navGoal        : 목표(/goal) 선택 여부
     navSetting     : 설정(/setting) 선택 여부
 }}
 
@@ -27,12 +28,17 @@
     <div class="pageTitle">{{pageTitle}}</div>
 
     <div class="userProfile">
-        <div class="profileImage">{{userEmoji}}</div>
+        <div class="profileImage">
+            <img src="{{profileImage}}" alt="프로필 사진">
+        </div>
         <div class="userInfo">
             <strong>{{userName}}</strong>
             <span>{{userEmail}}</span>
-            <span>마지막 접속 : {{lastLogin}}</span>
+            <span>마지막 수정 : {{lastModified}}</span>
         </div>
+        {{#loggedIn}}
+            <button type="button" class="sidebarLogout" data-account-logout>로그아웃</button>
+        {{/loggedIn}}
     </div>
 
     <div class="sideLine"></div>
@@ -42,9 +48,11 @@
         <a href="/dairy" {{#navDairy}} class="selected" {{/navDairy}}>일기</a>
         <a href="/index" {{#navIndex}} class="selected" {{/navIndex}}>관리</a>
         <a href="/goal" {{#navGoal}} class="selected" {{/navGoal}}>목표</a>
-        <a href="/setting" {{#navSetting}} class="selected" {{/navSetting}}>설정</a>
+        <a href="/setting" {{#navSetting}} class="selected" {{/navSetting}}>나의 정보</a>
     </nav>
 
     <p class="teamName">ⓒ CREATED BY TEAM HIKING</p>
 
 </aside>
+
+<script src="/js/account-menu.js" defer></script>

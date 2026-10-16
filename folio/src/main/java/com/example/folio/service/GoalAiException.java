@@ -1,3 +1,4 @@
+// 목표 AI 요청 중 발생한 오류를 구분해 전달합니다.
 package com.example.folio.service;
 
 import org.springframework.http.HttpStatus;

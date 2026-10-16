@@ -1,3 +1,4 @@
+// 목표의 진행 표 구조와 하위 기록 항목을 묶습니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.CascadeType;
@@ -12,10 +13,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import org.hibernate.annotations.BatchSize;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.hibernate.annotations.BatchSize;
 
 /**
  * '진도표 추가'로 만든 진도표 한 장.
@@ -65,10 +65,17 @@ public class GoalProgressTable {
     @BatchSize(size = 50)
     private List<GoalProgressItem> items = new ArrayList<>();
 
-    protected GoalProgressTable() {
-    }
+    protected GoalProgressTable() {}
 
-    GoalProgressTable(Goal goal, String kind, String name, int total, int rowCount, int colCount, int sortOrder) {
+    GoalProgressTable(
+        Goal goal,
+        String kind,
+        String name,
+        int total,
+        int rowCount,
+        int colCount,
+        int sortOrder
+    ) {
         this.goal = goal;
         this.kind = kind;
         this.name = name;
@@ -83,12 +90,35 @@ public class GoalProgressTable {
         items.add(new GoalProgressItem(this, content, done, items.size()));
     }
 
-    public Long getId() { return id; }
-    public String getKind() { return kind; }
-    public String getName() { return name; }
-    public int getTotal() { return total; }
-    public int getRowCount() { return rowCount; }
-    public int getColCount() { return colCount; }
-    public int getSortOrder() { return sortOrder; }
-    public List<GoalProgressItem> getItems() { return items; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    public int getColCount() {
+        return colCount;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
+
+    public List<GoalProgressItem> getItems() {
+        return items;
+    }
 }

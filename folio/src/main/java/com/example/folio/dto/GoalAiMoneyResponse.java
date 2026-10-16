@@ -1,3 +1,4 @@
+// 금전 목표 AI 분석 결과를 전달합니다.
 package com.example.folio.dto;
 
 /**
@@ -6,6 +7,11 @@ package com.example.folio.dto;
  *
  * @param message 어떻게 읽었는지 한 줄 (화면의 안내 말에 그대로 보인다)
  */
-public record GoalAiMoneyResponse(String message, String endDate, Long targetAmount, Long startAmount,
-                                  Long depositAmount, String depositCycle) {
-}
+public record GoalAiMoneyResponse(
+    String message,
+    String endDate,
+    Long targetAmount,
+    Long startAmount,
+    Long depositAmount,
+    String depositCycle
+) {}

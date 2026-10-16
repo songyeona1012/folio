@@ -1,20 +1,55 @@
+// 달력·일기·관리·목표·나의 정보 화면과 공통 사용자 정보를 준비합니다.
 package com.example.folio.controller;
 
+import com.example.folio.repository.AuthorAccountRepository;
 import com.example.folio.support.BookmarkLayout;
+import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Controller
 public class HomeController {
 
-    // 지금은 로그인 기능이 없어서 하드코딩.
-    // 나중에 세션/로그인 기능을 붙이면 실제 사용자 정보로 변경하면 됩니다.
+    // 로그인한 저자의 표시 정보를 세션에서 읽습니다.
+    private final AuthorAccountRepository accounts;
+
+    public HomeController(AuthorAccountRepository accounts) {
+        this.accounts = accounts;
+    }
+
     private void addUserInfo(Model model) {
-        model.addAttribute("userEmoji", "🐹");
-        model.addAttribute("userName", "송연아");
-        model.addAttribute("userEmail", "songyeona1012@gmail.com");
-        model.addAttribute("lastLogin", "2026.09.21");
+        model.addAttribute("loggedIn", false);
+        model.addAttribute("userName", "무 명");
+        model.addAttribute("userEmail", "작성되지 않음");
+        model.addAttribute("profileImage", "/img/default-mascot.png");
+        model.addAttribute("lastModified", "XXXX.XX.XX");
+        var attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes instanceof ServletRequestAttributes web) {
+            var session = web.getRequest().getSession(false);
+            if (session != null && session.getAttribute("authorId") instanceof Long id) accounts
+                .findById(id)
+                .ifPresent(a -> {
+                    model.addAttribute("loggedIn", true);
+                    model.addAttribute("userName", a.displayName);
+                    model.addAttribute("userEmail", a.authorId);
+                    model.addAttribute(
+                        "profileImage",
+                        a.avatar != null &&
+                            (a.avatar.startsWith("/img/") || a.avatar.startsWith("data:image/"))
+                            ? a.avatar
+                            : "/img/default-mascot.png"
+                    );
+                    model.addAttribute(
+                        "lastModified",
+                        (a.lastModifiedAt == null ? a.createdAt : a.lastModifiedAt).format(
+                            DateTimeFormatter.ofPattern("yyyy.MM.dd")
+                        )
+                    );
+                });
+        }
     }
 
     @GetMapping("/")
@@ -23,15 +58,13 @@ public class HomeController {
         return "intro";
     }
 
-
     @GetMapping("/login")
-    public String login(Model model){
+    public String login(Model model) {
         addUserInfo(model);
         model.addAttribute("pageTitle", "Folio");
 
         return "login";
     }
-
 
     @GetMapping("/main")
     public String main(Model model) {
@@ -51,7 +84,7 @@ public class HomeController {
     public String setting(Model model) {
         addUserInfo(model);
 
-        model.addAttribute("pageTitle", "설정");
+        model.addAttribute("pageTitle", "나의 정보");
         model.addAttribute("navSetting", true);
 
         // 설정 페이지
@@ -82,7 +115,7 @@ public class HomeController {
         model.addAttribute("pageTitle", "목표");
         model.addAttribute("navGoal", true);
 
-        // 친구 페이지
+        // 목표 페이지
         // 왼쪽 3개 / 오른쪽 1개
         model.addAttribute("bookmarks", BookmarkLayout.of(3));
 

@@ -1,3 +1,4 @@
+// AI가 만든 목표 양식을 화면으로 전달합니다.
 package com.example.folio.dto;
 
 import java.util.List;
@@ -14,15 +15,20 @@ import java.util.List;
  * @param source    AI(인공지능이 만듦) 또는 BASIC(기본 규칙으로 만듦)
  * @param blocks    양식을 이루는 블록들 (위에서부터 차례로)
  */
-public record GoalAiFormResponse(String reply, String title, String startDate, String endDate, String source,
-                                 List<Block> blocks) {
-
-    public static final String TABLE = "table";         // 항목 표: 이름 | 내용
+public record GoalAiFormResponse(
+    String reply,
+    String title,
+    String startDate,
+    String endDate,
+    String source,
+    List<Block> blocks
+) {
+    public static final String TABLE = "table"; // 항목 표: 이름 | 내용
     public static final String CHECKLIST = "checklist"; // 체크리스트: 순서 있는 할 일
-    public static final String TRACKER = "tracker";     // 습관표: 줄(습관) × 칸(요일·주차) 체크
-    public static final String PROGRESS = "progress";   // 진행도: 시작값 → 현재값 → 목표값 막대
-    public static final String LOG = "log";             // 기록표: 날짜별로 한 줄씩 쌓는 표
-    public static final String NOTE = "note";           // 메모: 짧은 글
+    public static final String TRACKER = "tracker"; // 습관표: 줄(습관) × 칸(요일·주차) 체크
+    public static final String PROGRESS = "progress"; // 진행도: 시작값 → 현재값 → 목표값 막대
+    public static final String LOG = "log"; // 기록표: 날짜별로 한 줄씩 쌓는 표
+    public static final String NOTE = "note"; // 메모: 짧은 글
 
     /**
      * 블록 한 개. type에 따라 쓰는 칸이 다르고, 쓰지 않는 칸은 null이다.
@@ -34,15 +40,20 @@ public record GoalAiFormResponse(String reply, String title, String startDate, S
      * log       : columns(열 이름) + entries(줄마다 열 수만큼의 글)
      * note      : text
      */
-    public record Block(String type, String title,
-                        List<Field> rows,
-                        List<Item> items,
-                        List<String> columns,
-                        List<Track> tracks,
-                        List<List<String>> entries,
-                        String unit, Double start, Double target, Double current,
-                        String text) {
-
+    public record Block(
+        String type,
+        String title,
+        List<Field> rows,
+        List<Item> items,
+        List<String> columns,
+        List<Track> tracks,
+        List<List<String>> entries,
+        String unit,
+        Double start,
+        Double target,
+        Double current,
+        String text
+    ) {
         public static Block table(String title, List<Field> rows) {
             return new Block(TABLE, title, rows, null, null, null, null, null, null, null, null, null);
         }
@@ -56,7 +67,20 @@ public record GoalAiFormResponse(String reply, String title, String startDate, S
         }
 
         public static Block progress(String title, String unit, Double start, Double target, Double current) {
-            return new Block(PROGRESS, title, null, null, null, null, null, unit, start, target, current, null);
+            return new Block(
+                PROGRESS,
+                title,
+                null,
+                null,
+                null,
+                null,
+                null,
+                unit,
+                start,
+                target,
+                current,
+                null
+            );
         }
 
         public static Block log(String title, List<String> columns, List<List<String>> entries) {
@@ -69,14 +93,11 @@ public record GoalAiFormResponse(String reply, String title, String startDate, S
     }
 
     /** 표의 한 줄: 이름 + 내용 */
-    public record Field(String label, String value) {
-    }
+    public record Field(String label, String value) {}
 
     /** 체크리스트 한 줄 */
-    public record Item(String text, boolean done) {
-    }
+    public record Item(String text, boolean done) {}
 
     /** 습관표 한 줄: 이름 + 칸마다 체크 여부 */
-    public record Track(String label, List<Boolean> checks) {
-    }
+    public record Track(String label, List<Boolean> checks) {}
 }

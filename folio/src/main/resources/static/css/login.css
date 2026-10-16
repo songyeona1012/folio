@@ -1,3 +1,4 @@
+/* 로그인 책 표지와 회원가입 창·입력란·암호 표시를 꾸밉니다. */
 /* =========================================================
    로그인 — 가죽 표지의 Folio
    닫힌 책의 크기·위치(.loginScene / .closedBook)는 그대로라서
@@ -10,7 +11,6 @@
     overflow: hidden;
 }
 
-
 /* =========================================================
    로그인 전 사이드바 (무명)
 ========================================================= */
@@ -20,14 +20,12 @@
     border-radius: 5px;
     background: #fff;
 }
-
 .loginSide .guestImage svg {
     display: block;
     width: 100%;
     height: 100%;
     padding: 3px 4px;
 }
-
 .loginSide .userInfo strong {
     letter-spacing: 0.08em;
 }
@@ -39,11 +37,9 @@
     white-space: normal;
     line-height: 1.4;
 }
-
 .loginSide .userInfo span:first-of-type {
     white-space: nowrap;
 }
-
 .loginSide .teamName {
     white-space: nowrap;
 }
@@ -52,16 +48,17 @@
     .loginSide .userInfo span {
         font-size: 9px;
     }
-
     .loginSide .teamName {
         font-size: 6.5px;
     }
 }
-
 .loginSide .teamName {
-    font: italic 7.5px "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+    font:
+        italic 7.5px "IBM Plex Mono",
+        ui-monospace,
+        "Courier New",
+        monospace;
 }
-
 
 /* =========================================================
    로그인 장면
@@ -77,7 +74,6 @@
     transform-style: preserve-3d;
 }
 
-
 /* =========================================================
    펼쳐진 책 (로그인하면 나타난다)
 ========================================================= */
@@ -89,7 +85,6 @@
     opacity: 0;
     pointer-events: none;
 }
-
 .openBook img {
     display: block;
     width: 100%;
@@ -97,7 +92,6 @@
     object-fit: fill;
     user-select: none;
 }
-
 
 /* =========================================================
    닫힌 책
@@ -139,7 +133,6 @@
     --line: #8c6b4b;
 }
 
-
 /* =========================================================
    종이 클립
 ========================================================= */
@@ -153,7 +146,6 @@
     filter: drop-shadow(0 0.2cqw 0.35cqw rgba(60, 45, 30, 0.35));
 }
 
-
 /* =========================================================
    책 모양: 그림자 → 윗면/옆면(종이 쪽) → 가죽 표지
 ========================================================= */
@@ -163,7 +155,6 @@
     inset: 0;
     filter: drop-shadow(0 1.7cqw 1.9cqw rgba(125, 88, 70, 0.3));
 }
-
 .book {
     position: absolute;
     inset: 0;
@@ -180,11 +171,7 @@
     right: 0;
     top: 0;
     height: 1.3cqw;
-    background: linear-gradient(to bottom,
-            #3c3430 0 36%,
-            #6f6760 36% 46%,
-            #e2dcd6 46% 80%,
-            #120b03 80%);
+    background: linear-gradient(to bottom, #3c3430 0 36%, #6f6760 36% 46%, #e2dcd6 46% 80%, #120b03 80%);
 }
 
 /* 오른쪽 옆면: 종이를 쌓아 둔 단면 */
@@ -194,14 +181,16 @@
     right: 0;
     bottom: 0;
     width: 2.3cqw;
-    background: linear-gradient(to right,
-            #120b03 0 16%,
-            #77736d 16% 22%,
-            #efefec 22% 36%,
-            #d6cbc3 36% 50%,
-            #d3c8c0 50% 74%,
-            #e2d9d2 74% 82%,
-            #5f5549 82%);
+    background: linear-gradient(
+        to right,
+        #120b03 0 16%,
+        #77736d 16% 22%,
+        #efefec 22% 36%,
+        #d6cbc3 36% 50%,
+        #d3c8c0 50% 74%,
+        #e2d9d2 74% 82%,
+        #5f5549 82%
+    );
 }
 
 /* 가죽 표지 */
@@ -222,7 +211,6 @@
         inset -0.55cqw 0 0 #120b03;
     color: #ddd9d6;
 }
-
 
 /* =========================================================
    표지 글씨
@@ -246,7 +234,6 @@
     text-shadow: 0 0.12cqw 0.2cqw rgba(0, 0, 0, 0.45);
     user-select: none;
 }
-
 .coverFoot {
     position: absolute;
     left: 0;
@@ -255,12 +242,15 @@
     margin: 0;
     transform: translateY(-50%);
     text-align: center;
-    font: italic 400 max(8px, 1.55cqw) "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+    font:
+        italic 400 max(8px, 1.55cqw) "IBM Plex Mono",
+        ui-monospace,
+        "Courier New",
+        monospace;
     letter-spacing: 0.015em;
     color: #d9d4cf;
     user-select: none;
 }
-
 
 /* =========================================================
    로그인 입력: 책에 붙은 하얀 라벨
@@ -275,7 +265,6 @@
     flex-direction: column;
     align-items: center;
 }
-
 .labelCard {
     position: relative;
     width: 34.9cqw;
@@ -292,7 +281,6 @@
         0 0.3cqw 0.9cqw rgba(0, 0, 0, 0.55),
         inset 0 0 0.6cqw rgba(60, 50, 40, 0.16);
 }
-
 .labelRow {
     display: flex;
     align-items: baseline;
@@ -301,7 +289,6 @@
     border-bottom: max(1px, 0.25cqw) solid var(--line);
     cursor: text;
 }
-
 .labelText {
     flex: 0 0 auto;
     font-family: "Noto Serif KR", "Gowun Batang", serif;
@@ -316,7 +303,6 @@
     letter-spacing: 0.35em;
     margin-right: -0.35em;
 }
-
 .labelInput {
     flex: 1 1 auto;
     min-width: 0;
@@ -330,7 +316,6 @@
     color: #4f3622;
     caret-color: #e9692c;
 }
-
 .labelRow:focus-within {
     border-bottom-color: #e9692c;
 }
@@ -355,30 +340,27 @@
     color: var(--ink);
     opacity: 0.3;
     cursor: pointer;
-    transition: opacity 0.2s ease, background-color 0.2s ease;
+    transition:
+        opacity 0.2s ease,
+        background-color 0.2s ease;
 }
-
 .enterButton svg {
     display: block;
     width: 100%;
     height: 100%;
 }
-
 .loginForm.is-ready .enterButton {
     opacity: 0.9;
 }
-
 .enterButton:hover,
 .enterButton:focus-visible {
     opacity: 1;
     background: rgba(140, 107, 75, 0.14);
     outline: 0;
 }
-
 .enterButton:disabled {
     cursor: default;
 }
-
 
 /* 회원가입(아직 준비 중) */
 .signupLink {
@@ -393,9 +375,10 @@
     white-space: nowrap;
     color: #bdb5ac;
     cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease;
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
 }
-
 .signupLink:hover,
 .signupLink:focus-visible {
     color: #fff;
@@ -416,7 +399,6 @@
     opacity: 0;
     transition: opacity 0.25s ease;
 }
-
 .loginNote.is-visible {
     opacity: 1;
 }
@@ -427,56 +409,54 @@
 }
 
 @keyframes labelShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-0.6cqw); }
-    75% { transform: translateX(0.6cqw); }
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-0.6cqw);
+    }
+    75% {
+        transform: translateX(0.6cqw);
+    }
 }
-
 
 /* 책이 좁을 때(휴대폰): 라벨을 넓히고 글씨를 키운다. 입력 글씨는 16px 이상이어야 iOS가 확대하지 않는다. */
 @container (max-width: 480px) {
     .labelCard {
         width: min(78cqw, 340px);
-        padding: 18px 46px 16px 20px;   /* 오른쪽은 들어가기 화살표 자리 */
+        padding: 18px 46px 16px 20px; /* 오른쪽은 들어가기 화살표 자리 */
         gap: 14px;
     }
-
     .labelRow {
         gap: 8px;
         border-bottom-width: 1.5px;
     }
-
     .labelText,
     .labelInput {
         font-size: 16px;
     }
-
     .labelInput {
         height: 28px;
     }
-
     .enterButton {
         right: 8px;
         bottom: 11px;
         width: 30px;
         height: 30px;
     }
-
     .signupLink {
         margin-top: 14px;
         font-size: 13px;
     }
-
     .loginNote {
         margin-top: 8px;
         font-size: 12.5px;
     }
-
     .coverFoot {
         font-size: 9px;
     }
 }
-
 
 /* =========================================================
    책 펼치기
@@ -488,16 +468,13 @@
 .loginForm {
     transition: opacity 0.3s ease;
 }
-
 .loginScene.opening .loginForm {
     opacity: 0;
     pointer-events: none;
 }
-
 .loginScene.opening .closedBookPage {
     animation: bookOpen 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
-
 .loginScene.opening .openBook {
     animation: openBookShow 1.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
@@ -520,7 +497,8 @@
 
 /* 표지가 90도 넘어간 뒤 펼쳐진 책이 나타난다 */
 @keyframes openBookShow {
-    0%, 45% {
+    0%,
+    45% {
         opacity: 0;
     }
     100% {
@@ -531,11 +509,14 @@
 /* 움직임을 줄이도록 설정한 경우: 넘기지 않고 부드럽게 바뀐다 */
 @media (prefers-reduced-motion: reduce) {
     @keyframes bookOpen {
-        from { opacity: 1; }
-        to { opacity: 0; }
+        from {
+            opacity: 1;
+        }
+        to {
+            opacity: 0;
+        }
     }
 }
-
 
 /* =========================================================
    반응형
@@ -550,5 +531,154 @@
 @media (max-width: 1100px) {
     .loginScene {
         width: calc(100% - 40px);
+    }
+}
+
+/* Membership card beside the closed book. */
+.signupPanel[hidden] {
+    display: none;
+}
+.signupPanel {
+    position: absolute;
+    z-index: 30;
+    left: 1%;
+    top: 30%;
+    width: min(43%, 490px);
+}
+.signupCard {
+    position: relative;
+    padding: 30px 34px 25px;
+    color: #624325;
+    background: url("/img/signup-card.png") center/100% 100% no-repeat;
+    font-family: "Noto Serif KR", serif;
+}
+.signupCard h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+.signupName {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: #aaa6a6;
+    font: inherit;
+    font-size: 27px;
+    margin: 0 0 23px;
+    padding: 0;
+}
+.signupName::placeholder {
+    color: #aaa6a6;
+}
+.signupRow {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr) 25px;
+    gap: 7px;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+.signupRow input {
+    width: 100%;
+    min-width: 0;
+    height: 27px;
+    padding: 2px 7px;
+    border: 1px solid #eae8e5;
+    background: #f7f7f7;
+    font: inherit;
+    color: #624325;
+    box-sizing: border-box;
+    border-radius: 0;
+}
+.signupClose {
+    position: absolute;
+    right: 19px;
+    top: 12px;
+    background: none;
+    border: 0;
+    color: #a99a8b;
+    cursor: pointer;
+    font-size: 20px;
+}
+.passwordEye {
+    border: 0;
+    background: none;
+    padding: 4px;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+}
+.passwordEye img {
+    display: block;
+    width: 20px;
+    height: 12px;
+    object-fit: contain;
+}
+.signupHint {
+    margin: 20px -8px 7px;
+    color: #a8b2b4;
+    font-size: 10px;
+    line-height: 1.7;
+}
+.signupStatus {
+    font-size: 11px;
+    line-height: 1.6;
+    min-height: 18px;
+    margin: 5px 0;
+    color: #a84c3e;
+}
+.signupSubmit {
+    display: block;
+    margin: 4px auto 0;
+    border: 1px solid #d8c9b8;
+    background: #faf8f3;
+    color: #624325;
+    font: inherit;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.signupSubmit:disabled {
+    opacity: 0.5;
+    cursor: wait;
+}
+.signupCard input:focus-visible,
+.passwordEye:focus-visible,
+.signupSubmit:focus-visible {
+    outline: 2px solid #c9a687;
+    outline-offset: 2px;
+}
+@media (max-width: 1100px) {
+    .signupPanel {
+        width: 44%;
+        left: 0;
+    }
+    .signupCard {
+        padding: 25px 23px 20px;
+    }
+    .signupRow {
+        grid-template-columns: 88px minmax(0, 1fr) 20px;
+        font-size: 11px;
+        gap: 4px;
+    }
+}
+@media (max-width: 760px) {
+    .signupPanel {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: min(92vw, 470px);
+        max-height: 90dvh;
+        overflow-y: auto;
+    }
+    .signupCard {
+        padding: 30px;
+    }
+    .signupRow {
+        font-size: 13px;
+        grid-template-columns: 100px minmax(0, 1fr) 24px;
     }
 }

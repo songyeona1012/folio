@@ -1,3 +1,4 @@
+// AI 목표 양식 생성에 필요한 요청 정보를 전달합니다.
 package com.example.folio.dto;
 
 import java.util.List;
@@ -10,11 +11,13 @@ import java.util.List;
  * @param current 지금 화면에 만들어져 있는 양식. 아직 없으면 null
  */
 public record GoalAiFormRequest(String prompt, List<Message> history, Current current) {
-
-    public record Message(String role, String text) {
-    }
+    public record Message(String role, String text) {}
 
     /** 지금 화면에 있는 양식. 날짜는 yyyy-MM-dd 문자열이거나 null. blocks는 화면에 있는 순서 그대로. */
-    public record Current(String title, String startDate, String endDate, List<GoalAiFormResponse.Block> blocks) {
-    }
+    public record Current(
+        String title,
+        String startDate,
+        String endDate,
+        List<GoalAiFormResponse.Block> blocks
+    ) {}
 }

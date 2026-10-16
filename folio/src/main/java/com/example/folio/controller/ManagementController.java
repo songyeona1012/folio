@@ -1,3 +1,4 @@
+// 주기 관리 일정, 완료율 그래프와 기록지 API를 연결합니다.
 package com.example.folio.controller;
 
 import com.example.folio.entity.*;

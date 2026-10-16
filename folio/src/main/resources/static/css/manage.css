@@ -1,23 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+/* 책 모양 화면의 공통 틀과 책갈피·클립·기본 관리 요소를 배치합니다. */
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@300;400;500&display=swap");
 
 * {
     box-sizing: border-box;
 }
-
 html,
 body {
     height: 100%;
     overflow: hidden;
 }
-
 body {
     margin: 0;
     min-width: 980px;
     background: #faf9f7;
     color: #6e5140;
-    font-family: 'Gowun Batang', serif;
+    font-family: "Gowun Batang", serif;
 }
-
 .appShell {
     display: flex;
     height: 100vh;
@@ -34,7 +32,6 @@ body {
     height: 100vh;
     overflow: hidden;
 }
-
 .topBar {
     height: 32px;
     margin-right: 10px;
@@ -52,7 +49,6 @@ body {
     height: calc(100vh - 45px);
     margin: 15px auto 0;
 }
-
 .notebookImage {
     position: absolute;
     z-index: 1;
@@ -61,7 +57,6 @@ body {
     height: 100%;
     object-fit: fill;
 }
-
 .leftPage,
 .rightPage {
     position: absolute;
@@ -70,14 +65,12 @@ body {
     bottom: 5.8%;
     width: 46.5%;
 }
-
 .leftPage {
     left: 3.2%;
     padding: 7.8% 5.2% 4%;
     display: flex;
     flex-direction: column;
 }
-
 .rightPage {
     right: 3.3%;
     padding: 8% 5.3% 4%;
@@ -95,29 +88,23 @@ body {
     height: 4%;
     overflow: hidden;
 }
-
 .bookmark img {
     display: block;
     width: 100%;
     height: 200%;
 }
-
 .bookmarkOne {
     left: 28%;
 }
-
 .bookmarkTwo {
     left: 37%;
 }
-
 .bookmarkThree {
     right: 28%;
 }
-
 .bookmarkFour {
     right: 19%;
 }
-
 .clip {
     position: absolute;
     z-index: 0;
@@ -140,26 +127,21 @@ body {
     font-size: 7px;
     line-height: 1.55;
 }
-
 .managementIntro h1 {
     margin: 0 0 3px;
     color: #5f4536;
     font-size: 14px;
 }
-
 .managementIntro p {
     margin: 0;
 }
-
 .managementIntro .tip {
     margin-top: 12px;
 }
-
 .managementIntro em {
     color: #77a68a;
     font-style: normal;
 }
-
 .categoryGrid {
     display: grid;
     flex: 1;
@@ -169,7 +151,6 @@ body {
     gap: 16px 18px;
     margin-top: 17px;
 }
-
 .categoryCard {
     position: relative;
     width: 100%;
@@ -179,7 +160,6 @@ body {
     aspect-ratio: 1 / 1.1;
     align-self: start;
 }
-
 .memoImage {
     position: absolute;
     z-index: 1;
@@ -188,7 +168,6 @@ body {
     height: 100%;
     object-fit: fill;
 }
-
 .categoryTape {
     position: absolute;
     z-index: 3;
@@ -198,24 +177,20 @@ body {
     height: 28px;
     object-fit: fill;
 }
-
 .tapeBlue {
     top: -5px;
     width: 51%;
     height: 38px;
     transform: rotate(3deg);
 }
-
 .tapePurple {
     width: 51%;
     transform: rotate(2deg);
 }
-
 .tapeOlive {
     width: 51%;
     transform: rotate(-2deg);
 }
-
 .categoryName {
     position: absolute;
     z-index: 4;
@@ -226,7 +201,6 @@ body {
     font-size: 10px;
     color: #6d615a;
 }
-
 .detailIcon {
     position: absolute;
     z-index: 4;
@@ -236,14 +210,15 @@ body {
     height: 7px;
     object-fit: fill;
 }
-
 .closeIcon {
     position: absolute;
     z-index: 4;
     top: 4px;
     right: 8px;
     color: #837c77;
-    font: 17px 'Noto Sans KR', sans-serif;
+    font:
+        17px "Noto Sans KR",
+        sans-serif;
 }
 
 /* =========================
@@ -258,7 +233,6 @@ body {
     color: #b1aba7;
     font-size: 6px;
 }
-
 .periodSelector {
     display: flex;
     border: 1px solid #d8bda9;
@@ -266,15 +240,12 @@ body {
     overflow: hidden;
     color: #7d685a;
 }
-
 .periodSelector span {
     padding: 1px 4px;
 }
-
 .periodSelector .active {
     background: #f2d8cb;
 }
-
 .chart {
     height: 158px;
     display: flex;
@@ -285,20 +256,20 @@ body {
     border: 1px solid #ebe8e5;
     border-bottom-color: #bbb5b0;
 }
-
 .bar {
     width: 11%;
     height: var(--height);
     border: 1px solid #e0dcd9;
     background: linear-gradient(#fff, #fafafa);
 }
-
 .chartLabels {
     display: flex;
     justify-content: space-around;
     margin-top: 4px;
     color: #817873;
-    font: 5px 'Noto Sans KR', sans-serif;
+    font:
+        5px "Noto Sans KR",
+        sans-serif;
 }
 
 /* =========================
@@ -311,7 +282,6 @@ body {
     gap: 8px;
     margin: 13px 2px 0;
 }
-
 .smile {
     width: 22px;
     height: 22px;
@@ -323,7 +293,6 @@ body {
     font-size: 18px;
     transform: rotate(10deg);
 }
-
 .monthlyNotice p {
     flex: 1;
     margin: 0;
@@ -343,14 +312,12 @@ body {
     height: 410px;
     margin-top: 18px;
 }
-
 .detailPostit .categoryTape {
     top: 0;
     left: 7%;
     width: 32%;
     height: 30px;
 }
-
 .detailPostit .categoryName {
     top: 6px;
     left: 7%;
@@ -367,7 +334,6 @@ body {
         aspect-ratio: 1086 / 907;
         margin: 15px auto 0;
     }
-
     .notebookImage {
         position: absolute;
         z-index: 1;
@@ -376,11 +342,9 @@ body {
         height: 100%;
         object-fit: fill;
     }
-
     .chart {
         height: 195px;
     }
-
     .managementIntro {
         font-size: 8px;
     }
@@ -394,7 +358,6 @@ body {
     flex: 1;
     padding: 100px;
 }
-
 .pageContent h1 {
     font-size: 28px;
 }

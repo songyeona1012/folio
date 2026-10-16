@@ -1,3 +1,4 @@
+/* 일기 기분 그래프·월별 폴더·도움말·스크롤의 세부 스타일입니다. */
 /* ============================================================
    일기 페이지 추가 스타일 (diary.css 다음에 불러옵니다)
    기존 diary.css 디자인은 그대로 두고, 새로 생긴 요소만 꾸밉니다.
@@ -6,24 +7,23 @@
 :root {
     --diary-ink: #3b3330;
     --diary-muted: #9c918b;
-    --diary-soft: #8c7b6e;          /* 기록지 본문 글씨 (연한 갈색) */
+    --diary-soft: #8c7b6e; /* 기록지 본문 글씨 (연한 갈색) */
     --diary-accent: #b39a8b;
     --diary-line: #ece7e2;
     --diary-sheet-border: #e3ded9;
     --diary-paper: #fbf9f6;
     --diary-error: #c0533f;
-    --diary-select: #d76950;        /* 선택 표시 주황 */
+    --diary-select: #d76950; /* 선택 표시 주황 */
     --diary-folder: #f6e39b;
     --diary-folder-edge: #dcc472;
 }
-
 .muted {
     color: var(--diary-muted);
 }
 
 /* ---------- 기분 그래프 (상자 + 일별 스틱, 10일 넘으면 옆으로 슬라이드) ---------- */
 .moodBox {
-    --bars: 10;   /* JS가 일기 개수로 덮어씀 */
+    --bars: 10; /* JS가 일기 개수로 덮어씀 */
     --cols: 10;
     box-sizing: border-box;
     height: 190px;
@@ -32,9 +32,8 @@
     background: #fdfcfa;
     border: 1px solid var(--diary-sheet-border);
 }
-
 .moodScroll {
-    position: relative;             /* 스틱 위치 계산 기준 */
+    position: relative; /* 스틱 위치 계산 기준 */
     height: 100%;
     overflow-x: auto;
     overflow-y: hidden;
@@ -42,25 +41,21 @@
     scrollbar-width: thin;
     scrollbar-color: var(--diary-accent) transparent;
 }
-
 .moodScroll::-webkit-scrollbar {
     height: 5px;
 }
-
 .moodScroll::-webkit-scrollbar-thumb {
     background: var(--diary-accent);
     border-radius: 3px;
 }
-
 .moodTrack {
     display: flex;
     flex-direction: column;
-    width: 100%;                    /* 10일 넘으면 JS가 넓힘 */
+    width: 100%; /* 10일 넘으면 JS가 넓힘 */
     height: 100%;
     padding-bottom: 6px;
     box-sizing: border-box;
 }
-
 .moodBox.isEmpty .moodLabels {
     visibility: hidden;
 }
@@ -68,7 +63,10 @@
 /* diary.css의 예전 막대 스타일 덮어쓰기 */
 .moodBox .moodChart {
     display: grid;
-    grid-template-columns: repeat(var(--bars, 10), calc((100% - (var(--cols, 10) - 1) * 10px) / var(--cols, 10)));
+    grid-template-columns: repeat(
+        var(--bars, 10),
+        calc((100% - (var(--cols, 10) - 1) * 10px) / var(--cols, 10))
+    );
     justify-content: start;
     gap: 10px;
     align-items: end;
@@ -79,7 +77,6 @@
     border: 0;
     background: none;
 }
-
 .moodSlot {
     display: flex;
     align-items: flex-end;
@@ -89,7 +86,6 @@
     background: none;
     cursor: pointer;
 }
-
 .moodBar {
     display: block;
     width: 100%;
@@ -97,18 +93,17 @@
     box-sizing: border-box;
     border: 1px solid #cfc8c2;
     border-radius: 1px 1px 0 0;
-    transition: height 0.35s ease, border-color 0.15s ease;
+    transition:
+        height 0.35s ease,
+        border-color 0.15s ease;
 }
-
 .moodBar.noRating {
     height: 3px;
 }
-
 .moodSlot:hover .moodBar,
 .moodSlot:focus-visible .moodBar {
     border-color: var(--diary-accent);
 }
-
 .moodSlot:focus-visible {
     outline: 2px solid var(--diary-accent);
     outline-offset: 2px;
@@ -119,10 +114,12 @@
     border-color: var(--diary-muted);
     box-shadow: 0 0 0 1px var(--diary-muted);
 }
-
 .moodBox .moodLabels {
     display: grid;
-    grid-template-columns: repeat(var(--bars, 10), calc((100% - (var(--cols, 10) - 1) * 10px) / var(--cols, 10)));
+    grid-template-columns: repeat(
+        var(--bars, 10),
+        calc((100% - (var(--cols, 10) - 1) * 10px) / var(--cols, 10))
+    );
     justify-content: start;
     gap: 10px;
     margin-top: 6px;
@@ -130,7 +127,6 @@
     color: var(--diary-muted);
     text-align: center;
 }
-
 .diaryEmptyYear {
     margin: 28px 0 0;
     text-align: center;
@@ -149,17 +145,14 @@ button.folderItem {
     cursor: pointer;
     text-align: left;
 }
-
 .folderItem:hover,
 .folderItem:focus-visible {
     transform: translateY(-2px);
     transition: transform 0.15s ease;
 }
-
 .folderBody {
     position: relative;
 }
-
 .folderCount {
     position: absolute;
     left: 10px;
@@ -178,11 +171,9 @@ button.folderItem {
     scrollbar-width: thin;
     scrollbar-color: var(--diary-accent) transparent;
 }
-
 .folderGrid::-webkit-scrollbar {
     width: 6px;
 }
-
 .folderGrid::-webkit-scrollbar-thumb {
     background: var(--diary-accent);
     border-radius: 3px;
@@ -193,38 +184,34 @@ button.folderItem {
    ============================================================ */
 .monthView {
     position: relative;
-    margin: 12px -12px 0;           /* 양옆으로 살짝 넓게 */
-    padding-bottom: 24px;           /* 왼쪽 아래 폴더가 걸칠 자리 (노트 안쪽) */
+    margin: 12px -12px 0; /* 양옆으로 살짝 넓게 */
+    padding-bottom: 24px; /* 왼쪽 아래 폴더가 걸칠 자리 (노트 안쪽) */
     box-sizing: border-box;
 }
-
 .monthSheet {
     position: relative;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    height: 400px;                  /* 노트 아래로 넘어가지 않게 높이 고정, 넘치면 표만 스크롤 */
+    height: 400px; /* 노트 아래로 넘어가지 않게 높이 고정, 넘치면 표만 스크롤 */
     padding: 22px 24px 14px;
     background: #fff;
     border: 1px solid var(--diary-sheet-border);
     border-radius: 3px;
     box-shadow: 0 1px 2px rgba(59, 51, 48, 0.04);
 }
-
 .monthSheetHead {
     display: flex;
     align-items: center;
     gap: 14px;
     margin-bottom: 22px;
 }
-
 .monthSheetTitle {
     flex: none;
     font-size: 12px;
     color: var(--diary-ink);
     letter-spacing: 0.02em;
 }
-
 .monthSheetHelp {
     display: inline-flex;
     align-items: center;
@@ -234,7 +221,6 @@ button.folderItem {
     line-height: 1.4;
     color: #b8aea7;
 }
-
 .monthSheetHelp .qMark {
     flex: none;
     display: inline-flex;
@@ -256,18 +242,23 @@ button.folderItem {
     scrollbar-width: thin;
     scrollbar-color: var(--diary-accent) transparent;
 }
-
 .monthTable {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
-
-.monthTable .colDay { width: 16%; }
-.monthTable .colSummary { width: 48%; }
-.monthTable .colRating { width: 24%; }
-.monthTable .colSelect { width: 12%; }
-
+.monthTable .colDay {
+    width: 16%;
+}
+.monthTable .colSummary {
+    width: 48%;
+}
+.monthTable .colRating {
+    width: 24%;
+}
+.monthTable .colSelect {
+    width: 12%;
+}
 .monthTable th {
     position: sticky;
     top: 0;
@@ -280,25 +271,21 @@ button.folderItem {
     text-align: left;
     white-space: nowrap;
 }
-
 .monthTable th:last-child,
 .monthTable td.cellSelect {
     text-align: center;
 }
-
 .monthTable td {
     padding: 0 6px;
     height: 34px;
     border-bottom: 1px solid var(--diary-line);
     vertical-align: middle;
 }
-
 .cellDay {
     font-size: 13px;
     color: var(--diary-ink);
     font-variant-numeric: tabular-nums;
 }
-
 .summaryBtn {
     display: block;
     width: 100%;
@@ -314,7 +301,6 @@ button.folderItem {
     text-overflow: ellipsis;
     cursor: pointer;
 }
-
 .summaryBtn:hover,
 .summaryBtn:focus-visible {
     color: var(--diary-ink);
@@ -323,18 +309,15 @@ button.folderItem {
     text-decoration-color: var(--diary-accent);
     outline: none;
 }
-
 .rowLock {
     font-size: 9px;
 }
-
 .rowStars {
     font-size: 11px;
     letter-spacing: 1px;
     color: #d9ad3c;
     white-space: nowrap;
 }
-
 .rowStars.none {
     color: #cfc7c0;
     letter-spacing: 0;
@@ -344,7 +327,6 @@ button.folderItem {
 .monthRow.active td {
     background: rgba(179, 154, 139, 0.08);
 }
-
 .monthRow.active .summaryBtn {
     color: var(--diary-ink);
 }
@@ -364,7 +346,6 @@ button.folderItem {
     cursor: pointer;
     vertical-align: middle;
 }
-
 .rowCheck::before {
     content: "";
     width: 8px;
@@ -374,16 +355,13 @@ button.folderItem {
     transform: scale(0);
     transition: transform 0.12s ease;
 }
-
 .rowCheck:checked::before {
     transform: scale(1);
 }
-
 .rowCheck:focus-visible {
     outline: 2px solid var(--diary-accent);
     outline-offset: 2px;
 }
-
 .monthEmpty {
     margin: 36px 0;
     text-align: center;
@@ -397,7 +375,6 @@ button.folderItem {
     justify-content: flex-end;
     margin-top: 16px;
 }
-
 .selectDeleteBtn {
     border: 0;
     background: none;
@@ -407,16 +384,13 @@ button.folderItem {
     color: var(--diary-muted);
     cursor: pointer;
 }
-
 .selectDeleteBtn:not(:disabled):hover {
     color: var(--diary-error);
 }
-
 .selectDeleteBtn:disabled {
     color: #cfc7c0;
     cursor: default;
 }
-
 .deleteBubble {
     position: absolute;
     right: 18px;
@@ -439,27 +413,23 @@ button.folderItem {
     right: 22px;
     border-style: solid;
 }
-
 .deleteBubble::before {
     bottom: -11px;
     border-width: 11px 10px 0 0;
     border-color: #b9b0a9 transparent transparent transparent;
 }
-
 .deleteBubble::after {
     bottom: -9px;
     right: 23px;
     border-width: 10px 9px 0 0;
     border-color: #fff transparent transparent transparent;
 }
-
 .deleteBubble p {
     margin: 0 0 8px;
     font-size: 9.5px;
     line-height: 1.6;
     color: var(--diary-ink);
 }
-
 .deleteBubbleActions {
     display: flex;
     justify-content: center;
@@ -468,7 +438,6 @@ button.folderItem {
     font-size: 10px;
     color: var(--diary-muted);
 }
-
 .deleteBubbleActions button {
     border: 0;
     background: none;
@@ -476,15 +445,12 @@ button.folderItem {
     font: inherit;
     cursor: pointer;
 }
-
 .deleteYes {
     color: var(--diary-muted);
 }
-
 .deleteYes:hover {
     color: var(--diary-error);
 }
-
 .deleteNo {
     color: var(--diary-ink);
     font-weight: 600;
@@ -493,7 +459,7 @@ button.folderItem {
 /* 왼쪽 아래 노란 폴더 (누르면 폴더 목록으로) */
 .monthFolderIcon {
     position: absolute;
-    left: 4px;                      /* 노트 밖으로 나가지 않게 안쪽에 배치 */
+    left: 4px; /* 노트 밖으로 나가지 않게 안쪽에 배치 */
     bottom: 0;
     width: 62px;
     height: 44px;
@@ -504,18 +470,15 @@ button.folderItem {
     z-index: 2;
     transition: transform 0.15s ease;
 }
-
 .monthFolderIcon:hover,
 .monthFolderIcon:focus-visible {
     transform: translateY(-3px);
 }
-
 .monthFolderIcon:focus-visible {
     outline: 2px solid var(--diary-accent);
     outline-offset: 3px;
     border-radius: 4px;
 }
-
 .monthFolderTab {
     position: absolute;
     left: 0;
@@ -527,7 +490,6 @@ button.folderItem {
     border-bottom: 0;
     border-radius: 4px 6px 0 0;
 }
-
 .monthFolderBody {
     position: absolute;
     left: 0;
@@ -539,7 +501,6 @@ button.folderItem {
     border-radius: 2px 4px 3px 3px;
     box-shadow: 0 2px 4px rgba(59, 51, 48, 0.12);
 }
-
 .monthFolderNum {
     position: absolute;
     right: 7px;
@@ -558,15 +519,13 @@ button.diaryHelpRow {
     padding: 0;
     font: inherit;
     font-size: 11px;
-    color: #b8aea7;                 /* 작고 흐리게 */
+    color: #b8aea7; /* 작고 흐리게 */
     cursor: pointer;
 }
-
 button.diaryHelpRow .qMark {
     transform: scale(0.85);
     opacity: 0.8;
 }
-
 button.diaryHelpRow:hover,
 button.diaryHelpRow:focus-visible {
     color: var(--diary-muted);
@@ -576,7 +535,6 @@ button.diaryHelpRow:focus-visible {
 .diaryLeftPage .diaryIntro {
     margin-bottom: 12px;
 }
-
 .diaryLeftPage #yearView {
     margin-top: 0;
 }
@@ -585,7 +543,6 @@ button.diaryHelpRow:focus-visible {
 .folderGrid {
     max-height: 280px;
 }
-
 .diaryHelpText {
     margin: 4px 0 12px;
     padding: 10px 12px;
@@ -596,11 +553,9 @@ button.diaryHelpRow:focus-visible {
     border: 1px solid var(--diary-line);
     border-radius: 8px;
 }
-
 .diaryHelpText p {
     margin: 0;
 }
-
 button.diaryDateHint {
     border: 0;
     background: none;
@@ -611,7 +566,6 @@ button.diaryDateHint {
     text-decoration-color: var(--diary-accent);
     text-underline-offset: 4px;
 }
-
 .diaryHeaderRow {
     position: relative;
 }
@@ -626,24 +580,20 @@ button.diaryDateHint {
     opacity: 0;
     pointer-events: none;
 }
-
 .starRating .star {
     cursor: pointer;
 }
-
 .starRating .star:focus-visible {
     outline: 2px solid var(--diary-accent);
     outline-offset: 2px;
     border-radius: 2px;
 }
-
 .diaryStatus {
     min-height: 18px;
     margin: 8px 0 0;
     font-size: 12px;
     color: var(--diary-accent);
 }
-
 .diaryStatus.isError {
     color: var(--diary-error);
 }
@@ -655,7 +605,6 @@ button.diaryDateHint {
     justify-content: flex-end;
     gap: 12px;
 }
-
 .privateToggle {
     display: inline-flex;
     align-items: center;
@@ -665,7 +614,6 @@ button.diaryDateHint {
     color: var(--diary-ink);
     cursor: pointer;
 }
-
 .diaryDeleteBtn {
     border: 1px solid var(--diary-line);
     background: none;
@@ -675,17 +623,14 @@ button.diaryDateHint {
     border-radius: 6px;
     cursor: pointer;
 }
-
 .diaryDeleteBtn:hover {
     background: rgba(192, 83, 63, 0.08);
 }
-
 .diarySaveBtn:disabled,
 .diaryDeleteBtn:disabled {
     opacity: 0.5;
     cursor: progress;
 }
-
 #nextYearBtn:disabled {
     opacity: 0.3;
     cursor: default;
@@ -700,7 +645,6 @@ button.diaryDateHint {
     box-shadow: none !important;
     padding: 0 !important;
 }
-
 .plainNoteText {
     display: block;
     width: 100%;
@@ -718,7 +662,6 @@ button.diaryDateHint {
     line-height: 1.9;
     color: var(--diary-ink);
 }
-
 .plainNoteText::placeholder {
     color: var(--diary-muted);
 }
@@ -733,7 +676,6 @@ button.diaryDateHint {
     color: var(--diary-ink);
     cursor: pointer;
 }
-
 .diarySaveRow .diarySaveBtn:hover,
 .diarySaveRow .diarySaveBtn:focus-visible {
     background: none;
@@ -754,7 +696,6 @@ button.diaryDateHint {
     border-radius: 0;
     cursor: pointer;
 }
-
 .diarySaveRow .diaryDeleteBtn:hover,
 .diarySaveRow .diaryDeleteBtn:focus-visible {
     background: none;
@@ -765,28 +706,28 @@ button.diaryDateHint {
 }
 /* 관리 화면과 같은 레일 및 흰색 손잡이를 사용하는 일기 스크롤 */
 :is(.timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap) {
-    scrollbar-width:auto;
-    scrollbar-color:auto;
-    scrollbar-gutter:stable;
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+    scrollbar-gutter: stable;
 }
 :is(.timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap)::-webkit-scrollbar {
-    width:14px;
-    height:14px;
-    background:transparent;
+    width: 14px;
+    height: 14px;
+    background: transparent;
 }
 :is(.timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap)::-webkit-scrollbar-track {
-    background:url('/img/scroll-rail.png') center / 1px 100% no-repeat;
-    margin-block:3px;
+    background: url("/img/scroll-rail.png") center / 1px 100% no-repeat;
+    margin-block: 3px;
 }
 :is(.timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap)::-webkit-scrollbar-thumb {
-    min-height:34px;
-    background:url('/img/scroll-thumb.png') center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat;
+    min-height: 34px;
+    background: url("/img/scroll-thumb.png") center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat;
 }
 :is(.timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap)::-webkit-scrollbar-button {
-    display:none;
-    width:0;
-    height:0;
+    display: none;
+    width: 0;
+    height: 0;
 }
 :is(.timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap)::-webkit-scrollbar-corner {
-    background:transparent;
+    background: transparent;
 }

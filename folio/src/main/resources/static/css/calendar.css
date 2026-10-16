@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap');
+/* 달력과 오른쪽 일정 목록·메모·일정 편집 창의 스타일입니다. */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&display=swap");
 
 :root {
     --orange: #e9692c;
@@ -9,10 +10,10 @@
     --sat: #5c68b9;
     --black: #000000;
 
-    --tag-health-bg: rgba(114, 131, 151, 0.20);
+    --tag-health-bg: rgba(114, 131, 151, 0.2);
     --tag-health-fg: #4c5c6b;
 
-    --tag-important-bg: rgba(215, 105, 80, 0.20);
+    --tag-important-bg: rgba(215, 105, 80, 0.2);
     --tag-important-fg: #ad4b31;
 
     --tag-todo-bg: rgba(140, 190, 110, 0.24);
@@ -21,10 +22,10 @@
     --shadow: rgba(60, 50, 40, 0.16);
 
     /* 버튼/메모 공통 따뜻한 색 */
-    --button-bg: #FAFAFA;
-    --button-bg-hover: #FAFAFA;
-    --button-border: #E79E7B;
-    --button-text: #E79E7B;
+    --button-bg: #fafafa;
+    --button-bg-hover: #fafafa;
+    --button-border: #e79e7b;
+    --button-text: #e79e7b;
 }
 
 /* =========================================================
@@ -58,7 +59,6 @@
 
     transition: transform 0.15s ease;
 }
-
 .bookmark img {
     display: block;
 
@@ -81,17 +81,14 @@
     left: 10%;
     top: 0.8%;
 }
-
 .pos-l2 {
     left: 19%;
     top: 0.8%;
 }
-
 .pos-l3 {
     left: 28%;
     top: 0.8%;
 }
-
 .pos-l4 {
     left: 37%;
     top: 0.8%;
@@ -103,22 +100,18 @@
     right: 37%;
     top: 0.8%;
 }
-
 .pos-r2 {
     right: 28%;
     top: 0.8%;
 }
-
 .pos-r3 {
     right: 19%;
     top: 0.8%;
 }
-
 .pos-r4 {
     right: 10%;
     top: 0.8%;
 }
-
 .bookmark:hover {
     transform: translateY(-2px);
 }
@@ -148,9 +141,8 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .brand-row h1 {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: "Cormorant Garamond", serif;
     font-style: italic;
     font-weight: 600;
 
@@ -160,7 +152,6 @@ Folio 제목
 
     margin: 0;
 }
-
 .brand-row .rate {
     font-size: 14px;
     color: var(--gold);
@@ -184,7 +175,6 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .briefing strong {
     font-weight: 700;
 }
@@ -212,7 +202,7 @@ Folio 제목
     margin-top: -8px;
     margin-bottom: -18px;
 
-    background-image: url('../img/postit.png');
+    background-image: url("../img/postit.png");
 
     background-position: center;
     background-repeat: no-repeat;
@@ -245,7 +235,6 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .cal-head .year {
     font-size: 14px;
 
@@ -255,7 +244,6 @@ Folio 제목
 
     font-weight: 400;
 }
-
 .cal-head .month {
     font-size: 18px;
 
@@ -263,7 +251,6 @@ Folio 제목
 
     color: #342f2d;
 }
-
 .cal-nav {
     margin-left: auto;
 
@@ -271,7 +258,6 @@ Folio 제목
 
     gap: 4px;
 }
-
 .cal-nav button {
     width: 24px;
     height: 24px;
@@ -288,7 +274,6 @@ Folio 제목
 
     font-size: 16px;
 }
-
 .cal-nav button:hover {
     color: var(--orange);
 }
@@ -308,7 +293,6 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .weekdays span {
     text-align: center;
 
@@ -320,11 +304,9 @@ Folio 제목
 
     color: #342f2d;
 }
-
 .weekdays span:first-child {
     color: var(--sun);
 }
-
 .weekdays span:last-child {
     color: var(--sat);
 }
@@ -344,7 +326,6 @@ Folio 제목
 
     min-height: 0;
 }
-
 .day {
     position: relative;
 
@@ -364,11 +345,9 @@ Folio 제목
 
     min-width: 0;
 }
-
 .day:hover:not(.other) {
     background: rgba(233, 105, 44, 0.07);
 }
-
 .day .num {
     font-size: 12.5px;
 
@@ -388,19 +367,15 @@ Folio 제목
 
     color: #342f2d;
 }
-
 .day.other .num {
     color: #d7c9c0;
 }
-
 .day.sun .num {
     color: var(--sun);
 }
-
 .day.sat .num {
     color: var(--sat);
 }
-
 .day.today .num {
     background: var(--orange);
 
@@ -408,11 +383,9 @@ Folio 제목
 
     font-weight: 700;
 }
-
 .day.selected {
     outline: 1px solid var(--orange-line);
 }
-
 .day .tag {
     margin-top: 3px;
 
@@ -436,17 +409,14 @@ Folio 제목
 
     text-overflow: ellipsis;
 }
-
 .tag.health {
     background: var(--tag-health-bg);
     color: var(--tag-health-fg);
 }
-
 .tag.important {
     background: var(--tag-important-bg);
     color: var(--tag-important-fg);
 }
-
 .tag.todo {
     background: var(--tag-todo-bg);
     color: var(--tag-todo-fg);
@@ -506,7 +476,7 @@ Folio 제목
 
     outline: none;
 
-    font-family: 'Noto Sans KR', sans-serif;
+    font-family: "Noto Sans KR", sans-serif;
 
     margin: 0;
 
@@ -516,13 +486,11 @@ Folio 제목
         background 0.15s ease,
         border-color 0.15s ease;
 }
-
 .natural-schedule .add-pill::placeholder {
     color: var(--button-text);
 
     opacity: 1;
 }
-
 .natural-schedule .add-pill:focus,
 .natural-schedule .add-pill:active {
     outline: none;
@@ -533,7 +501,6 @@ Folio 제목
 
     color: var(--black);
 }
-
 .natural-schedule .add-pill:hover {
     background: var(--button-bg-hover);
 
@@ -561,7 +528,7 @@ Folio 제목
 
     background-color: transparent !important;
 
-    background-image: url('../img/add.png') !important;
+    background-image: url("../img/add.png") !important;
 
     background-repeat: no-repeat !important;
 
@@ -581,13 +548,12 @@ Folio 제목
 
     display: block;
 }
-
 .natural-schedule .naturalScheduleBtn:hover,
 .natural-schedule .naturalScheduleBtn:focus,
 .natural-schedule .naturalScheduleBtn:active {
     background-color: transparent !important;
 
-    background-image: url('../img/add.png') !important;
+    background-image: url("../img/add.png") !important;
 
     background-repeat: no-repeat !important;
 
@@ -603,7 +569,6 @@ Folio 제목
 
     transform: translateY(-50%) !important;
 }
-
 .natural-schedule .naturalScheduleBtn:disabled {
     opacity: 0.6;
 
@@ -625,7 +590,6 @@ Folio 제목
 
     opacity: 1;
 }
-
 .natural-schedule .naturalScheduleBtn.is-loading::after {
     content: "";
 
@@ -670,7 +634,6 @@ Folio 제목
     cursor: pointer;
 }
 
-
 /* =========================================================
 우측 섹션
 ========================================================= */
@@ -680,7 +643,6 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .section.grow {
     flex: 1;
 
@@ -692,7 +654,6 @@ Folio 제목
 
     margin-top: 5px;
 }
-
 .section h4 {
     font-size: 14.5px;
 
@@ -710,7 +671,6 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .section h4 .reorder {
     font-size: 14.5px;
 
@@ -720,16 +680,13 @@ Folio 제목
 
     cursor: pointer;
 }
-
-.rightDashboard>.section:first-of-type {
+.rightDashboard > .section:first-of-type {
     margin-top: 8px;
 }
-
-.rightDashboard>.section:first-of-type h4 {
+.rightDashboard > .section:first-of-type h4 {
     margin-bottom: 10px;
 }
-
-.rightDashboard>.section:nth-of-type(2) {
+.rightDashboard > .section:nth-of-type(2) {
     margin-top: 4px;
 }
 
@@ -750,7 +707,6 @@ Folio 제목
 
     gap: 8px;
 }
-
 .check-list li {
     display: flex;
 
@@ -764,7 +720,6 @@ Folio 제목
 
     cursor: pointer;
 }
-
 .check-list .chk {
     width: 11px;
     height: 11px;
@@ -775,13 +730,11 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .check-list li.done .chk {
     background: var(--orange);
 
     border-color: var(--orange);
 }
-
 .check-list li.done {
     opacity: 0.5;
 
@@ -807,7 +760,6 @@ Folio 제목
 
     padding-top: 10px;
 }
-
 .health-row .muted {
     color: #a39b96;
 
@@ -835,7 +787,6 @@ Folio 제목
 
     min-height: 0;
 }
-
 .today-list li {
     display: flex;
 
@@ -847,7 +798,6 @@ Folio 제목
 
     border-bottom: 1px dashed var(--line);
 }
-
 .today-list .time {
     font-size: 10.5px;
 
@@ -857,7 +807,6 @@ Folio 제목
 
     flex-shrink: 0;
 }
-
 .today-list .title {
     flex: 1;
 
@@ -867,8 +816,8 @@ Folio 제목
 
     color: var(--gold);
 }
-
-.today-list .chk2, .dashboardManagementList .chk2, .dashboardManagementList .chk2, .dashboardManagementList .chk2 {
+.today-list .chk2,
+.dashboardManagementList .chk2 {
     --chk-color: var(--orange);
 
     position: relative;
@@ -895,37 +844,40 @@ Folio 제목
 }
 
 /* 카테고리별 체크 색 (완료 전에는 테두리만 색으로 표시) */
-.today-list li.important .chk2, .dashboardManagementList li.important .chk2 {
+.today-list li.important .chk2,
+.dashboardManagementList li.important .chk2 {
     --chk-color: var(--tag-important-fg);
 
     border-color: var(--tag-important-fg);
 }
-
-.today-list li.health .chk2, .dashboardManagementList li.health .chk2 {
+.today-list li.health .chk2,
+.dashboardManagementList li.health .chk2 {
     --chk-color: var(--tag-health-fg);
 
     border-color: var(--tag-health-fg);
 }
 
 /* 마우스를 올리면 살짝 채워져서 누를 수 있다는 걸 보여줌 */
-.today-list .chk2:hover, .dashboardManagementList .chk2:hover {
+.today-list .chk2:hover,
+.dashboardManagementList .chk2:hover {
     border-color: var(--chk-color);
 
     background: rgba(233, 105, 44, 0.12);
 }
-
-.today-list .chk2:active, .dashboardManagementList .chk2:active {
+.today-list .chk2:active,
+.dashboardManagementList .chk2:active {
     transform: scale(0.88);
 }
 
 /* 완료: 색으로 채우고 체크 표시 */
-.today-list li.completed .chk2, .dashboardManagementList li.completed .chk2 {
+.today-list li.completed .chk2,
+.dashboardManagementList li.completed .chk2 {
     background: var(--chk-color);
 
     border-color: var(--chk-color);
 }
-
-.today-list li.completed .chk2::after, .dashboardManagementList li.completed .chk2::after {
+.today-list li.completed .chk2::after,
+.dashboardManagementList li.completed .chk2::after {
     content: "";
 
     position: absolute;
@@ -942,11 +894,9 @@ Folio 제목
 
     transform: rotate(45deg);
 }
-
 .today-list li.completed .time {
     opacity: 0.5;
 }
-
 .today-list li.completed .title {
     opacity: 0.4;
 
@@ -985,7 +935,6 @@ Folio 제목
         color 0.15s ease,
         background 0.15s ease;
 }
-
 .delete-schedule:hover {
     color: var(--orange);
 
@@ -1003,19 +952,15 @@ Folio 제목
 
     border-radius: 3px;
 
-    transition:
-        background-color 0.2s ease;
+    transition: background-color 0.2s ease;
 
     padding: 1px 2px;
 
     margin-left: -2px;
 }
-
 .hover-edit:hover {
-    background-color:
-        rgba(233, 105, 44, 0.10);
+    background-color: rgba(233, 105, 44, 0.1);
 }
-
 .time-edit {
     width: 66px;
 
@@ -1039,7 +984,6 @@ Folio 제목
 
     box-sizing: border-box;
 }
-
 .title-edit {
     width: 100%;
 
@@ -1151,7 +1095,6 @@ Folio 제목
 
     position: relative;
 }
-
 .memoPanel .memoDate {
     color: #624325;
 
@@ -1184,7 +1127,6 @@ Folio 제목
 
     padding: 0;
 }
-
 .memoColumnHeader {
     display: grid;
 
@@ -1192,17 +1134,14 @@ Folio 제목
 
     align-items: center;
 }
-
 .memoColumnHeader div {
     position: relative;
 
     top: 1px;
 }
-
 .memoColumnHeader div:first-child {
     padding-left: 3px;
 }
-
 .memoColumnHeader div:last-child {
     padding-left: 4px;
 }
@@ -1306,7 +1245,6 @@ Folio 제목
 
     box-sizing: border-box;
 }
-
 .memoSchedule,
 .memoPlaceholder {
     font-family: inherit;
@@ -1339,7 +1277,6 @@ Folio 제목
 
     box-sizing: border-box;
 }
-
 .memoEvent:hover .memoPlaceholder {
     color: #624325;
 }
@@ -1374,11 +1311,9 @@ Folio 제목
 
     box-sizing: border-box;
 }
-
 .memoNewTime {
     width: 80px;
 }
-
 .memoNewTitle {
     width: 100%;
 }
@@ -1388,7 +1323,6 @@ Folio 제목
 .memo-empty .memoNewTitle {
     top: 4px;
 }
-
 .memoNewTime::placeholder,
 .memoNewTitle::placeholder {
     color: #624325;
@@ -1415,24 +1349,19 @@ Folio 제목
 ========================================================= */
 
 .memoPanel.memo-opening {
-    animation:
-        memoRise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: memoRise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes memoRise {
-
     from {
         opacity: 0;
 
-        transform:
-            translateY(70px) scale(0.98);
+        transform: translateY(70px) scale(0.98);
     }
-
     to {
         opacity: 1;
 
-        transform:
-            translateY(0) scale(1);
+        transform: translateY(0) scale(1);
     }
 }
 
@@ -1478,7 +1407,6 @@ Folio 제목
 
     transform: rotate(-12deg);
 }
-
 .penButton img {
     display: block;
 
@@ -1494,24 +1422,19 @@ Folio 제목
 ========================================================= */
 
 .memoPanel.memo-opening .penTool {
-    animation:
-        penSlideIn 0.65s 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: penSlideIn 0.65s 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes penSlideIn {
-
     from {
         opacity: 0;
 
-        transform:
-            translate(90px, 90px);
+        transform: translate(90px, 90px);
     }
-
     to {
         opacity: 1;
 
-        transform:
-            translate(0, 0);
+        transform: translate(0, 0);
     }
 }
 
@@ -1534,18 +1457,14 @@ Folio 제목
 
     padding: 6px;
 
-    background:
-        rgba(255, 255, 255, 0.93);
+    background: rgba(255, 255, 255, 0.93);
 
-    border:
-        1px solid #e6ddda;
+    border: 1px solid #e6ddda;
 
     border-radius: 10px;
 
-    box-shadow:
-        0 8px 20px rgba(60, 50, 40, 0.15);
+    box-shadow: 0 8px 20px rgba(60, 50, 40, 0.15);
 }
-
 .penPalette.show {
     display: flex;
 }
@@ -1565,7 +1484,6 @@ Folio 제목
 
     cursor: pointer;
 }
-
 .penChoice img {
     width: 100%;
 
@@ -1583,10 +1501,8 @@ Folio 제목
 .memoPanel.highlight-mode .memoEvent {
     cursor: crosshair;
 }
-
 .memoPanel.highlight-mode .memoEvent:hover {
-    background:
-        rgba(233, 105, 44, 0.05);
+    background: rgba(233, 105, 44, 0.05);
 }
 
 /* =========================================================
@@ -1596,10 +1512,8 @@ Folio 제목
 .memoList::-webkit-scrollbar {
     width: 4px;
 }
-
 .memoList::-webkit-scrollbar-thumb {
-    background:
-        rgba(110, 81, 64, 0.25);
+    background: rgba(110, 81, 64, 0.25);
 
     border-radius: 10px;
 }
@@ -1633,8 +1547,7 @@ Toast
 
     left: 50%;
 
-    transform:
-        translateX(-50%) translateY(-10px);
+    transform: translateX(-50%) translateY(-10px);
 
     background: #514945;
 
@@ -1650,23 +1563,18 @@ Toast
 
     pointer-events: none;
 
-    transition:
-        all 0.25s ease;
+    transition: all 0.25s ease;
 
     z-index: 40;
 
     white-space: nowrap;
 
-    font-family:
-        'Noto Sans KR',
-        sans-serif;
+    font-family: "Noto Sans KR", sans-serif;
 }
-
 .toast.show {
     opacity: 1;
 
-    transform:
-        translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0);
 }
 
 /* =========================================================
@@ -1674,11 +1582,9 @@ Toast
 ========================================================= */
 
 @media (min-width: 1300px) {
-
     .postit {
         width: 112%;
     }
-
 }
 
 /* =========================================================
@@ -1689,11 +1595,9 @@ Toast
 .title-edit:focus,
 .memoNewTime:focus,
 .memoNewTitle:focus {
-    border-bottom-color:
-        var(--orange);
+    border-bottom-color: var(--orange);
 
-    box-shadow:
-        0 1px 0 rgba(233, 105, 44, 0.25);
+    box-shadow: 0 1px 0 rgba(233, 105, 44, 0.25);
 }
 
 /* =========================================================
@@ -1705,11 +1609,9 @@ Toast
 
     caret-color: transparent;
 }
-
 .time-picker-input::selection {
     background: transparent;
 }
-
 .timePickerBackdrop {
     position: fixed;
 
@@ -1719,7 +1621,6 @@ Toast
 
     background: transparent;
 }
-
 .timePickerPopover {
     position: fixed;
 
@@ -1733,40 +1634,29 @@ Toast
 
     border-radius: 16px;
 
-    box-shadow:
-        0 20px 40px -14px var(--shadow);
+    box-shadow: 0 20px 40px -14px var(--shadow);
 
     padding: 14px 14px 12px;
 
-    font-family:
-        'Noto Sans KR',
-        sans-serif;
+    font-family: "Noto Sans KR", sans-serif;
 
-    animation:
-        tpPop 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: tpPop 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes tpPop {
-
     from {
         opacity: 0;
 
-        transform:
-            translateY(6px) scale(0.97);
+        transform: translateY(6px) scale(0.97);
     }
-
     to {
         opacity: 1;
 
-        transform:
-            translateY(0) scale(1);
+        transform: translateY(0) scale(1);
     }
 }
-
 .tpHeader {
-    font-family:
-        'Cormorant Garamond',
-        serif;
+    font-family: "Cormorant Garamond", serif;
 
     font-style: italic;
 
@@ -1780,7 +1670,6 @@ Toast
 
     margin-bottom: 8px;
 }
-
 .tpAmPmRow {
     display: flex;
 
@@ -1788,7 +1677,6 @@ Toast
 
     margin-bottom: 10px;
 }
-
 .tpAmPmBtn {
     flex: 1;
 
@@ -1813,11 +1701,9 @@ Toast
         color 0.15s,
         border-color 0.15s;
 }
-
 .tpAmPmBtn:hover {
     background: var(--button-bg-hover);
 }
-
 .tpAmPmBtn.sel {
     background: var(--button-bg);
 
@@ -1827,7 +1713,6 @@ Toast
 
     font-weight: 700;
 }
-
 .tpWheelRow {
     display: flex;
 
@@ -1843,7 +1728,6 @@ Toast
 
     margin-bottom: 12px;
 }
-
 .tpWheelRow::before {
     content: "";
 
@@ -1856,17 +1740,13 @@ Toast
 
     height: 30px;
 
-    transform:
-        translateY(-15px);
+    transform: translateY(-15px);
 
-    background:
-        rgba(233, 105, 44, 0.08);
+    background: rgba(233, 105, 44, 0.08);
 
-    border-top:
-        1px solid var(--orange-line);
+    border-top: 1px solid var(--orange-line);
 
-    border-bottom:
-        1px solid var(--orange-line);
+    border-bottom: 1px solid var(--orange-line);
 
     border-radius: 8px;
 
@@ -1874,7 +1754,6 @@ Toast
 
     z-index: 0;
 }
-
 .tpColumn {
     position: relative;
 
@@ -1892,11 +1771,9 @@ Toast
 
     -ms-overflow-style: none;
 }
-
 .tpColumn::-webkit-scrollbar {
     display: none;
 }
-
 .tpColumn::before,
 .tpColumn::after {
     content: "";
@@ -1907,7 +1784,6 @@ Toast
 
     flex-shrink: 0;
 }
-
 .tpItem {
     scroll-snap-align: center;
 
@@ -1930,7 +1806,6 @@ Toast
         font-size 0.15s,
         font-weight 0.15s;
 }
-
 .tpItem.sel {
     color: var(--gold);
 
@@ -1938,15 +1813,12 @@ Toast
 
     font-size: 18px;
 }
-
 .tpColon {
     position: relative;
 
     z-index: 1;
 
-    font-family:
-        'Cormorant Garamond',
-        serif;
+    font-family: "Cormorant Garamond", serif;
 
     font-style: italic;
 
@@ -1956,7 +1828,6 @@ Toast
 
     padding-bottom: 2px;
 }
-
 .tpConfirm {
     width: 100%;
 
@@ -1982,7 +1853,6 @@ Toast
         background 0.15s ease,
         opacity 0.15s ease;
 }
-
 .tpConfirm:hover {
     background: var(--button-bg-hover);
 
@@ -2010,11 +1880,9 @@ Toast
 
     backdrop-filter: blur(3px);
 }
-
 .natural-modal-backdrop.show {
     display: flex;
 }
-
 .natural-modal {
     position: relative;
 
@@ -2036,16 +1904,12 @@ Toast
 
     animation: naturalModalOpen 0.22s ease-out;
 }
-
 .natural-modal-title {
     margin-bottom: 7px;
 
     color: #4b403b;
 
-    font-family:
-        "Cormorant Garamond",
-        "Noto Serif KR",
-        serif;
+    font-family: "Cormorant Garamond", "Noto Serif KR", serif;
 
     font-size: 34px;
 
@@ -2055,7 +1919,6 @@ Toast
 
     text-align: center;
 }
-
 .natural-modal-subtitle {
     margin-bottom: 24px;
 
@@ -2067,7 +1930,6 @@ Toast
 
     text-align: center;
 }
-
 .natural-modal-close {
     position: absolute;
 
@@ -2099,17 +1961,14 @@ Toast
         color 0.15s ease,
         transform 0.15s ease;
 }
-
 .natural-modal-close:hover {
     color: #4f443f;
 
     transform: rotate(5deg);
 }
-
 .natural-input-wrap {
     position: relative;
 }
-
 .natural-input {
     display: block;
 
@@ -2143,18 +2002,14 @@ Toast
         border-color 0.18s ease,
         box-shadow 0.18s ease;
 }
-
 .natural-input::placeholder {
     color: #b5aaa3;
 }
-
 .natural-input:focus {
     border-color: #a99a90;
 
-    box-shadow:
-        0 0 0 3px rgba(169, 154, 144, 0.10);
+    box-shadow: 0 0 0 3px rgba(169, 154, 144, 0.1);
 }
-
 .natural-example {
     margin-top: 13px;
 
@@ -2170,7 +2025,6 @@ Toast
 
     font-size: 13px;
 }
-
 .natural-example span {
     display: block;
 
@@ -2180,13 +2034,11 @@ Toast
 
     font-size: 12px;
 }
-
 .natural-example p {
     margin: 0;
 
     color: #756860;
 }
-
 .natural-submit {
     display: block;
 
@@ -2215,15 +2067,12 @@ Toast
         transform 0.12s ease,
         opacity 0.18s ease;
 }
-
 .natural-submit:hover {
     background: #62564f;
 }
-
 .natural-submit:active {
     transform: translateY(1px);
 }
-
 .natural-submit:disabled {
     opacity: 0.55;
 
@@ -2234,89 +2083,191 @@ Toast
     from {
         opacity: 0;
 
-        transform:
-            translateY(10px) scale(0.98);
+        transform: translateY(10px) scale(0.98);
     }
-
     to {
         opacity: 1;
 
-        transform:
-            translateY(0) scale(1);
+        transform: translateY(0) scale(1);
     }
 }
 
 @media (max-width: 600px) {
-
     .natural-modal {
         width: calc(100vw - 28px);
 
         padding: 32px 24px 25px;
     }
-
     .natural-modal-title {
         font-size: 30px;
     }
 }
-
-.management-category-heading { display:flex; align-items:center; gap:25px; border-bottom:1px solid var(--line); width:max-content; min-width:100px; margin-bottom:12px; }
-.management-category-heading h4 { margin:0 0 5px; }
-.dashboardCategoryMenu { position:relative; margin-bottom:5px; }
-.dashboardCategoryMenu summary { list-style:none; cursor:pointer; padding:5px; }
-.dashboardCategoryMenu summary::-webkit-details-marker { display:none; }
-.dashboardCategoryMenu summary span { display:block; width:12px; height:10px; background:repeating-linear-gradient(to bottom,#878181 0 2px,transparent 2px 4px); }
-.dashboardCategoryOptions { position:absolute; top:100%; right:0; z-index:20; min-width:100px; padding:5px; background:#fffdf9; border:1px solid var(--line); border-radius:5px; box-shadow:0 3px 10px #0002; }
-.dashboardCategoryOptions button { display:block; width:100%; padding:7px 12px; border:0; background:transparent; text-align:left; color:var(--gold); font-family:inherit; cursor:pointer; }
-.dashboardCategoryOptions button[aria-pressed="true"] { background:#f0d7c8; }
-.dashboardManagementList { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px; max-height:150px; overflow-y:auto; font-size:11.5px; color:var(--gold); }
-.dashboardManagementList .muted { color:#ABA6A6; }
-
-.dashboardCategoryOptions { top:50%; left:calc(100% + 8px); right:auto; transform:translateY(-50%); display:flex; align-items:center; min-width:190px; padding:4px 6px; white-space:nowrap; background:#fffdf9; }
-.dashboardCategoryOptions button { width:auto; padding:5px 10px; }
-.dashboardCategoryOptions button + button { border-left:1px solid #b6afa8; }
-.dashboardManagementList li { display:flex; align-items:center; justify-content:space-between; gap:14px; padding-right:8px; }
-
-.dashboardManagementList .chk2 { appearance:none; margin:0; }
-.dashboardManagementList .chk2:hover { border-color:var(--orange); background:rgba(233,105,44,.12); }
-.dashboardManagementList .chk2:active { transform:scale(.88); }
-.dashboardManagementList li.completed .chk2 { background:var(--orange); border-color:var(--orange); }
-.dashboardManagementList li.completed .chk2::after { content:''; position:absolute; left:3.5px; top:.5px; width:3px; height:6.5px; border:solid #fff; border-width:0 1.6px 1.6px 0; transform:rotate(45deg); }
-.dashboardManagementList li.completed > span { opacity:.4; text-decoration:line-through; }
-.dashboardManagementList .chk2:disabled { opacity:.4; cursor:wait; }
-
+.management-category-heading {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    border-bottom: 1px solid var(--line);
+    width: max-content;
+    min-width: 100px;
+    margin-bottom: 12px;
+}
+.management-category-heading h4 {
+    margin: 0 0 5px;
+}
+.dashboardCategoryMenu {
+    position: relative;
+    margin-bottom: 5px;
+}
+.dashboardCategoryMenu summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 5px;
+}
+.dashboardCategoryMenu summary::-webkit-details-marker {
+    display: none;
+}
+.dashboardCategoryMenu summary span {
+    display: block;
+    width: 12px;
+    height: 10px;
+    background: repeating-linear-gradient(to bottom, #878181 0 2px, transparent 2px 4px);
+}
+.dashboardCategoryOptions {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 20;
+    min-width: 100px;
+    padding: 5px;
+    background: #fffdf9;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    box-shadow: 0 3px 10px #0002;
+}
+.dashboardCategoryOptions button {
+    display: block;
+    width: 100%;
+    padding: 7px 12px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    color: var(--gold);
+    font-family: inherit;
+    cursor: pointer;
+}
+.dashboardCategoryOptions button[aria-pressed="true"] {
+    background: #f0d7c8;
+}
+.dashboardManagementList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    font-size: 11.5px;
+    color: var(--gold);
+}
+.dashboardManagementList .muted {
+    color: #aba6a6;
+}
+.dashboardCategoryOptions {
+    top: 50%;
+    left: calc(100% + 8px);
+    right: auto;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    min-width: 190px;
+    padding: 4px 6px;
+    white-space: nowrap;
+    background: #fffdf9;
+}
+.dashboardCategoryOptions button {
+    width: auto;
+    padding: 5px 10px;
+}
+.dashboardCategoryOptions button + button {
+    border-left: 1px solid #b6afa8;
+}
+.dashboardManagementList li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding-right: 8px;
+}
+.dashboardManagementList .chk2 {
+    appearance: none;
+    margin: 0;
+}
+.dashboardManagementList .chk2:hover {
+    border-color: var(--orange);
+    background: rgba(233, 105, 44, 0.12);
+}
+.dashboardManagementList .chk2:active {
+    transform: scale(0.88);
+}
+.dashboardManagementList li.completed .chk2 {
+    background: var(--orange);
+    border-color: var(--orange);
+}
+.dashboardManagementList li.completed .chk2::after {
+    content: "";
+    position: absolute;
+    left: 3.5px;
+    top: 0.5px;
+    width: 3px;
+    height: 6.5px;
+    border: solid #fff;
+    border-width: 0 1.6px 1.6px 0;
+    transform: rotate(45deg);
+}
+.dashboardManagementList li.completed > span {
+    opacity: 0.4;
+    text-decoration: line-through;
+}
+.dashboardManagementList .chk2:disabled {
+    opacity: 0.4;
+    cursor: wait;
+}
 
 /* ---------- 달력 메모지가 붙는 효과 ---------- */
 @keyframes memoStick {
     0% {
         opacity: 0;
         transform: translateY(-28px) rotate(-4deg) scale(1.04);
-        filter: drop-shadow(0 18px 18px rgba(59, 51, 48, 0.25));   /* 떠 있을 땐 그림자가 크고 진하게 */
+        filter: drop-shadow(0 18px 18px rgba(59, 51, 48, 0.25)); /* 떠 있을 땐 그림자가 크고 진하게 */
     }
     60% {
         opacity: 1;
-        transform: translateY(3px) rotate(0.6deg) scale(0.995);     /* 꾹 눌러 붙이는 순간 */
+        transform: translateY(3px) rotate(0.6deg) scale(0.995); /* 꾹 눌러 붙이는 순간 */
         filter: drop-shadow(0 3px 4px rgba(59, 51, 48, 0.15));
     }
     80% {
-        transform: translateY(-1px) rotate(-0.2deg);                /* 살짝 튕기며 자리 잡기 */
+        transform: translateY(-1px) rotate(-0.2deg); /* 살짝 튕기며 자리 잡기 */
     }
     100% {
         opacity: 1;
         transform: none;
     }
 }
-
 .memoStickIn {
-    transform-origin: 50% 0%;                                       /* 윗변을 먼저 붙이는 느낌 */
+    transform-origin: 50% 0%; /* 윗변을 먼저 붙이는 느낌 */
     animation: memoStick 0.7s cubic-bezier(0.22, 0.8, 0.3, 1) backwards;
 }
 
 /* 메모지가 붙은 뒤에 날짜 칸이 스르륵 나타나기 */
 @keyframes memoContentIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
-
 .memoStickIn #grid {
     animation: memoContentIn 0.35s 0.5s ease-out backwards;
 }
@@ -2329,7 +2280,6 @@ Toast
     }
 }
 
-
 /* =========================================================
 🗓 월간 / 주간 보기
 ========================================================= */
@@ -2337,17 +2287,15 @@ Toast
 /* 보기 전환 버튼 (월간 | 주간) */
 .viewToggle {
     display: flex;
-    margin-left: auto;              /* 오른쪽으로 붙이고 */
+    margin-left: auto; /* 오른쪽으로 붙이고 */
     padding: 2px;
     border: 1px solid var(--orange-line);
     border-radius: 14px;
     align-self: center;
 }
-
 .viewToggle + .cal-nav {
-    margin-left: 4px;               /* 원래 cal-nav의 margin-left:auto 대신 */
+    margin-left: 4px; /* 원래 cal-nav의 margin-left:auto 대신 */
 }
-
 .viewToggle button {
     padding: 2px 9px;
     border: 0;
@@ -2357,19 +2305,18 @@ Toast
     font-size: 10.5px;
     color: var(--gold);
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
 }
-
 .viewToggle button:hover {
     color: var(--orange);
 }
-
 .viewToggle button[aria-pressed="true"] {
     background: rgba(233, 105, 44, 0.14);
     color: var(--orange);
     font-weight: 700;
 }
-
 .viewToggle button:focus-visible,
 .cal-nav button:focus-visible {
     outline: 2px solid var(--orange-line);
@@ -2387,7 +2334,6 @@ Toast
     grid-template-rows: 1fr;
     gap: 0;
 }
-
 .grid.isWeek .day {
     justify-content: flex-start;
     align-items: stretch;
@@ -2399,15 +2345,12 @@ Toast
     border-right: 1px dashed var(--line);
     scrollbar-width: none;
 }
-
 .grid.isWeek .day::-webkit-scrollbar {
     display: none;
 }
-
 .grid.isWeek .day:last-child {
     border-right: 0;
 }
-
 .grid.isWeek .day .num {
     align-self: center;
     flex-shrink: 0;
@@ -2417,7 +2360,6 @@ Toast
     border-radius: 11px;
     margin-bottom: 4px;
 }
-
 .grid.isWeek .day.selected {
     outline: none;
     background: rgba(233, 105, 44, 0.06);
@@ -2437,7 +2379,6 @@ Toast
     -webkit-box-orient: vertical;
     flex-shrink: 0;
 }
-
 .grid.isWeek .tagTime {
     display: block;
     font-size: 8px;
@@ -2450,7 +2391,6 @@ Toast
     opacity: 0.45;
     text-decoration: line-through;
 }
-
 .tagMore {
     flex-shrink: 0;
     font-size: 8.5px;
@@ -2460,10 +2400,15 @@ Toast
 
 /* 보기 전환 / 이동 시 날짜 칸이 살짝 나타나기 */
 @keyframes gridSwap {
-    from { opacity: 0; transform: translateY(4px); }
-    to   { opacity: 1; transform: none; }
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
 }
-
 .postit #grid.gridSwap {
     animation: gridSwap 0.25s ease-out;
 }
@@ -2475,44 +2420,121 @@ Toast
 }
 
 /* 현재 페이지의 책갈피만 위로 돌출 */
-.bookmark { top: .8%; }
-.bookmark.is-current { top: -2%; z-index: 5; }
-.bookmark:not(.is-current):hover { transform: translateY(-2px); }
+.bookmark {
+    top: 0.8%;
+}
+.bookmark.is-current {
+    top: -2%;
+    z-index: 5;
+}
+.bookmark:not(.is-current):hover {
+    transform: translateY(-2px);
+}
 /* 네 책갈피에 동일한 모양을 적용하고 색상만 구분합니다. */
 .bookmark {
     height: 4.8%;
     border-radius: 6px 6px 0 0;
     overflow: hidden;
     background:
-        radial-gradient(ellipse at 50% 65%, rgba(255,255,255,.3), transparent 62%),
-        linear-gradient(to bottom, rgba(255,255,255,.08), rgba(0,0,0,.025)),
+        radial-gradient(ellipse at 50% 65%, rgba(255, 255, 255, 0.3), transparent 62%),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.025)),
         var(--bookmark-color, #d5d5d2);
 }
-.bookmark[href="/main"] { --bookmark-color: #acb8e3; }
-.bookmark[href="/dairy"] { --bookmark-color: #97bc94; }
-.bookmark[href="/index"] { --bookmark-color: #ed9166; }
-.bookmark[href="/goal"] { --bookmark-color: #d5d5d2; }
-.bookmark img { visibility: hidden; }
+.bookmark[href="/main"] {
+    --bookmark-color: #acb8e3;
+}
+.bookmark[href="/dairy"] {
+    --bookmark-color: #97bc94;
+}
+.bookmark[href="/index"] {
+    --bookmark-color: #ed9166;
+}
+.bookmark[href="/goal"] {
+    --bookmark-color: #d5d5d2;
+}
+.bookmark img {
+    visibility: hidden;
+}
 /* 카테고리 메뉴는 버튼 너비에 맞추고 관리 체크는 이름 옆에 배치합니다. */
-.dashboardCategoryOptions { min-width:0; width:max-content; padding:3px 4px; }
-.dashboardCategoryOptions button { padding:5px 10px; }
-.dashboardManagementList li { justify-content:flex-start; gap:16px; padding-right:0; }
-.dashboardManagementList li > span { flex:0 1 145px; min-width:0; overflow-wrap:anywhere; }
-.dashboardManagementList .chk2 { flex:0 0 13px; }
+.dashboardCategoryOptions {
+    min-width: 0;
+    width: max-content;
+    padding: 3px 4px;
+}
+.dashboardCategoryOptions button {
+    padding: 5px 10px;
+}
+.dashboardManagementList li {
+    justify-content: flex-start;
+    gap: 16px;
+    padding-right: 0;
+}
+.dashboardManagementList li > span {
+    flex: 0 1 145px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.dashboardManagementList .chk2 {
+    flex: 0 0 13px;
+}
 
 /* 메인 목록은 책 높이 안에서 스크롤합니다. */
-.rightPage:has(#rightDashboard) { min-height:0; padding-bottom:4%; }
-.rightDashboard { flex:1; min-height:0; overflow:hidden; }
-.rightDashboard .section.grow { flex:1 1 0; min-height:0; margin-bottom:0; overflow:hidden; }
-.rightDashboard .today-list { min-height:0; overflow-y:auto; overflow-x:hidden; }
-.rightPage:has(#rightDashboard) .memoPanel { top:16%; bottom:4%; height:auto; margin-bottom:0; overflow:hidden; }
-.rightPage:has(#rightDashboard) .memoInner { min-height:0; }
-:is(.today-list, .memoList, .dashboardManagementList) { scrollbar-width:auto; scrollbar-color:auto; scrollbar-gutter:stable; }
-:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar { width:14px; height:14px; background:transparent; }
-:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-track { background:url('/img/scroll-rail.png') center / 1px 100% no-repeat; margin-block:3px; }
-:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-thumb { min-height:34px; background:url('/img/scroll-thumb.png') center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat; }
-:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-button { display:none; width:0; height:0; }
-:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-corner { background:transparent; }
+.rightPage:has(#rightDashboard) {
+    min-height: 0;
+    padding-bottom: 4%;
+}
+.rightDashboard {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+.rightDashboard .section.grow {
+    flex: 1 1 0;
+    min-height: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+.rightDashboard .today-list {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.rightPage:has(#rightDashboard) .memoPanel {
+    top: 16%;
+    bottom: 4%;
+    height: auto;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+.rightPage:has(#rightDashboard) .memoInner {
+    min-height: 0;
+}
+:is(.today-list, .memoList, .dashboardManagementList) {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+    scrollbar-gutter: stable;
+}
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+    background: transparent;
+}
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-track {
+    background: url("/img/scroll-rail.png") center / 1px 100% no-repeat;
+    margin-block: 3px;
+}
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-thumb {
+    min-height: 34px;
+    background: url("/img/scroll-thumb.png") center var(--scroll-thumb-position, 0%) / 10px 34px no-repeat;
+}
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+:is(.today-list, .memoList, .dashboardManagementList)::-webkit-scrollbar-corner {
+    background: transparent;
+}
 
 /* =========================================================
 🖍 형광펜 색으로 달력 일정 표시 (카테고리 색 대신)
@@ -2520,28 +2542,46 @@ Toast
 .day .tag.pen {
     font-weight: 600;
 }
-
 .day .tag.pen-red {
     background: rgba(215, 105, 80, 0.32);
     color: #9c3a24;
 }
-
 .day .tag.pen-orange {
     background: rgba(233, 189, 44, 0.38);
     color: #7d5d05;
 }
-
 .day .tag.pen-green {
     background: rgba(134, 231, 64, 0.34);
     color: #3b7012;
 }
-
 .day .tag.pen-blue {
-    background: rgba(73, 176, 255, 0.30);
+    background: rgba(73, 176, 255, 0.3);
     color: #1d5f97;
 }
-
 .day .tag.pen-purple {
     background: rgba(166, 65, 238, 0.24);
     color: #6a2799;
+}
+.clipLink {
+    position: absolute;
+    z-index: 25;
+    top: -2.5%;
+    right: 2.8%;
+    width: 2.5%;
+    height: 9.5%;
+    cursor: pointer;
+}
+.clipLink .clip {
+    position: static;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* The notebook covers the lower part of the clip, as if clipped to its edge. */
+.clipLink {
+    z-index: 0;
+}
+.notebookImage {
+    pointer-events: none;
 }

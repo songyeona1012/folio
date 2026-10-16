@@ -1,3 +1,4 @@
+// 날짜별 일기 본문·별점·작성 양식을 저장합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.CollectionTable;
@@ -17,7 +18,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -30,9 +30,14 @@ import java.util.TreeMap;
  *   양식을 바꿔도 이전에 쓴 내용이 사라지지 않습니다.
  */
 @Entity
-@Table(name = "dairy",
-        uniqueConstraints = @UniqueConstraint(name = "uk_dairy_date", columnNames = "dairy_date"))
-public class Dairy {
+@Table(
+    name = "dairy",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_dairy_owner_date",
+        columnNames = { "owner_id", "dairy_date" }
+    )
+)
+public class Dairy extends OwnedRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,8 +87,13 @@ public class Dairy {
     }
 
     /** 내용 전체를 새 값으로 바꿉니다. */
-    public void update(int rating, DairyType type, String content,
-                       Map<Integer, String> hours, boolean isPrivate) {
+    public void update(
+        int rating,
+        DairyType type,
+        String content,
+        Map<Integer, String> hours,
+        boolean isPrivate
+    ) {
         this.rating = rating;
         this.type = type;
         this.content = content;
@@ -106,13 +116,39 @@ public class Dairy {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public LocalDate getDate() { return date; }
-    public int getRating() { return rating; }
-    public DairyType getType() { return type; }
-    public String getContent() { return content; }
-    public Map<Integer, String> getHours() { return hours; }
-    public boolean isPrivate() { return isPrivate; }
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public DairyType getType() {
+        return type;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Map<Integer, String> getHours() {
+        return hours;
+    }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 }

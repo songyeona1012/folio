@@ -1,3 +1,4 @@
+// 날짜별 일정과 완료 여부, 주기 관리 연결 정보를 저장합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.*;
@@ -9,7 +10,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "schedule", uniqueConstraints = @UniqueConstraint(columnNames = { "recurring_id", "date" }))
-public class Schedule {
+public class Schedule extends OwnedRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

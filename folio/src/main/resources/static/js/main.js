@@ -1,20 +1,20 @@
-(function() {
+// 달력 표시와 날짜 선택, 일정 편집 및 오른쪽 일정 목록을 처리합니다.
+(function () {
     const now = new Date();
     const TODAY = {
         y: now.getFullYear(),
         m: now.getMonth() + 1,
-        d: now.getDate()
+        d: now.getDate(),
     };
-    const queryDate = new URLSearchParams(location.search).get('date');
-    const requested = /^\d{4}-\d{2}-\d{2}$/.test(queryDate || '') ? new Date(queryDate + 'T12:00:00') :
-        now;
+    const queryDate = new URLSearchParams(location.search).get("date");
+    const requested = /^\d{4}-\d{2}-\d{2}$/.test(queryDate || "") ? new Date(queryDate + "T12:00:00") : now;
     const initial = Number.isNaN(requested.getTime()) ? now : requested;
     let YEAR = initial.getFullYear(),
         MONTH = initial.getMonth() + 1;
     let selectedDate = {
         y: YEAR,
         m: MONTH,
-        d: initial.getDate()
+        d: initial.getDate(),
     };
     let tempIdCounter = 1000;
     let events = {};
@@ -28,7 +28,7 @@
         orange: "#E9BD2C",
         green: "#86E740",
         blue: "#49B0FF",
-        purple: "#A641EE"
+        purple: "#A641EE",
     };
 
     const highlightStorageKey = "folioHighlights";
@@ -46,8 +46,18 @@
     }
 
     const monthNames = [
-        "1월", "2월", "3월", "4월", "5월", "6월",
-        "7월", "8월", "9월", "10월", "11월", "12월"
+        "1월",
+        "2월",
+        "3월",
+        "4월",
+        "5월",
+        "6월",
+        "7월",
+        "8월",
+        "9월",
+        "10월",
+        "11월",
+        "12월",
     ];
 
     function key(y, m, d) {
@@ -73,13 +83,14 @@
     function escapeHtml(value) {
         return String(value || "").replace(
             /[&<>"']/g,
-            c => ({
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#39;"
-            } [c])
+            (c) =>
+                ({
+                    "&": "&amp;",
+                    "<": "&lt;",
+                    ">": "&gt;",
+                    '"': "&quot;",
+                    "'": "&#39;",
+                })[c]
         );
     }
 
@@ -87,7 +98,7 @@
         const rank = {
             health: 0,
             important: 1,
-            todo: 2
+            todo: 2,
         };
 
         return list.slice().sort((a, b) => {
@@ -112,8 +123,7 @@
         let h12 = h % 12;
         if (h12 === 0) h12 = 12;
 
-        return period + " " + h12 + "시" +
-            (m !== "00" ? " " + parseInt(m, 10) + "분" : "");
+        return period + " " + h12 + "시" + (m !== "00" ? " " + parseInt(m, 10) + "분" : "");
     }
 
     function pad2(n) {
@@ -125,7 +135,7 @@
             return {
                 h: 9,
                 m: 0,
-                ampm: "AM"
+                ampm: "AM",
             };
         }
 
@@ -146,7 +156,7 @@
         return {
             h: h12,
             m: m,
-            ampm: ampm
+            ampm: ampm,
         };
     }
 
@@ -158,6 +168,7 @@
         if (oldBackdrop) oldBackdrop.remove();
     }
 
+    // 일정 시각을 선택하는 작은 입력 창을 엽니다.
     function openTimePicker(anchorEl, currentValue, onConfirm) {
         closeTimePicker();
 
@@ -179,14 +190,12 @@
 
         const amBtn = document.createElement("button");
         amBtn.type = "button";
-        amBtn.className =
-            "tpAmPmBtn" + (state.ampm === "AM" ? " sel" : "");
+        amBtn.className = "tpAmPmBtn" + (state.ampm === "AM" ? " sel" : "");
         amBtn.textContent = "오전";
 
         const pmBtn = document.createElement("button");
         pmBtn.type = "button";
-        pmBtn.className =
-            "tpAmPmBtn" + (state.ampm === "PM" ? " sel" : "");
+        pmBtn.className = "tpAmPmBtn" + (state.ampm === "PM" ? " sel" : "");
         pmBtn.textContent = "오후";
 
         amBtn.addEventListener("click", () => {
@@ -211,24 +220,21 @@
             const col = document.createElement("div");
             col.className = "tpColumn";
 
-            values.forEach(v => {
+            values.forEach((v) => {
                 const item = document.createElement("div");
 
-                item.className =
-                    "tpItem" + (v === selectedValue ? " sel" : "");
+                item.className = "tpItem" + (v === selectedValue ? " sel" : "");
 
                 item.textContent = pad2(v);
 
                 item.addEventListener("click", () => {
-                    col.querySelectorAll(".tpItem").forEach(el =>
-                        el.classList.remove("sel")
-                    );
+                    col.querySelectorAll(".tpItem").forEach((el) => el.classList.remove("sel"));
 
                     item.classList.add("sel");
 
                     item.scrollIntoView({
                         behavior: "smooth",
-                        block: "center"
+                        block: "center",
                     });
 
                     onPick(v);
@@ -240,25 +246,17 @@
             return col;
         }
 
-        const hourCol = buildColumn(
-            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-            state.h,
-            v => {
-                state.h = v;
-            }
-        );
+        const hourCol = buildColumn([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], state.h, (v) => {
+            state.h = v;
+        });
 
         const colon = document.createElement("div");
         colon.className = "tpColon";
         colon.textContent = ":";
 
-        const minuteCol = buildColumn(
-            [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
-            state.m,
-            v => {
-                state.m = v;
-            }
-        );
+        const minuteCol = buildColumn([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55], state.m, (v) => {
+            state.m = v;
+        });
 
         wheelRow.appendChild(hourCol);
         wheelRow.appendChild(colon);
@@ -277,8 +275,7 @@
                 h24 += 12;
             }
 
-            const value =
-                pad2(h24) + ":" + pad2(state.m);
+            const value = pad2(h24) + ":" + pad2(state.m);
 
             closeTimePicker();
 
@@ -295,7 +292,7 @@
 
         const rect = anchorEl.getBoundingClientRect();
 
-        const popWidth =  190;
+        const popWidth = 190;
 
         let left = rect.left;
 
@@ -317,21 +314,19 @@
         pop.style.top = top + "px";
 
         requestAnimationFrame(() => {
-            const selHour =
-                hourCol.querySelector(".tpItem.sel");
+            const selHour = hourCol.querySelector(".tpItem.sel");
 
-            const selMinute =
-                minuteCol.querySelector(".tpItem.sel");
+            const selMinute = minuteCol.querySelector(".tpItem.sel");
 
             if (selHour) {
                 selHour.scrollIntoView({
-                    block: "center"
+                    block: "center",
                 });
             }
 
             if (selMinute) {
                 selMinute.scrollIntoView({
-                    block: "center"
+                    block: "center",
                 });
             }
         });
@@ -344,20 +339,16 @@
         inputEl.readOnly = true;
         inputEl.classList.add("time-picker-input");
 
-        inputEl.addEventListener("click", e => {
+        inputEl.addEventListener("click", (e) => {
             e.stopPropagation();
 
-            openTimePicker(
-                inputEl,
-                inputEl.value,
-                newValue => {
-                    inputEl.value = newValue;
+            openTimePicker(inputEl, inputEl.value, (newValue) => {
+                inputEl.value = newValue;
 
-                    if (onChange) {
-                        onChange(newValue);
-                    }
+                if (onChange) {
+                    onChange(newValue);
                 }
-            );
+            });
         });
     }
 
@@ -367,18 +358,16 @@
         fetch("/api/schedules/" + ev.id, {
             method: "PATCH",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 title: ev.title,
                 time: ev.time,
-                completed: ev.completed
-            })
-        }).then(() =>
-            loadDashboardSummary()
-        ).catch(e =>
-            console.log("서버 오프라인, 로컬에서만 반영됨")
-        );
+                completed: ev.completed,
+            }),
+        })
+            .then(() => loadDashboardSummary())
+            .catch((e) => console.log("서버 오프라인, 로컬에서만 반영됨"));
     }
 
     /* 일정 삭제 */
@@ -389,14 +378,10 @@
             return;
         }
 
-        const k = key(
-            selectedDate.y,
-            selectedDate.m,
-            selectedDate.d
-        );
+        const k = key(selectedDate.y, selectedDate.m, selectedDate.d);
 
         if (events[k]) {
-            events[k] = events[k].filter(item => item.id !== ev.id);
+            events[k] = events[k].filter((item) => item.id !== ev.id);
         }
 
         const highlights = getHighlights();
@@ -407,12 +392,10 @@
 
         if (!String(ev.id).startsWith("local_")) {
             fetch("/api/schedules/" + ev.id, {
-                method: "DELETE"
-            }).then(() =>
-                loadDashboardSummary()
-            ).catch(e =>
-                console.log("서버 오프라인, 로컬에서만 삭제됨")
-            );
+                method: "DELETE",
+            })
+                .then(() => loadDashboardSummary())
+                .catch((e) => console.log("서버 오프라인, 로컬에서만 삭제됨"));
         }
 
         refreshViews();
@@ -423,43 +406,42 @@
     function monthsToLoad() {
         if (VIEW === "week") {
             const months = new Map();
-            weekDays().forEach(c => months.set(c.y + "-" + c.m, {y: c.y, m: c.m}));
+            weekDays().forEach((c) => months.set(c.y + "-" + c.m, { y: c.y, m: c.m }));
             return [...months.values()];
         }
-        return [{y: YEAR, m: MONTH}];
+        return [{ y: YEAR, m: MONTH }];
     }
 
     let loadRequest = 0;
 
+    // 현재 달력 범위의 일정을 서버에서 불러옵니다.
     function loadMonthEvents() {
         const requestId = ++loadRequest;
 
-        Promise.all(monthsToLoad().map(({y, m}) =>
-            fetch("/api/schedules?year=" + y + "&month=" + m).then(res => {
-                if (!res.ok) {
-                    throw new Error("로드 실패");
-                }
-                return res.json();
-            })
-        ))
-            .then(results => {
+        Promise.all(
+            monthsToLoad().map(({ y, m }) =>
+                fetch("/api/schedules?year=" + y + "&month=" + m).then((res) => {
+                    if (!res.ok) {
+                        throw new Error("로드 실패");
+                    }
+                    return res.json();
+                })
+            )
+        )
+            .then((results) => {
                 // 늦게 도착한 이전 응답은 무시
                 if (requestId !== loadRequest) return;
 
                 events = {};
 
-                results.flat().forEach(item => {
+                results.flat().forEach((item) => {
                     if (!item || !item.date) return;
 
                     const parts = String(item.date).split("-");
 
                     if (parts.length !== 3) return;
 
-                    const k = key(
-                        parseInt(parts[0], 10),
-                        parseInt(parts[1], 10),
-                        parseInt(parts[2], 10)
-                    );
+                    const k = key(parseInt(parts[0], 10), parseInt(parts[1], 10), parseInt(parts[2], 10));
 
                     if (!events[k]) {
                         events[k] = [];
@@ -472,7 +454,7 @@
                         cat: item.category || "todo",
                         recurringId: item.recurringId,
                         priv: !!item.private,
-                        completed: !!item.completed
+                        completed: !!item.completed,
                     });
                 });
 
@@ -493,41 +475,30 @@
     function loadDashboardSummary() {
         const requestId = ++summaryRequest;
 
-        fetch(
-            "/api/schedules/summary?year=" +
-            YEAR +
-            "&month=" +
-            MONTH
-        )
-            .then(res => {
+        fetch("/api/schedules/summary?year=" + YEAR + "&month=" + MONTH)
+            .then((res) => {
                 if (!res.ok) {
                     throw new Error("요약 로드 실패");
                 }
 
                 return res.json();
             })
-            .then(summary => {
+            .then((summary) => {
                 // 늦게 도착한 이전 응답은 무시
                 if (requestId !== summaryRequest) return;
 
                 renderDashboardSummary(summary);
             })
-            .catch(e =>
-                console.log("대시보드 요약을 불러오지 못했어요", e)
-            );
+            .catch((e) => console.log("대시보드 요약을 불러오지 못했어요", e));
     }
 
     function renderDashboardSummary(s) {
         document.getElementById("rateLabel").textContent =
-            "일정 완료도 : " +
-            (s.completionRate == null ? "-" : s.completionRate + "%");
+            "일정 완료도 : " + (s.completionRate == null ? "-" : s.completionRate + "%");
 
-        document.getElementById("congestLabel").textContent =
-            s.congestion || "-";
+        document.getElementById("congestLabel").textContent = s.congestion || "-";
 
-        document.getElementById("nextEventLabel").textContent =
-            s.nextEvent || "예정된 일정이 없어요";
-
+        document.getElementById("nextEventLabel").textContent = s.nextEvent || "예정된 일정이 없어요";
     }
 
     function refreshViews() {
@@ -535,10 +506,7 @@
         renderTodayList();
         renderDashboardManagement();
 
-        if (
-            document.getElementById("memoPanel").style.display ===
-            "flex"
-        ) {
+        if (document.getElementById("memoPanel").style.display === "flex") {
             renderMemo();
         }
     }
@@ -549,10 +517,10 @@
         const start = new Date(base);
         start.setDate(base.getDate() - base.getDay());
 
-        return Array.from({length: 7}, (_, i) => {
+        return Array.from({ length: 7 }, (_, i) => {
             const d = new Date(start);
             d.setDate(start.getDate() + i);
-            return {y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate(), other: false};
+            return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate(), other: false };
         });
     }
 
@@ -570,25 +538,25 @@
         const cells = [];
 
         for (let i = 0; i < startWd; i++) {
-            cells.push({y: prevYear, m: prevMonth, d: prevTotal - startWd + 1 + i, other: true});
+            cells.push({ y: prevYear, m: prevMonth, d: prevTotal - startWd + 1 + i, other: true });
         }
 
         for (let d = 1; d <= total; d++) {
-            cells.push({y: YEAR, m: MONTH, d: d, other: false});
+            cells.push({ y: YEAR, m: MONTH, d: d, other: false });
         }
 
         let nextDay = 1;
 
         while (cells.length < 42) {
-            cells.push({y: nextYear, m: nextMonth, d: nextDay, other: true});
+            cells.push({ y: nextYear, m: nextMonth, d: nextDay, other: true });
             nextDay++;
         }
 
         return cells;
     }
 
-    const MONTH_TAG_LIMIT = 2;   // 월간: 칸마다 일정 2개까지
-    const WEEK_TAG_LIMIT = 6;    // 주간: 칸마다 일정 6개까지 (넘으면 +N)
+    const MONTH_TAG_LIMIT = 2; // 월간: 칸마다 일정 2개까지
+    const WEEK_TAG_LIMIT = 6; // 주간: 칸마다 일정 6개까지 (넘으면 +N)
 
     function renderGrid() {
         const grid = document.getElementById("grid");
@@ -610,12 +578,7 @@
                 (idx % 7 === 0 ? " sun" : "") +
                 (idx % 7 === 6 ? " sat" : "");
 
-            if (
-                !cell.other &&
-                cell.y === TODAY.y &&
-                cell.m === TODAY.m &&
-                cell.d === TODAY.d
-            ) {
+            if (!cell.other && cell.y === TODAY.y && cell.m === TODAY.m && cell.d === TODAY.d) {
                 el.classList.add("today");
             }
 
@@ -633,20 +596,17 @@
             num.className = "num";
 
             // 주간에서 달이 바뀌는 날은 "9/1"처럼 월도 함께 표시
-            num.textContent =
-                isWeek && cell.d === 1 && idx !== 0 ?
-                    cell.m + "/" + cell.d :
-                    cell.d;
+            num.textContent = isWeek && cell.d === 1 && idx !== 0 ? cell.m + "/" + cell.d : cell.d;
 
             el.appendChild(num);
 
             if (!cell.other) {
                 const k = key(cell.y, cell.m, cell.d);
 
-                const evs = sortEvents((events[k] || []).filter(event => !isSideManagement(event)));
+                const evs = sortEvents((events[k] || []).filter((event) => !isSideManagement(event)));
                 const limit = isWeek ? WEEK_TAG_LIMIT : MONTH_TAG_LIMIT;
 
-                evs.slice(0, limit).forEach(ev => {
+                evs.slice(0, limit).forEach((ev) => {
                     const tag = document.createElement("div");
 
                     tag.className = "tag " + ev.cat + (ev.completed ? " done" : "");
@@ -677,11 +637,11 @@
                     el.appendChild(more);
                 }
 
-                el.addEventListener("click", e => {
+                el.addEventListener("click", (e) => {
                     selectedDate = {
                         y: cell.y,
                         m: cell.m,
-                        d: cell.d
+                        d: cell.d,
                     };
 
                     // 주간에서 다른 달의 날짜를 누르면 그 달 기준으로 요약을 다시 계산
@@ -703,18 +663,13 @@
     }
 
     function renderTodayList() {
-        const k = key(
-            selectedDate.y,
-            selectedDate.m,
-            selectedDate.d
-        );
+        const k = key(selectedDate.y, selectedDate.m, selectedDate.d);
 
         events[k] = sortEvents(events[k] || []);
 
-        const list = events[k].filter(event => !isSideManagement(event));
+        const list = events[k].filter((event) => !isSideManagement(event));
 
-        const wrap =
-            document.getElementById("todayList");
+        const wrap = document.getElementById("todayList");
 
         if (!wrap) return;
 
@@ -727,7 +682,7 @@
             return;
         }
 
-        list.forEach(ev => {
+        list.forEach((ev) => {
             const li = document.createElement("li");
 
             li.className = ev.cat;
@@ -736,47 +691,34 @@
                 li.classList.add("completed");
             }
 
-            const timeSpan =
-                document.createElement("span");
+            const timeSpan = document.createElement("span");
 
-            timeSpan.className =
-                "time hover-edit";
+            timeSpan.className = "time hover-edit";
 
-            timeSpan.textContent =
-                ev.time ?
-                    formatTime(ev.time) :
-                    "시간없음";
+            timeSpan.textContent = ev.time ? formatTime(ev.time) : "시간없음";
 
-            const titleSpan =
-                document.createElement("span");
+            const titleSpan = document.createElement("span");
 
-            titleSpan.className =
-                "title hover-edit";
+            titleSpan.className = "title hover-edit";
 
-            titleSpan.innerHTML =
-                escapeHtml(ev.title) +
-                (ev.priv ? " 🔒" : "");
+            titleSpan.innerHTML = escapeHtml(ev.title) + (ev.priv ? " 🔒" : "");
 
-            const titleInput =
-                document.createElement("input");
+            const titleInput = document.createElement("input");
 
             titleInput.type = "text";
             titleInput.className = "title-edit";
             titleInput.value = ev.title;
             titleInput.style.display = "none";
 
-            const chk =
-                document.createElement("span");
+            const chk = document.createElement("span");
 
             chk.className = "chk2";
 
             /* 삭제 버튼 */
-            const deleteBtn =
-                document.createElement("button");
+            const deleteBtn = document.createElement("button");
 
             deleteBtn.type = "button";
-            deleteBtn.className =
-                "delete-schedule";
+            deleteBtn.className = "delete-schedule";
 
             deleteBtn.textContent = "×";
             deleteBtn.title = "일정 삭제";
@@ -787,26 +729,20 @@
             li.appendChild(chk);
             li.appendChild(deleteBtn);
 
-            timeSpan.addEventListener("click", e => {
+            timeSpan.addEventListener("click", (e) => {
                 e.stopPropagation();
 
-                openTimePicker(
-                    timeSpan,
-                    ev.time || "",
-                    newValue => {
-                        if (newValue !== ev.time) {
-                            ev.time = newValue;
-                            updateScheduleLocal(ev);
-                            refreshViews();
-                            showToast(
-                                "시간이 수정되었어요"
-                            );
-                        }
+                openTimePicker(timeSpan, ev.time || "", (newValue) => {
+                    if (newValue !== ev.time) {
+                        ev.time = newValue;
+                        updateScheduleLocal(ev);
+                        refreshViews();
+                        showToast("시간이 수정되었어요");
                     }
-                );
+                });
             });
 
-            titleSpan.addEventListener("click", e => {
+            titleSpan.addEventListener("click", (e) => {
                 e.stopPropagation();
 
                 titleSpan.style.display = "none";
@@ -816,43 +752,31 @@
             });
 
             titleInput.addEventListener("blur", () => {
-                const val =
-                    titleInput.value.trim();
+                const val = titleInput.value.trim();
 
-                if (
-                    val &&
-                    val !== ev.title
-                ) {
+                if (val && val !== ev.title) {
                     ev.title = val;
 
                     updateScheduleLocal(ev);
                     refreshViews();
 
-                    showToast(
-                        "제목이 수정되었어요"
-                    );
+                    showToast("제목이 수정되었어요");
                 } else {
-                    titleInput.value =
-                        ev.title;
+                    titleInput.value = ev.title;
 
-                    titleInput.style.display =
-                        "none";
+                    titleInput.style.display = "none";
 
-                    titleSpan.style.display =
-                        "block";
+                    titleSpan.style.display = "block";
                 }
             });
 
-            titleInput.addEventListener(
-                "keydown",
-                e => {
-                    if (e.key === "Enter") {
-                        titleInput.blur();
-                    }
+            titleInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    titleInput.blur();
                 }
-            );
+            });
 
-            chk.addEventListener("click", e => {
+            chk.addEventListener("click", (e) => {
                 e.stopPropagation();
 
                 ev.completed = !ev.completed;
@@ -861,13 +785,10 @@
                 refreshViews();
             });
 
-            deleteBtn.addEventListener(
-                "click",
-                e => {
-                    e.stopPropagation();
-                    deleteSchedule(ev);
-                }
-            );
+            deleteBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                deleteSchedule(ev);
+            });
 
             wrap.appendChild(li);
         });
@@ -875,343 +796,188 @@
 
     // 메모장 열기
     function openMemo() {
-        const memo =
-            document.getElementById("memoPanel");
+        const memo = document.getElementById("memoPanel");
 
         memo.style.display = "flex";
 
-        memo.classList.remove(
-            "memo-closing"
-        );
+        memo.classList.remove("memo-closing");
 
-        memo.classList.remove(
-            "memo-opening"
-        );
+        memo.classList.remove("memo-opening");
 
         void memo.offsetWidth;
 
         renderMemo();
 
-        requestAnimationFrame(() =>
-            memo.classList.add(
-                "memo-opening"
-            )
-        );
+        requestAnimationFrame(() => memo.classList.add("memo-opening"));
     }
 
     // 외부 클릭 시 부드럽게 닫기 기능
     function closeMemo() {
-        const memo =
-            document.getElementById("memoPanel");
+        const memo = document.getElementById("memoPanel");
 
-        if (
-            memo.style.display === "flex" &&
-            !memo.classList.contains(
-                "memo-closing"
-            )
-        ) {
-            memo.classList.remove(
-                "memo-opening"
-            );
+        if (memo.style.display === "flex" && !memo.classList.contains("memo-closing")) {
+            memo.classList.remove("memo-opening");
 
-            memo.classList.add(
-                "memo-closing"
-            );
+            memo.classList.add("memo-closing");
 
             setTimeout(() => {
                 memo.style.display = "none";
 
-                memo.classList.remove(
-                    "memo-closing"
-                );
+                memo.classList.remove("memo-closing");
 
-                memo.classList.remove(
-                    "highlight-mode"
-                );
+                memo.classList.remove("highlight-mode");
             }, 450);
         }
     }
 
-    document.addEventListener(
-        "click",
-        e => {
-            const memo =
-                document.getElementById(
-                    "memoPanel"
-                );
+    document.addEventListener("click", (e) => {
+        const memo = document.getElementById("memoPanel");
 
+        if (memo.style.display === "flex") {
             if (
-                memo.style.display ===
-                "flex"
+                !memo.contains(e.target) &&
+                !e.target.closest(".day:not(.other)") &&
+                !e.target.closest(".timePickerPopover") &&
+                !e.target.closest(".timePickerBackdrop")
             ) {
-                if (
-                    !memo.contains(e.target) &&
-                    !e.target.closest(
-                        ".day:not(.other)"
-                    ) &&
-                    !e.target.closest(
-                        ".timePickerPopover"
-                    ) &&
-                    !e.target.closest(
-                        ".timePickerBackdrop"
-                    )
-                ) {
-                    closeMemo();
-                }
+                closeMemo();
             }
         }
-    );
+    });
 
     function renderMemo() {
-        const memoList =
-            document.getElementById(
-                "memoList"
-            );
+        const memoList = document.getElementById("memoList");
 
         if (!memoList) return;
 
-        document.getElementById(
-            "memoDateLabel"
-        ).textContent =
-            formatDate(
-                selectedDate.y,
-                selectedDate.m,
-                selectedDate.d
-            );
-
-        memoList.innerHTML = "";
-
-        const k = key(
+        document.getElementById("memoDateLabel").textContent = formatDate(
             selectedDate.y,
             selectedDate.m,
             selectedDate.d
         );
 
-        const list =
-            sortEvents((events[k] || []).filter(event => !isSideManagement(event)));
+        memoList.innerHTML = "";
 
-        const highlights =
-            getHighlights();
+        const k = key(selectedDate.y, selectedDate.m, selectedDate.d);
 
-        for (
-            let i = 0; i <= list.length; i++
-        ) {
-            const ev =
-                list[i] || null;
+        const list = sortEvents((events[k] || []).filter((event) => !isSideManagement(event)));
 
-            const row =
-                document.createElement("div");
+        const highlights = getHighlights();
 
-            row.className =
-                "memoEvent";
+        for (let i = 0; i <= list.length; i++) {
+            const ev = list[i] || null;
+
+            const row = document.createElement("div");
+
+            row.className = "memoEvent";
 
             if (ev) {
                 row.dataset.id = ev.id;
 
-                const timeCell =
-                    document.createElement("div");
+                const timeCell = document.createElement("div");
 
-                timeCell.className =
-                    "memoTime";
-                const timeText =
-                    document.createElement(
-                        "span"
-                    );
+                timeCell.className = "memoTime";
+                const timeText = document.createElement("span");
 
-                timeText.className =
-                    "hover-edit time-text";
+                timeText.className = "hover-edit time-text";
 
-                const timeLabel =
-                    document.createElement("span");
+                const timeLabel = document.createElement("span");
 
-                timeLabel.textContent =
-                    ev.time || "시간 선택";
+                timeLabel.textContent = ev.time || "시간 선택";
 
-                timeText.appendChild(
-                    timeLabel
-                );
+                timeText.appendChild(timeLabel);
 
-                timeCell.appendChild(
-                    timeText
-                );
-                const titleCell =
-                    document.createElement("div");
+                timeCell.appendChild(timeText);
+                const titleCell = document.createElement("div");
 
-                titleCell.className =
-                    "memoSchedule";
+                titleCell.className = "memoSchedule";
 
-                const titleText =
-                    document.createElement(
-                        "span"
-                    );
+                const titleText = document.createElement("span");
 
-                titleText.className =
-                    "hover-edit title-text";
+                titleText.className = "hover-edit title-text";
 
-                titleText.textContent =
-                    ev.title;
+                titleText.textContent = ev.title;
 
-                titleCell.appendChild(
-                    titleText
-                );
+                titleCell.appendChild(titleText);
 
                 if (highlights[ev.id]) {
-                    applyHighlightStyle(
-                        titleText,
-                        highlights[ev.id]
-                    );
+                    applyHighlightStyle(titleText, highlights[ev.id]);
                 }
 
-                row.addEventListener(
-                    "click",
-                    e => {
-                        if (
-                            document
-                                .getElementById(
-                                    "memoPanel"
-                                )
-                                .classList.contains(
-                                "highlight-mode"
-                            )
-                        ) {
-                            e.stopPropagation();
-
-                            setHighlight(
-                                ev,
-                                titleText
-                            );
-                        }
-                    }
-                );
-
-                timeText.addEventListener(
-                    "click",
-                    e => {
+                row.addEventListener("click", (e) => {
+                    if (document.getElementById("memoPanel").classList.contains("highlight-mode")) {
                         e.stopPropagation();
 
-                        if (
-                            document
-                                .getElementById(
-                                    "memoPanel"
-                                )
-                                .classList.contains(
-                                "highlight-mode"
-                            )
-                        ) {
-                            setHighlight(
-                                ev,
-                                titleText
-                            );
-
-                            return;
-                        }
-
-                        startInlineEdit(
-                            timeText,
-                            ev,
-                            "time"
-                        );
+                        setHighlight(ev, titleText);
                     }
-                );
+                });
 
-                titleText.addEventListener(
-                    "click",
-                    e => {
-                        e.stopPropagation();
+                timeText.addEventListener("click", (e) => {
+                    e.stopPropagation();
 
-                        if (
-                            document
-                                .getElementById(
-                                    "memoPanel"
-                                )
-                                .classList.contains(
-                                "highlight-mode"
-                            )
-                        ) {
-                            setHighlight(
-                                ev,
-                                titleText
-                            );
+                    if (document.getElementById("memoPanel").classList.contains("highlight-mode")) {
+                        setHighlight(ev, titleText);
 
-                            return;
-                        }
-
-                        startInlineEdit(
-                            titleText,
-                            ev,
-                            "title"
-                        );
+                        return;
                     }
-                );
+
+                    startInlineEdit(timeText, ev, "time");
+                });
+
+                titleText.addEventListener("click", (e) => {
+                    e.stopPropagation();
+
+                    if (document.getElementById("memoPanel").classList.contains("highlight-mode")) {
+                        setHighlight(ev, titleText);
+
+                        return;
+                    }
+
+                    startInlineEdit(titleText, ev, "title");
+                });
 
                 row.appendChild(timeCell);
                 row.appendChild(titleCell);
             } else {
-                row.classList.add(
-                    "memo-empty"
-                );
+                row.classList.add("memo-empty");
 
-                row.innerHTML =
-                    `<div class="memoTime"><span class="memoPlaceholder">시간 선택</span></div><div class="memoSchedule"><span class="memoPlaceholder">일정을 작성해주세요.</span></div>`;
+                row.innerHTML = `<div class="memoTime"><span class="memoPlaceholder">시간 선택</span></div><div class="memoSchedule"><span class="memoPlaceholder">일정을 작성해주세요.</span></div>`;
 
-                row.addEventListener(
-                    "click",
-                    e => {
-                        e.stopPropagation();
+                row.addEventListener("click", (e) => {
+                    e.stopPropagation();
 
-                        activateEmptyMemoRow(
-                            row
-                        );
-                    }
-                );
+                    activateEmptyMemoRow(row);
+                });
             }
 
             memoList.appendChild(row);
         }
     }
 
-    function startInlineEdit(
-        target,
-        ev,
-        field
-    ) {
+    function startInlineEdit(target, ev, field) {
         if (field === "time") {
-            openTimePicker(
-                target,
-                ev.time || "",
-                newValue => {
-                    ev.time = newValue;
+            openTimePicker(target, ev.time || "", (newValue) => {
+                ev.time = newValue;
 
-                    updateScheduleLocal(ev);
-                    refreshViews();
+                updateScheduleLocal(ev);
+                refreshViews();
 
-                    showToast(
-                        "수정되었습니다"
-                    );
-                }
-            );
+                showToast("수정되었습니다");
+            });
 
             return;
         }
 
-        if (
-            target.dataset.editing ===
-            "true"
-        ) {
+        if (target.dataset.editing === "true") {
             return;
         }
 
-        target.dataset.editing =
-            "true";
+        target.dataset.editing = "true";
 
-        const input =
-            document.createElement(
-                "input"
-            );
+        const input = document.createElement("input");
 
         input.type = "text";
-        input.className =
-            "memoNewTitle";
+        input.className = "memoNewTitle";
 
         input.value = ev.title;
 
@@ -1232,8 +998,7 @@
                 return;
             }
 
-            const newValue =
-                input.value.trim();
+            const newValue = input.value.trim();
 
             if (!newValue) {
                 renderMemo();
@@ -1245,113 +1010,71 @@
             updateScheduleLocal(ev);
             refreshViews();
 
-            showToast(
-                "수정되었습니다"
-            );
+            showToast("수정되었습니다");
         }
 
-        input.addEventListener(
-            "blur",
-            () => finish(true)
-        );
+        input.addEventListener("blur", () => finish(true));
 
-        input.addEventListener(
-            "keydown",
-            e => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    input.blur();
-                }
-
-                if (e.key === "Escape") {
-                    e.preventDefault();
-                    finish(false);
-                }
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                input.blur();
             }
-        );
+
+            if (e.key === "Escape") {
+                e.preventDefault();
+                finish(false);
+            }
+        });
     }
 
     function activateEmptyMemoRow(row) {
-        if (
-            row.classList.contains(
-                "editing-new"
-            )
-        ) {
+        if (row.classList.contains("editing-new")) {
             return;
         }
 
-        row.classList.add(
-            "editing-new"
-        );
+        row.classList.add("editing-new");
 
-        const timeCell =
-            row.querySelector(
-                ".memoTime"
-            );
+        const timeCell = row.querySelector(".memoTime");
 
-        const titleCell =
-            row.querySelector(
-                ".memoSchedule"
-            );
+        const titleCell = row.querySelector(".memoSchedule");
 
         timeCell.innerHTML = "";
         titleCell.innerHTML = "";
 
-        const timeInput =
-            document.createElement(
-                "input"
-            );
+        const timeInput = document.createElement("input");
 
-        timeInput.className =
-            "memoNewTime";
+        timeInput.className = "memoNewTime";
 
         timeInput.placeholder = "시간 선택";
 
-        attachTimePicker(
-            timeInput,
-            () => titleInput.focus()
-        );
+        attachTimePicker(timeInput, () => titleInput.focus());
 
-        const titleInput =
-            document.createElement(
-                "input"
-            );
+        const titleInput = document.createElement("input");
 
         titleInput.type = "text";
 
-        titleInput.className =
-            "memoNewTitle";
+        titleInput.className = "memoNewTitle";
 
-        titleInput.placeholder =
-            "일정을 작성해주세요.";
+        titleInput.placeholder = "일정을 작성해주세요.";
 
-        timeCell.appendChild(
-            timeInput
-        );
+        timeCell.appendChild(timeInput);
 
-        titleCell.appendChild(
-            titleInput
-        );
+        titleCell.appendChild(titleInput);
 
         titleInput.focus();
 
         function saveNewSchedule() {
-            const title =
-                titleInput.value.trim();
+            const title = titleInput.value.trim();
 
-            const time =
-                timeInput.value || "";
+            const time = timeInput.value || "";
 
             if (!title) {
                 renderMemo();
                 return;
             }
 
-            const k = key(
-                selectedDate.y,
-                selectedDate.m,
-                selectedDate.d
-            );
+            const k = key(selectedDate.y, selectedDate.m, selectedDate.d);
 
             if (!events[k]) {
                 events[k] = [];
@@ -1363,42 +1086,30 @@
                 time: time,
                 cat: "todo",
                 priv: false,
-                completed: false
+                completed: false,
             };
 
             events[k].push(tempEv);
 
             refreshViews();
 
-            showToast(
-                "일정이 저장되었습니다"
-            );
+            showToast("일정이 저장되었습니다");
 
             fetch("/api/schedules", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     title: title,
-                    date: selectedDate.y +
-                        "-" +
-                        pad(
-                            selectedDate.m
-                        ) +
-                        "-" +
-                        pad(
-                            selectedDate.d
-                        ),
+                    date: selectedDate.y + "-" + pad(selectedDate.m) + "-" + pad(selectedDate.d),
                     time: time,
                     category: "todo",
-                    private: false
-                })
+                    private: false,
+                }),
             })
-                .then(res =>
-                    res.json()
-                )
-                .then(saved => {
+                .then((res) => res.json())
+                .then((saved) => {
                     const highlights = getHighlights();
                     if (highlights[tempEv.id]) {
                         highlights[saved.id] = highlights[tempEv.id];
@@ -1414,79 +1125,46 @@
 
         function handleBlur() {
             setTimeout(() => {
-                if (
-                    document.querySelector(
-                        ".timePickerPopover"
-                    )
-                ) {
+                if (document.querySelector(".timePickerPopover")) {
                     return;
                 }
 
-                if (
-                    document.activeElement !==
-                    timeInput &&
-                    document.activeElement !==
-                    titleInput
-                ) {
+                if (document.activeElement !== timeInput && document.activeElement !== titleInput) {
                     saveNewSchedule();
                 }
             }, 100);
         }
 
-        timeInput.addEventListener(
-            "blur",
-            handleBlur
-        );
+        timeInput.addEventListener("blur", handleBlur);
 
-        titleInput.addEventListener(
-            "blur",
-            handleBlur
-        );
+        titleInput.addEventListener("blur", handleBlur);
 
-        titleInput.addEventListener(
-            "keydown",
-            e => {
-                if (e.key === "Enter") {
-                    e.preventDefault();
-                    titleInput.blur();
-                }
-
-                if (e.key === "Escape") {
-                    e.preventDefault();
-                    renderMemo();
-                }
+        titleInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                titleInput.blur();
             }
-        );
+
+            if (e.key === "Escape") {
+                e.preventDefault();
+                renderMemo();
+            }
+        });
     }
 
-    function applyHighlightStyle(
-        element,
-        pen
-    ) {
-        const color =
-            penColors[pen] ||
-            penColors.red;
+    function applyHighlightStyle(element, pen) {
+        const color = penColors[pen] || penColors.red;
 
         element.style.background =
-            "linear-gradient(transparent 35%, " +
-            color +
-            "88 35%, " +
-            color +
-            "88 90%, transparent 90%)";
+            "linear-gradient(transparent 35%, " + color + "88 35%, " + color + "88 90%, transparent 90%)";
 
-        element.style.borderRadius =
-            "3px";
+        element.style.borderRadius = "3px";
 
-        element.style.padding =
-            "1px 4px";
+        element.style.padding = "1px 4px";
     }
 
-    function setHighlight(
-        ev,
-        titleText
-    ) {
-        const highlights =
-            getHighlights();
+    function setHighlight(ev, titleText) {
+        const highlights = getHighlights();
 
         // 같은 색으로 한 번 더 칠하면 형광펜을 지운다
         const removing = highlights[ev.id] === selectedPen;
@@ -1497,51 +1175,23 @@
             highlights[ev.id] = selectedPen;
         }
 
-        saveHighlights(
-            highlights
-        );
+        saveHighlights(highlights);
 
         // 메모장과 달력을 함께 다시 그려서 달력 칸 색도 바로 바뀌게 한다
         refreshViews();
 
-        showToast(
-            removing ? "형광펜을 지웠어요" : "달력에 형광펜 색으로 표시했어요"
-        );
+        showToast(removing ? "형광펜을 지웠어요" : "달력에 형광펜 색으로 표시했어요");
     }
 
-    document
-        .getElementById("penButton")
-        .addEventListener(
-            "click",
-            e => {
-                e.stopPropagation();
+    document.getElementById("penButton").addEventListener("click", (e) => {
+        e.stopPropagation();
 
-                selectedPen =
-                    penOrder[
-                    (
-                        penOrder.indexOf(
-                            selectedPen
-                        ) + 1
-                    ) %
-                    penOrder.length
-                        ];
+        selectedPen = penOrder[(penOrder.indexOf(selectedPen) + 1) % penOrder.length];
 
-                document.getElementById(
-                    "penImage"
-                ).src =
-                    "/img/pen_" +
-                    selectedPen +
-                    ".png";
+        document.getElementById("penImage").src = "/img/pen_" + selectedPen + ".png";
 
-                document
-                    .getElementById(
-                        "memoPanel"
-                    )
-                    .classList.add(
-                    "highlight-mode"
-                );
-            }
-        );
+        document.getElementById("memoPanel").classList.add("highlight-mode");
+    });
 
     // ==============================
     // 월간 / 주간 보기
@@ -1552,17 +1202,23 @@
 
     try {
         if (localStorage.getItem(VIEW_KEY) === "week") VIEW = "week";
-    } catch (e) { /* 저장소를 못 쓰면 월간으로 */ }
+    } catch (e) {
+        /* 저장소를 못 쓰면 월간으로 */
+    }
 
     function applyViewUI() {
         document.getElementById("grid").classList.toggle("isWeek", VIEW === "week");
 
-        document.querySelectorAll("[data-cal-view]").forEach(button => {
+        document.querySelectorAll("[data-cal-view]").forEach((button) => {
             button.setAttribute("aria-pressed", String(button.dataset.calView === VIEW));
         });
 
-        document.getElementById("prevBtn").setAttribute("aria-label", VIEW === "week" ? "이전 주" : "이전 달");
-        document.getElementById("nextBtn").setAttribute("aria-label", VIEW === "week" ? "다음 주" : "다음 달");
+        document
+            .getElementById("prevBtn")
+            .setAttribute("aria-label", VIEW === "week" ? "이전 주" : "이전 달");
+        document
+            .getElementById("nextBtn")
+            .setAttribute("aria-label", VIEW === "week" ? "다음 주" : "다음 달");
     }
 
     // 보기를 바꿀 때 날짜 칸이 살짝 바뀌는 효과
@@ -1580,7 +1236,9 @@
 
         try {
             localStorage.setItem(VIEW_KEY, VIEW);
-        } catch (e) { /* 무시 */ }
+        } catch (e) {
+            /* 무시 */
+        }
 
         // 두 보기 모두 "선택한 날짜"를 기준으로 맞춘다
         YEAR = selectedDate.y;
@@ -1593,7 +1251,7 @@
         loadMonthEvents();
     }
 
-    document.querySelectorAll("[data-cal-view]").forEach(button => {
+    document.querySelectorAll("[data-cal-view]").forEach((button) => {
         button.addEventListener("click", () => setView(button.dataset.calView));
     });
 
@@ -1605,7 +1263,7 @@
             selectedDate = {
                 y: d.getFullYear(),
                 m: d.getMonth() + 1,
-                d: d.getDate()
+                d: d.getDate(),
             };
 
             YEAR = selectedDate.y;
@@ -1626,7 +1284,7 @@
             selectedDate = {
                 y: YEAR,
                 m: MONTH,
-                d: 1
+                d: 1,
             };
         }
 
@@ -1664,8 +1322,7 @@
             document.getElementById("monthLabel").textContent =
                 monthNames[selectedDate.m - 1] + " " + weekNo + "주차";
 
-            range.textContent =
-                pad(first.m) + "." + pad(first.d) + " ~ " + pad(last.m) + "." + pad(last.d);
+            range.textContent = pad(first.m) + "." + pad(first.d) + " ~ " + pad(last.m) + "." + pad(last.d);
             range.hidden = false;
             return;
         }
@@ -1675,28 +1332,16 @@
         range.hidden = true;
     }
 
-    document
-        .querySelectorAll(
-            ".check-list .chk"
-        )
-        .forEach(chk =>
-            chk.parentElement.addEventListener(
-                "click",
-                function() {
-                    this.classList.toggle(
-                        "done"
-                    );
-                }
-            )
-        );
+    document.querySelectorAll(".check-list .chk").forEach((chk) =>
+        chk.parentElement.addEventListener("click", function () {
+            this.classList.toggle("done");
+        })
+    );
 
     let toastTimer;
 
     function showToast(msg) {
-        const t =
-            document.getElementById(
-                "toast"
-            );
+        const t = document.getElementById("toast");
 
         t.textContent = msg;
 
@@ -1704,28 +1349,18 @@
 
         clearTimeout(toastTimer);
 
-        toastTimer = setTimeout(
-            () =>
-                t.classList.remove(
-                    "show"
-                ),
-            1800
-        );
+        toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
     }
     // ==============================
     // 자연어 일정 등록
     // ==============================
 
-    const naturalScheduleInput =
-        document.getElementById("naturalScheduleInput");
+    const naturalScheduleInput = document.getElementById("naturalScheduleInput");
 
-    const naturalScheduleBtn =
-        document.getElementById("naturalScheduleBtn");
+    const naturalScheduleBtn = document.getElementById("naturalScheduleBtn");
 
     naturalScheduleBtn.addEventListener("click", async () => {
-
-        const text =
-            naturalScheduleInput.value.trim();
+        const text = naturalScheduleInput.value.trim();
 
         if (!text) {
             showToast("일정을 입력해주세요");
@@ -1740,19 +1375,16 @@
         naturalScheduleBtn.title = "AI가 읽는 중...";
 
         try {
-
             // 1. 자연어 → Gemini
-            const aiResponse = await fetch(
-                "/api/ai/parse-schedule", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        text: text
-                    })
-                }
-            );
+            const aiResponse = await fetch("/api/ai/parse-schedule", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    text: text,
+                }),
+            });
 
             if (!aiResponse.ok) {
                 throw new Error(
@@ -1762,72 +1394,54 @@
                 );
             }
 
-            const schedule =
-                await aiResponse.json();
+            const schedule = await aiResponse.json();
 
             if (!schedule.date) {
-                throw new Error(
-                    "날짜를 해석하지 못했어요"
-                );
+                throw new Error("날짜를 해석하지 못했어요");
             }
 
             // 2. AI가 분석한 일정 → DB 저장
-            naturalScheduleBtn.title =
-                "일정 저장 중...";
+            naturalScheduleBtn.title = "일정 저장 중...";
 
-            const saveResponse =
-                await fetch(
-                    "/api/schedules", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            title: schedule.title || text,
+            const saveResponse = await fetch("/api/schedules", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    title: schedule.title || text,
 
-                            date: schedule.date,
+                    date: schedule.date,
 
-                            time: schedule.time || "",
+                    time: schedule.time || "",
 
-                            category: schedule.category || "todo",
+                    category: schedule.category || "todo",
 
-                            private: schedule.private !== undefined ?
-                                !!schedule.private :
-                                !!schedule.isPrivate,
+                    private: schedule.private !== undefined ? !!schedule.private : !!schedule.isPrivate,
 
-                            completed: false
-                        })
-                    }
-                );
+                    completed: false,
+                }),
+            });
 
             if (!saveResponse.ok) {
-                throw new Error(
-                    "일정 저장에 실패했어요"
-                );
+                throw new Error("일정 저장에 실패했어요");
             }
 
-            const savedSchedule =
-                await saveResponse.json();
+            const savedSchedule = await saveResponse.json();
 
             // 3. 입력창 비우기
             naturalScheduleInput.value = "";
 
             // 4. 저장된 날짜로 이동
             if (savedSchedule.date) {
-
-                const parts =
-                    String(savedSchedule.date).split("-");
+                const parts = String(savedSchedule.date).split("-");
 
                 if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
 
-                    const y =
-                        parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10);
 
-                    const m =
-                        parseInt(parts[1], 10);
-
-                    const d =
-                        parseInt(parts[2], 10);
+                    const d = parseInt(parts[2], 10);
 
                     YEAR = y;
                     MONTH = m;
@@ -1835,19 +1449,11 @@
                     selectedDate = {
                         y: y,
                         m: m,
-                        d: d
+                        d: d,
                     };
 
-                    document.getElementById(
-                        "todayTitle"
-                    ).textContent =
-                        "금일 일정 목록 [ " +
-                        String(y).slice(2) +
-                        "." +
-                        pad(m) +
-                        "." +
-                        pad(d) +
-                        " ]";
+                    document.getElementById("todayTitle").textContent =
+                        "금일 일정 목록 [ " + String(y).slice(2) + "." + pad(m) + "." + pad(d) + " ]";
 
                     updateMonthLabel();
                 }
@@ -1856,160 +1462,170 @@
             // 5. 달력 새로고침
             loadMonthEvents();
 
-            showToast(
-                "AI가 일정을 등록했어요"
-            );
-
+            showToast("AI가 일정을 등록했어요");
         } catch (error) {
+            console.error("자연어 일정 등록 오류:", error);
 
-            console.error(
-                "자연어 일정 등록 오류:",
-                error
-            );
-
-            showToast(
-                error.message ||
-                "일정 등록 중 오류가 발생했어요"
-            );
-
+            showToast(error.message || "일정 등록 중 오류가 발생했어요");
         } finally {
-
-            naturalScheduleBtn.disabled =
-                false;
+            naturalScheduleBtn.disabled = false;
 
             naturalScheduleBtn.classList.remove("is-loading");
 
-            naturalScheduleBtn.title =
-                "일정 등록";
+            naturalScheduleBtn.title = "일정 등록";
         }
     });
 
     // Enter로 등록
-    naturalScheduleInput.addEventListener(
-        "keydown",
-        e => {
-
-            if (e.key === "Enter") {
-                e.preventDefault();
-                naturalScheduleBtn.click();
-            }
-
+    naturalScheduleInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            naturalScheduleBtn.click();
         }
-    );
-    const dashboardCategories = {daily: '일상', subscription: '구독', relationship: '교체'};
-    let dashboardCategory = localStorage.getItem('folio.dashboardCategory') || 'daily';
-    if (!dashboardCategories[dashboardCategory]) dashboardCategory = 'daily';
+    });
+    const dashboardCategories = { daily: "일상", subscription: "구독", relationship: "교체" };
+    let dashboardCategory = localStorage.getItem("folio.dashboardCategory") || "daily";
+    if (!dashboardCategories[dashboardCategory]) dashboardCategory = "daily";
     let dashboardRules = [];
     const dashboardOccurrences = new Map();
     function isSideManagement(event) {
         if (!event.recurringId) return false;
-        const category = dashboardRules.find(rule => String(rule.id) === String(event.recurringId))?.category || event.cat;
-        return ['daily', 'subscription', 'relationship'].includes(category);
+        const category =
+            dashboardRules.find((rule) => String(rule.id) === String(event.recurringId))?.category ||
+            event.cat;
+        return ["daily", "subscription", "relationship"].includes(category);
     }
     function renderDashboardManagement() {
         dashboardOccurrences.clear();
         const dateKey = key(selectedDate.y, selectedDate.m, selectedDate.d);
-        (events[dateKey] || []).forEach(event => {
+        (events[dateKey] || []).forEach((event) => {
             if (isSideManagement(event)) dashboardOccurrences.set(String(event.recurringId), event);
         });
-        document.getElementById('dashboardCategoryTitle').textContent = dashboardCategories[dashboardCategory];
-        const list = document.getElementById('dashboardManagementList');
+        document.getElementById("dashboardCategoryTitle").textContent =
+            dashboardCategories[dashboardCategory];
+        const list = document.getElementById("dashboardManagementList");
         list.replaceChildren();
         const todayDate = new Date();
         todayDate.setHours(0, 0, 0, 0);
-        const upcoming = dashboardRules.filter(rule => rule.category === 'health' && rule.nextDate && new Date(rule.nextDate + 'T00:00:00') >= todayDate);
+        const upcoming = dashboardRules.filter(
+            (rule) =>
+                rule.category === "health" &&
+                rule.nextDate &&
+                new Date(rule.nextDate + "T00:00:00") >= todayDate
+        );
         upcoming.sort((a, b) => a.nextDate.localeCompare(b.nextDate));
         const nearest = upcoming[0];
-        document.getElementById('nearestManagementTitle').textContent = nearest ? nearest.title : '예정된 건강 관리가 없어요';
-        const days = nearest ? Math.round((new Date(nearest.nextDate + 'T00:00:00') - todayDate) / 86400000) : null;
-        document.getElementById('nearestManagementDays').textContent = nearest ? '[ 다음 건강 일정 : ' + (days === 0 ? '오늘' : days + '일 뒤') + ' ]' : '';
-        const matching = dashboardRules.filter(rule => rule.category === dashboardCategory && dashboardOccurrences.has(String(rule.id)));
-        matching.sort((a, b) => String(a.nextDate || '').localeCompare(String(b.nextDate || '')));
+        document.getElementById("nearestManagementTitle").textContent = nearest
+            ? nearest.title
+            : "예정된 건강 관리가 없어요";
+        const days = nearest
+            ? Math.round((new Date(nearest.nextDate + "T00:00:00") - todayDate) / 86400000)
+            : null;
+        document.getElementById("nearestManagementDays").textContent = nearest
+            ? "[ 다음 건강 일정 : " + (days === 0 ? "오늘" : days + "일 뒤") + " ]"
+            : "";
+        const matching = dashboardRules.filter(
+            (rule) => rule.category === dashboardCategory && dashboardOccurrences.has(String(rule.id))
+        );
+        matching.sort((a, b) => String(a.nextDate || "").localeCompare(String(b.nextDate || "")));
         for (const rule of matching) {
-            const li = document.createElement('li');
-            const title = document.createElement('span');
+            const li = document.createElement("li");
+            const title = document.createElement("span");
             title.textContent = rule.title;
-            const check = document.createElement('input');
-            check.type = 'checkbox';
-            check.className = 'dashboardComplete chk2';
-            check.setAttribute('aria-label', rule.title + ' 완료');
+            const check = document.createElement("input");
+            check.type = "checkbox";
+            check.className = "dashboardComplete chk2";
+            check.setAttribute("aria-label", rule.title + " 완료");
             const occurrence = dashboardOccurrences.get(String(rule.id));
             check.checked = !!(occurrence && occurrence.completed);
             check.disabled = !occurrence;
-            li.classList.toggle('completed', check.checked);
-            check.addEventListener('change', async () => {
+            li.classList.toggle("completed", check.checked);
+            check.addEventListener("change", async () => {
                 check.disabled = true;
                 try {
-                    const response = await fetch('/api/schedules/' + occurrence.id, {
-                        method: 'PATCH', headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({completed: check.checked})
+                    const response = await fetch("/api/schedules/" + occurrence.id, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ completed: check.checked }),
                     });
-                    if (!response.ok) throw new Error('완료 상태 저장 실패');
+                    if (!response.ok) throw new Error("완료 상태 저장 실패");
                     occurrence.completed = check.checked;
-                    li.classList.toggle('completed', check.checked);
+                    li.classList.toggle("completed", check.checked);
                     loadMonthEvents();
-                    showToast(check.checked ? '관리 일정을 완료했어요' : '완료를 취소했어요');
+                    showToast(check.checked ? "관리 일정을 완료했어요" : "완료를 취소했어요");
                 } catch (error) {
                     check.checked = occurrence.completed;
-                    showToast('완료 상태를 저장하지 못했어요');
-                } finally { check.disabled = false; }
+                    showToast("완료 상태를 저장하지 못했어요");
+                } finally {
+                    check.disabled = false;
+                }
             });
             li.append(title, check);
             list.append(li);
         }
         if (!matching.length) {
-            const li = document.createElement('li');
-            li.className = 'muted';
-            li.textContent = '선택한 날짜에 해당하는 관리 일정이 없어요.';
+            const li = document.createElement("li");
+            li.className = "muted";
+            li.textContent = "선택한 날짜에 해당하는 관리 일정이 없어요.";
             list.append(li);
         }
-        document.querySelectorAll('[data-dashboard-category]').forEach(button => {
-            button.setAttribute('aria-pressed', String(button.dataset.dashboardCategory === dashboardCategory));
+        document.querySelectorAll("[data-dashboard-category]").forEach((button) => {
+            button.setAttribute(
+                "aria-pressed",
+                String(button.dataset.dashboardCategory === dashboardCategory)
+            );
         });
     }
-    document.querySelectorAll('[data-dashboard-category]').forEach(button => {
-        button.addEventListener('click', () => {
+    document.querySelectorAll("[data-dashboard-category]").forEach((button) => {
+        button.addEventListener("click", () => {
             dashboardCategory = button.dataset.dashboardCategory;
-            localStorage.setItem('folio.dashboardCategory', dashboardCategory);
+            localStorage.setItem("folio.dashboardCategory", dashboardCategory);
             renderDashboardManagement();
-            document.querySelector('.dashboardCategoryMenu').open = false;
+            document.querySelector(".dashboardCategoryMenu").open = false;
         });
     });
-    document.addEventListener('click', event => {
-        const menu = document.querySelector('.dashboardCategoryMenu');
+    document.addEventListener("click", (event) => {
+        const menu = document.querySelector(".dashboardCategoryMenu");
         if (!menu.contains(event.target)) menu.open = false;
     });
     renderDashboardManagement();
-    fetch('/api/management/rules').then(response => {
-        if (!response.ok) throw new Error('관리 일정 로드 실패');
-        return response.json();
-    }).then(async data => {
-        dashboardRules = data;
-        renderDashboardManagement();
-        refreshViews();
-        renderDashboardManagement();
-    }).catch(() => {
-        document.getElementById('dashboardManagementList').textContent = '관리 일정을 불러오지 못했어요.';
-    });
+    fetch("/api/management/rules")
+        .then((response) => {
+            if (!response.ok) throw new Error("관리 일정 로드 실패");
+            return response.json();
+        })
+        .then(async (data) => {
+            dashboardRules = data;
+            renderDashboardManagement();
+            refreshViews();
+            renderDashboardManagement();
+        })
+        .catch(() => {
+            document.getElementById("dashboardManagementList").textContent = "관리 일정을 불러오지 못했어요.";
+        });
     applyViewUI();
     updateTodayTitle();
     updateMonthLabel();
     renderGrid();
     loadMonthEvents();
-
 })();
 
 // Keep the fixed-size scrollbar artwork aligned with the actual scroll position.
 (() => {
-    const selector = '.today-list, .memoList, .dashboardManagementList, .timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap';
+    const selector =
+        ".today-list, .memoList, .dashboardManagementList, .timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap";
     function update(area) {
         const distance = area.scrollHeight - area.clientHeight;
         const ratio = distance > 0 ? Math.max(0, Math.min(1, area.scrollTop / distance)) : 0;
-        area.style.setProperty('--scroll-thumb-position', (ratio * 100) + '%');
+        area.style.setProperty("--scroll-thumb-position", ratio * 100 + "%");
     }
-    document.addEventListener('scroll', event => {
-        if (event.target instanceof Element && event.target.matches(selector)) update(event.target);
-    }, true);
-    window.addEventListener('resize', () => document.querySelectorAll(selector).forEach(update));
+    document.addEventListener(
+        "scroll",
+        (event) => {
+            if (event.target instanceof Element && event.target.matches(selector)) update(event.target);
+        },
+        true
+    );
+    window.addEventListener("resize", () => document.querySelectorAll(selector).forEach(update));
     document.querySelectorAll(selector).forEach(update);
 })();

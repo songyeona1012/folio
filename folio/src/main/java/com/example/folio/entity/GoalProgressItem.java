@@ -1,3 +1,4 @@
+// 목표 진행 표에 들어가는 개별 기록 항목을 저장합니다.
 package com.example.folio.entity;
 
 import jakarta.persistence.Column;
@@ -37,8 +38,7 @@ public class GoalProgressItem {
     @Column(nullable = false)
     private int sortOrder;
 
-    protected GoalProgressItem() {
-    }
+    protected GoalProgressItem() {}
 
     GoalProgressItem(GoalProgressTable progressTable, String content, boolean done, int sortOrder) {
         this.progressTable = progressTable;
@@ -47,8 +47,19 @@ public class GoalProgressItem {
         this.sortOrder = sortOrder;
     }
 
-    public Long getId() { return id; }
-    public String getContent() { return content; }
-    public boolean isDone() { return done; }
-    public int getSortOrder() { return sortOrder; }
+    public Long getId() {
+        return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public int getSortOrder() {
+        return sortOrder;
+    }
 }

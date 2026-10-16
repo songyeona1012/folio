@@ -1,9 +1,14 @@
+// 날짜별 일기와 연도별 요약을 조회하고 일기를 저장합니다.
 package com.example.folio.controller;
 
 import com.example.folio.dto.DairyRequest;
 import com.example.folio.dto.DairyResponse;
 import com.example.folio.dto.DairyYearSummary;
 import com.example.folio.service.DairyService;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,11 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 일기 API
@@ -46,10 +46,12 @@ public class DairyApiController {
 
     @GetMapping
     public ResponseEntity<DairyResponse> byDate(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return dairyService.findByDate(date)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.noContent().build());
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
+        return dairyService
+            .findByDate(date)
+            .map(ResponseEntity::ok)
+            .orElseGet(() -> ResponseEntity.noContent().build());
     }
 
     @GetMapping("/month")

@@ -1,3 +1,4 @@
+// 금전 목표 AI 분석에 필요한 요청 정보를 전달합니다.
 package com.example.folio.dto;
 
 /**
@@ -8,8 +9,12 @@ package com.example.folio.dto;
  * @param current 지금 입력칸에 들어 있는 값 (비어 있으면 null)
  */
 public record GoalAiMoneyRequest(String text, Current current) {
-
-    public record Current(String startDate, String endDate, Long targetAmount, Long startAmount,
-                          Long depositAmount, String depositCycle) {
-    }
+    public record Current(
+        String startDate,
+        String endDate,
+        Long targetAmount,
+        Long startAmount,
+        Long depositAmount,
+        String depositCycle
+    ) {}
 }

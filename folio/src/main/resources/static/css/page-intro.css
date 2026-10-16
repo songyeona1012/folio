@@ -1,0 +1,143 @@
+/* 일기·관리·목표·나의 정보의 제목·설명·공통 글씨 크기를 맞춥니다. */
+/* Shared left-page typography based on management. */
+.notebook .diaryLeftPage > h1,
+.notebook .managementIntro h1,
+.notebook .goal-heading h1,
+.notebook .myInfoIntro h1 {
+    font-family: "Gowun Batang", serif;
+    font-size: 21px;
+    font-weight: 700;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: #624325;
+}
+
+.notebook .diaryLeftPage > .diaryIntro,
+.notebook .managementIntro > p,
+.notebook .goal-heading > p,
+.notebook .myInfoIntro header > p {
+    font-family: "Gowun Batang", serif;
+    font-size: 12px;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 18px;
+    letter-spacing: normal;
+    color: #624325;
+}
+
+/* Preserve the overview's existing header footprint and note area. */
+.managementApp .managementHeading {
+    height: 44px;
+    flex-shrink: 0;
+}
+
+.managementApp .managementIntro h1 {
+    margin: 0 0 3px;
+}
+
+.managementApp .managementIntro {
+    line-height: 18px;
+}
+/* Use one desktop page inset for the four sections, including diary. */
+@media (min-width: 701px) {
+    .notebook > .leftPage:has(.diaryIntro),
+    .notebook > .leftPage:has(.managementIntro),
+    .notebook > .leftPage:has(.goal-heading),
+    .notebook > .leftPage.myInfoIntro {
+        top: 5.3%;
+        left: 3.2%;
+        width: 46.5%;
+        padding-top: 2%;
+        padding-left: calc(3.6% + 6px);
+        padding-right: calc(3.6% + 6px);
+    }
+
+    /* Retain the enlarged management notes independently of the text inset. */
+    .managementApp[data-view="overview"] .categoryGrid {
+        margin-left: calc(-4.07% - 6px);
+        margin-right: calc(-4.07% - 6px);
+    }
+}
+
+.notebook .diaryLeftPage > h1,
+.notebook .managementIntro h1,
+.notebook .goal-heading h1,
+.notebook .myInfoIntro h1 {
+    margin: 0 0 18px;
+}
+
+.notebook .diaryLeftPage > .diaryIntro,
+.notebook .managementIntro > p,
+.notebook .goal-heading > p,
+.notebook .myInfoIntro header > p {
+    margin-top: 0;
+    opacity: 1;
+}
+
+.notebook .managementIntro > p.tip {
+    margin-top: 12px;
+}
+
+.notebook .managementHeading {
+    height: 49.5px;
+}
+
+/* Right-page typography follows the same heading/body/helper scale. */
+.notebook .rightPage:has(#diaryHeadline),
+.notebook .analysisPage,
+.notebook .myInfoEditor,
+.notebook .rightPage:has(.goal-paper) {
+    font-family: "Gowun Batang", serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.notebook .diaryHeadline,
+.notebook .analysisHeader h2,
+.notebook .myInfoName,
+.notebook .goal-title-input {
+    font-family: "Gowun Batang", serif;
+    font-size: 18px !important;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.notebook .diaryDateHint,
+.notebook .diaryDateInput,
+.notebook .formTabRow button,
+.notebook .myInfoRow,
+.notebook .myInfoRow input,
+.notebook .goal-paper :is(label, td, th, input:not(.goal-title-input), select, textarea),
+.notebook .analysisPage :is(.chartOptions, .reportNotice button, .reportChoice button) {
+    font-family: "Gowun Batang", serif;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.notebook .chartToolbar,
+.notebook .chartToolbar button,
+.notebook .chartLegend,
+.notebook .diaryHelpRow,
+.notebook .photoActions,
+.notebook .dday-hint {
+    font-family: "Gowun Batang", serif;
+    font-size: 10px;
+    line-height: 1.5;
+}
+/* The diary graph fills the same content width as the shared introduction. */
+.notebook .diaryLeftPage #yearView,
+.notebook .diaryLeftPage .moodBox {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+}
+/* Lower the shared introduction without shifting the content beneath it. */
+.notebook .diaryLeftPage > h1,
+.notebook .diaryLeftPage > .diaryIntro,
+.notebook .managementIntro,
+.notebook .goal-heading,
+.notebook .myInfoIntro > header {
+    transform: translateY(14px);
+}

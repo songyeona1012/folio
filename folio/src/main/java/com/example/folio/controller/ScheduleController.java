@@ -1,3 +1,4 @@
+// 달력에서 사용하는 일정 조회와 등록·수정·삭제 API입니다.
 package com.example.folio.controller;
 
 import com.example.folio.dto.ScheduleDto;
