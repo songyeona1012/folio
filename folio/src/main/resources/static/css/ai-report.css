@@ -1,0 +1,314 @@
+/* =========================================================
+   AI 일정 분석: 책 오른쪽 아래 탭 + 손이 내려주는 기록지
+   - 이미지: /img/hand.png, /img/report_background.png
+   - 이미지에 맞춰 글자 위치를 바꾸려면 .aiReportScene 의 변수만 고치세요.
+   ========================================================= */
+
+/* ---------- 책 오른쪽 아래 탭 ---------- */
+.aiReportTab {
+    position: absolute;
+    z-index: 6;
+    right: 7%;
+    bottom: 7%;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: 1px solid #e3d6cc;
+    border-radius: 10px;
+    background: #fffdf9;
+    box-shadow: 0 2px 6px rgba(60, 50, 40, 0.1);
+    color: #624325;
+    font-family: "Noto Sans KR", sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+
+    /* 평소에는 작게 */
+    transform: translateY(0) scale(0.92);
+    transform-origin: right bottom;
+    transition:
+        transform 0.25s cubic-bezier(0.22, 0.8, 0.3, 1),
+        box-shadow 0.25s ease;
+}
+
+.aiReportTab::before {
+    content: "✦";
+    color: #e9692c;
+}
+
+/* 마우스를 올리면 위로 살짝 */
+.aiReportTab:hover,
+.aiReportTab:focus-visible {
+    transform: translateY(-6px) scale(1);
+    box-shadow: 0 8px 18px rgba(60, 50, 40, 0.16);
+    outline: none;
+}
+
+/* 요약 중 */
+.aiReportTab.is-loading {
+    transform: translateY(-6px) scale(1);
+    cursor: progress;
+}
+
+.aiReportTab.is-loading::before {
+    display: inline-block;
+    animation: aiReportSpin 1s linear infinite;
+}
+
+@keyframes aiReportSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ---------- 손 + 기록지 ---------- */
+.aiReportOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: rgba(40, 32, 28, 0);
+    transition: background 0.5s ease;
+    overflow: hidden;
+}
+
+.aiReportOverlay[hidden] {
+    display: none;
+}
+
+.aiReportOverlay.is-in {
+    background: rgba(40, 32, 28, 0.2);
+}
+
+.aiReportScene {
+    /* 이미지에 맞춰 조절하는 값 (report_background.png 1160x605, hand.png 1122x657 기준) */
+    --paper-width: min(880px, 60vw);
+    --content-inset: 12% 9% 19% 15%;    /* 기록지 안 글자 영역 (위 오른쪽 아래 왼쪽) */
+    --hand-width: 115%;                  /* 손을 크게: 팔이 화면 왼쪽 밖에서 뻗어 나옴 */
+    --hand-left: -82%;
+    --hand-top: -8%;
+
+    position: relative;
+    width: var(--paper-width);
+}
+
+/* 손바닥에 기록지를 얹고 왼쪽 위 대각선에서 내려오기 */
+.aiReportOverlay.is-in .aiReportScene {
+    animation: aiReportDrop 1s cubic-bezier(0.2, 0.85, 0.25, 1) both;
+}
+
+.aiReportOverlay.is-out .aiReportScene {
+    animation: aiReportLift 0.5s cubic-bezier(0.5, 0, 0.75, 0) both;
+}
+
+@keyframes aiReportDrop {
+    0% {
+        transform: translate(-110vh, -110vh);
+    }
+    70% {
+        transform: translate(8px, 8px);
+    }
+    85% {
+        transform: translate(-3px, -3px);
+    }
+    100% {
+        transform: none;
+    }
+}
+
+@keyframes aiReportLift {
+    to {
+        transform: translate(-110vh, -110vh);
+    }
+}
+
+.aiReportPaper {
+    position: relative;
+    z-index: 2;                          /* 기록지가 손바닥 위에 얹힘 */
+    transform: none;
+}
+
+.aiReportPaperImg {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* 이미지가 없을 때 종이 색으로 대신 */
+.aiReportPaper.noImage {
+    aspect-ratio: 1160 / 605;
+    border-radius: 6px;
+    background: #fdfaf0;
+    box-shadow: 0 14px 24px rgba(40, 32, 28, 0.2);
+}
+
+.aiReportPaper.noImage .aiReportPaperImg {
+    display: none;
+}
+
+.aiReportContent {
+    position: absolute;
+    inset: var(--content-inset);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    color: #4a3a30;
+    font-family: "Gowun Batang", "Noto Serif KR", serif;
+    font-size: 17px;
+    line-height: 1.65;
+    scrollbar-width: thin;
+}
+
+.aiReportHead {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #e2d6c8;
+}
+
+.aiReportTitle {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #3b3330;
+}
+
+.aiReportRange {
+    margin: 0;
+    font-size: 12px;
+    color: #9c8a7e;
+}
+
+.aiReportBody {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.aiReportStats {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.aiReportNotes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.aiReportNote {
+    margin: 0;
+    word-break: keep-all;
+}
+
+.aiReportClose {
+    position: absolute;
+    top: 7%;
+    right: 6%;
+    z-index: 3;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #8c7b6e;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.aiReportClose:hover {
+    color: #e9692c;
+}
+
+/* 손: 왼쪽에서 뻗어 나와 기록지 왼쪽 아래를 받치고 있음 */
+.aiReportHand {
+    position: absolute;
+    z-index: 1;
+    left: var(--hand-left);
+    top: var(--hand-top);
+    width: var(--hand-width);
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    transform: rotate(-4deg);
+    transform-origin: left center;
+}
+
+/* 내려온 뒤 손이 살짝 받쳐 드는 느낌 */
+.aiReportOverlay.is-in .aiReportHand {
+    animation: aiReportHandSettle 0.5s 0.9s ease-out both;
+}
+
+@keyframes aiReportHandSettle {
+    0% {
+        transform: rotate(-4deg);
+    }
+    50% {
+        transform: translateY(-5px) rotate(-6deg);
+    }
+    100% {
+        transform: translateY(-2px) rotate(-5deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aiReportOverlay.is-in .aiReportScene,
+    .aiReportOverlay.is-out .aiReportScene,
+    .aiReportOverlay.is-in .aiReportHand {
+        animation-duration: 0.01s;
+    }
+}
+
+/* 휴대폰: 종이를 세로로 늘려서 글자가 다 들어가게 */
+@media (max-width: 900px) {
+    .aiReportTab {
+        position: absolute;
+        left: auto;
+        right: 16px;
+        bottom: 8px;
+    }
+
+    .aiReportOverlay {
+        padding: 0 16px;
+    }
+
+    .aiReportScene {
+        --paper-width: 88vw;
+        --hand-width: 115%;
+        --hand-left: -78%;
+        --hand-top: auto;
+    }
+
+    .aiReportPaperImg {
+        position: absolute;
+        inset: 0;
+        height: 100%;
+    }
+
+    .aiReportContent {
+        position: relative;
+        inset: auto;
+        padding: 9% 9% 22% 13%;
+        font-size: 14px;
+    }
+
+    .aiReportBody {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .aiReportHand {
+        top: auto;
+        bottom: -26%;
+    }
+}

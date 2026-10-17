@@ -751,7 +751,7 @@
                         ev.time = newValue;
                         updateScheduleLocal(ev);
                         refreshViews();
-                        showToast("시간이 수정되었어요");
+                        toastWithClash("시간이 수정되었어요", findSameTime(selectedDayEvents(), newValue, ev.id));
                     }
                 });
             });
@@ -976,7 +976,7 @@
                 updateScheduleLocal(ev);
                 refreshViews();
 
-                showToast("수정되었습니다");
+                toastWithClash("수정되었습니다", findSameTime(selectedDayEvents(), newValue, ev.id));
             });
 
             return;
@@ -1094,6 +1094,8 @@
                 events[k] = [];
             }
 
+            const clash = findSameTime(events[k], time, null);
+
             const tempEv = {
                 id: "local_" + Date.now(),
                 title: title,
@@ -1107,7 +1109,7 @@
 
             refreshViews();
 
-            showToast("일정이 저장되었습니다");
+            toastWithClash("일정이 저장되었습니다", clash);
 
             fetch("/api/schedules", {
                 method: "POST",
@@ -1354,7 +1356,7 @@
 
     let toastTimer;
 
-    function showToast(msg) {
+    function showToast(msg, duration) {
         const t = document.getElementById("toast");
 
         t.textContent = msg;
@@ -1363,7 +1365,40 @@
 
         clearTimeout(toastTimer);
 
-        toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
+        toastTimer = setTimeout(() => t.classList.remove("show"), duration || 1800);
+    }
+
+    // ==============================
+    // 같은 시간 일정 알림 (같은 날짜 + 같은 시:분)
+    // ==============================
+
+    function findSameTime(list, time, excludeId) {
+        if (!time) return null;
+
+        const target = String(time).slice(0, 5);
+
+        return (
+            (list || []).find(
+                (item) =>
+                    item &&
+                    String(item.id) !== String(excludeId) &&
+                    item.time &&
+                    String(item.time).slice(0, 5) === target
+            ) || null
+        );
+    }
+
+    // 저장 안내 대신, 겹치는 일정이 있으면 경고를 조금 더 오래 보여줍니다.
+    function toastWithClash(doneMessage, clash) {
+        if (clash) {
+            showToast("⚠️ 같은 시간에 다른 일정이 있습니다 (" + clash.title + ")", 3200);
+        } else {
+            showToast(doneMessage);
+        }
+    }
+
+    function selectedDayEvents() {
+        return events[key(selectedDate.y, selectedDate.m, selectedDate.d)] || [];
     }
     // ==============================
     // 자연어 일정 등록
@@ -1389,8 +1424,8 @@
         naturalScheduleBtn.title = "AI가 읽는 중...";
 
         try {
-            // 1. 자연어 → Gemini
-            const aiResponse = await fetch("/api/ai/parse-schedule", {
+            // 1. 자연어 → AI (새 일정 추가인지, 기존 일정 수정·미루기인지 판단)
+            const aiResponse = await fetch("/api/ai/command", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -1408,7 +1443,37 @@
                 );
             }
 
-            const schedule = await aiResponse.json();
+            const command = await aiResponse.json();
+
+            // 1-1. 수정·미루기: 서버에서 이미 바뀌었으니 바뀐 날짜로 이동해 달력만 새로고침
+            if (command.action === "update") {
+                const changed = command.updated || [];
+
+                if (changed.length) {
+                    naturalScheduleInput.value = "";
+
+                    const parts = String(changed[0].date || "").split("-");
+
+                    if (parts.length === 3) {
+                        YEAR = parseInt(parts[0], 10);
+                        MONTH = parseInt(parts[1], 10);
+                        selectedDate = { y: YEAR, m: MONTH, d: parseInt(parts[2], 10) };
+                        updateTodayTitle();
+                        updateMonthLabel();
+                    }
+
+                    loadMonthEvents();
+                }
+
+                showToast(command.message || "일정을 수정했어요", command.clashes && command.clashes.length ? 3600 : 2400);
+                return;
+            }
+
+            if (command.action !== "create" || !command.schedule) {
+                throw new Error(command.message || "어떤 일정인지 이해하지 못했어요. 다시 적어주세요.");
+            }
+
+            const schedule = command.schedule;
 
             if (!schedule.date) {
                 throw new Error("날짜를 해석하지 못했어요");
@@ -1416,6 +1481,18 @@
 
             // 2. AI가 분석한 일정 → DB 저장
             naturalScheduleBtn.title = "일정 저장 중...";
+
+            // 그 날짜에 같은 시간 일정이 이미 있는지 (다른 달일 수도 있어서 서버에서 확인)
+            let clash = null;
+
+            if (schedule.time) {
+                try {
+                    const sameDay = await fetch("/api/schedules/date?value=" + encodeURIComponent(schedule.date));
+                    if (sameDay.ok) clash = findSameTime(await sameDay.json(), schedule.time, null);
+                } catch (e) {
+                    /* 확인 못 해도 저장은 계속 */
+                }
+            }
 
             const saveResponse = await fetch("/api/schedules", {
                 method: "POST",
@@ -1476,7 +1553,7 @@
             // 5. 달력 새로고침
             loadMonthEvents();
 
-            showToast("AI가 일정을 등록했어요");
+            toastWithClash("AI가 일정을 등록했어요", clash);
         } catch (error) {
             console.error("자연어 일정 등록 오류:", error);
 
