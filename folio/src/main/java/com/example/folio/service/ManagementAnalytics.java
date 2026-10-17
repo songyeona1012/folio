@@ -444,65 +444,53 @@ public class ManagementAnalytics {
                   rate +
                   "%). " +
                   encouragement;
-        StringBuilder detailed = new StringBuilder(briefing);
-        if (total > 0) {
-            detailed
-                .append("\n\n이번 기간에는 예정된 관리 일정 중 ")
-                .append(completed)
-                .append("건을 마무리했고, ")
-                .append(total - completed)
-                .append("건은 아직 완료 표시가 되어 있지 않아요. ")
-                .append(
-                    "이 기록은 지금까지 일정 날짜가 지난 항목을 기준으로 살펴본 결과예요. 앞으로 예정된 일정은 포함하지 않았습니다. "
-                )
-                .append(
-                    "실제로 끝낸 일이 있다면 완료 표시를 해주세요. 기록이 정확해질수록 관리 흐름도 더 잘 확인할 수 있어요."
-                );
-            categories.forEach((key, label) -> {
-                var items = events
-                    .stream()
-                    .filter(event -> key.equals(event.getCategory()))
-                    .toList();
-                if (items.isEmpty()) return;
-                long done = items.stream().filter(Schedule::isCompleted).count();
-                long percent = Math.round((100.0 * done) / items.size());
-                detailed
-                    .append("\n\n")
-                    .append(label)
-                    .append(" 관리는 ")
-                    .append(items.size())
-                    .append("건 중 ")
-                    .append(done)
-                    .append("건을 완료해 완료율이 ")
-                    .append(percent)
-                    .append("%예요. ");
-                if (percent >= 80) detailed.append(
-                    "예정된 일을 잘 챙기고 있어요. 지금 도움이 되는 알림이나 습관을 유지하면 다음 일정도 놓치지 않는 데 도움이 될 거예요."
-                );
-                else detailed
-                    .append("아직 완료하지 않은 항목을 확인하고, 가장 먼저 할 수 있는 일 하나를 골라보세요. ")
-                    .append(
-                        key.equals("health")
-                            ? "예약이 필요한 일이라면 가능한 날짜를 먼저 정해두는 것도 좋아요."
-                            : "반복해서 챙겨야 하는 일이라면 평소 하는 행동과 연결하거나 알림을 설정해보세요."
-                    );
-            });
-            detailed
-                .append("\n\n완료 기록이 없는 다른 카테고리는 관리가 부족하다고 판단할 수 없어요. ")
-                .append(
-                    "월별 기록이 더 쌓이면 어느 시기에 잘 이어갔고 어느 시기에 놓친 일이 많았는지 비교할 수 있습니다. "
-                )
-                .append(
-                    "지금은 한꺼번에 모두 해결하기보다 다음에 챙길 한 가지를 정하고, 완료할 때마다 표시해보세요. 작은 실천을 차근차근 이어가면 좋아요."
-                );
+        // AI를 사용할 수 없어도 카테고리 차이와 다음 실천을 연결해 설명합니다.
+        StringBuilder detailed = new StringBuilder();
+        if (total == 0) {
+            detailed.append(briefing).append(" 기록이 쌓이면 잘 이어가는 부분과 놓치기 쉬운 시기를 함께 살펴볼게요.");
         } else {
-            detailed
-                .append(
-                    "\n\n아직 이 기간에는 평가할 완료 기록이 없어요. 미래 일정은 완료율에 포함하지 않기 때문에 일정이 등록되어 있어도 수치가 나오지 않을 수 있습니다. "
-                )
-                .append(
-                    "시작일과 주기를 확인하고, 일정에 맞춰 실천한 뒤 완료를 표시해주세요. 기록이 쌓이면 카테고리별 관리 흐름과 변화를 함께 살펴볼 수 있어요."
-                );
+            String strongest = null;
+            String weakest = null;
+            double highest = -1;
+            double lowest = 101;
+            for (var category : categories.entrySet()) {
+                var items = events.stream().filter(event -> category.getKey().equals(event.getCategory())).toList();
+                if (items.isEmpty()) continue;
+                double percent = 100.0 * items.stream().filter(Schedule::isCompleted).count() / items.size();
+                if (percent > highest) {
+                    highest = percent;
+                    strongest = category.getKey();
+                }
+                if (percent < lowest) {
+                    lowest = percent;
+                    weakest = category.getKey();
+                }
+            }
+            if (highest > lowest) {
+                detailed.append("이번 기록에서는 ").append(categories.get(strongest))
+                    .append(" 관리가 비교적 잘 이어진 반면, ").append(categories.get(weakest))
+                    .append(" 관리에는 아직 놓친 항목이 보여요. 같은 기간에도 관리 종류에 따라 실천 흐름이 다르게 나타났습니다.");
+            } else if (rate >= 80) {
+                detailed.append("이번 기간에는 예정된 관리를 전반적으로 잘 챙겼어요. 완료율은 ")
+                    .append(rate).append("%로, 좋은 흐름을 이어가고 있습니다.");
+            } else {
+                detailed.append("이번 기간에는 완료율이 ").append(rate)
+                    .append("%로 나타났어요. 아직 마무리하지 않은 일이 남아 있지만, 한꺼번에 따라잡으려 하기보다는 다음에 챙길 일을 정해보면 좋겠습니다.");
+            }
+            if (lowest < 80 && weakest != null) {
+                detailed.append("\n\n");
+                switch (weakest) {
+                    case "relationship" -> detailed.append("교체 관리는 주기가 길어 평소에는 잊기 쉬울 수 있어요. 교체할 물품을 미리 준비하고 예정일 전에 알림을 설정해보세요. 반복해서 떠올려야 하는 부담을 줄이면 다음 일정부터 조금 더 수월하게 이어갈 수 있습니다.");
+                    case "daily" -> detailed.append("일상 관리는 작은 일을 반복해야 해서 꾸준히 이어가는 장치가 필요해요. 식사 후나 잠들기 전처럼 이미 하고 있는 행동에 한 가지를 붙여보세요. 부담이 작은 목표부터 정해 다음 주기에는 한 번 더 실천해보면 좋겠습니다.");
+                    case "health" -> detailed.append("건강 관리에서 아직 마무리하지 않은 항목을 먼저 확인해보세요. 예약이 필요한 일정이라면 가능한 날짜를 정하고, 준비할 일을 미리 적어두면 다음 주기를 챙기는 데 도움이 됩니다.");
+                    default -> detailed.append("구독 관리는 결제일이나 갱신일 전에 알림을 두고, 계속 이용할 서비스인지 확인하는 시간을 정해보세요. 놓친 항목을 모두 한 번에 해결하기보다 가장 가까운 일정부터 챙겨보면 좋겠습니다.");
+                }
+            }
+            if (highest >= 80 && strongest != null) {
+                detailed.append("\n\n그래도 ").append(categories.get(strongest)).append(" 관리는 완료율 ")
+                    .append(Math.round(highest)).append("%로 잘 챙겼다는 점이 반가워요. 이때 도움이 됐던 알림이나 확인 습관을 다른 관리에도 활용해보세요. 이미 이어가고 있는 좋은 흐름이 다음 실천의 출발점이 될 수 있습니다.");
+            }
+            detailed.append("\n\n다음 기간에는 가장 자주 놓치는 관리 한 가지를 골라, 예정일에 맞춰 한 번 더 챙겨보세요. 실제로 마친 일은 완료 표시까지 남기면 다음 기록에서 달라진 흐름을 더 정확히 확인할 수 있어요.");
         }
         briefing = detailed.toString();
         StringBuilder facts = new StringBuilder("관리 일정 완료 기록\n기간: ")
@@ -650,14 +638,17 @@ public class ManagementAnalytics {
             }
             if (decline != null) changes.append(decline).append("\n\n");
         }
-        if (!changes.isEmpty()) briefing = changes + briefing;
+        if (!changes.isEmpty()) {
+            briefing = changes + briefing;
+            facts.append("\n눈에 띄는 월별 변화:\n").append(changes);
+        }
         return new CompletionBriefing(total, completed, rate, briefing, facts.toString());
     }
 
     public synchronized ManagementReport report(String period, LocalDate anchor, boolean retry) {
         Range range = range(period, anchor);
         CompletionBriefing summary = completionBriefing(period, anchor);
-        String facts = "변화 분석 기록지 형식 v4\n" + summary.facts();
+        String facts = "변화 분석 기록지 형식 v5\n" + summary.facts();
         String raw = scheduleRange(range.start(), range.end())
             .stream()
             .filter(event -> event.getRecurringId() != null)
