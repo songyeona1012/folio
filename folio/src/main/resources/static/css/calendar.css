@@ -1,5 +1,5 @@
 /* 달력과 오른쪽 일정 목록·메모·일정 편집 창의 스타일입니다. */
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Noto+Serif+KR:wght@600&display=swap");
 
 :root {
     --orange: #e9692c;
@@ -141,8 +141,8 @@ Folio 제목
 
     flex-shrink: 0;
 }
-.brand-row h1 {
-    font-family: "Cormorant Garamond", serif;
+.brand-row #brandTitle {
+    font-family: "Cormorant Garamond", "Noto Serif KR", serif;
     font-style: normal;
     font-weight: 600;
 
@@ -2584,4 +2584,11 @@ Toast
 }
 .notebookImage {
     pointer-events: none;
+}
+
+/* Only Korean characters use the requested Korean font and size. */
+.brand-row #brandTitle .brandHangul {
+    font-family: "Noto Serif KR", serif;
+    font-size: 26px;
+    font-style: normal;
 }

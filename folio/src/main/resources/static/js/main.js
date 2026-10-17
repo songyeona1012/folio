@@ -1,5 +1,19 @@
 // 달력 표시와 날짜 선택, 일정 편집 및 오른쪽 일정 목록을 처리합니다.
 (function () {
+    // 제목의 한글만 별도 크기로 표시하고 나머지는 기존 영문 글꼴을 유지합니다.
+    const brandTitle = document.getElementById("brandTitle");
+    if (brandTitle) {
+        const titleParts = brandTitle.textContent.match(/[\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uAC00-\uD7FF]+|[^\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uAC00-\uD7FF]+/gu) || [];
+        brandTitle.replaceChildren(...titleParts.map((part) => {
+            if (!/^[\u1100-\u11FF\u3130-\u318F\uA960-\uA97F\uAC00-\uD7FF]/u.test(part)) {
+                return document.createTextNode(part);
+            }
+            const span = document.createElement("span");
+            span.className = "brandHangul";
+            span.textContent = part;
+            return span;
+        }));
+    }
     const now = new Date();
     const TODAY = {
         y: now.getFullYear(),

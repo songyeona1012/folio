@@ -1,6 +1,12 @@
 // 나의 정보 화면의 암호 확인·프로필 미리보기·저장·탈퇴를 처리합니다.
 (() => {
     const $ = (id) => document.getElementById(id);
+    // 마지막 한글 음절의 받침 여부에 따라 이름 뒤의 이/가를 고릅니다.
+    const authorName = $("profileName").value.trim().normalize("NFC");
+    const lastCharacter = Array.from(authorName).pop() || "";
+    const lastCode = lastCharacter.codePointAt(0);
+    const hasFinalConsonant = lastCode >= 0xac00 && lastCode <= 0xd7a3 && (lastCode - 0xac00) % 28 !== 0;
+    $("nameParticle").textContent = hasFinalConsonant ? "이" : "가";
     const status = $("profileStatus");
     let token = "",
         expires = 0,
