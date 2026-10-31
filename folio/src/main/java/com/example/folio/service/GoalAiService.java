@@ -134,7 +134,7 @@ public class GoalAiService {
             // 화면이 이 상태 코드를 보고 "서버에 키가 필요해요"라고 안내한다 (팀 AiService.parseSchedule과 같은 방식)
             throw new GoalAiException(
                 HttpStatus.SERVICE_UNAVAILABLE,
-                "AI 기능을 사용하려면 GEMINI_API_KEY, ANTHROPIC_API_KEY, OPENAI_API_KEY 중 하나를 환경변수로 설정해주세요."
+                "AI 기능을 사용하려면 OPENAI_API_KEY를 환경변수로 설정해주세요."
             );
         }
 
@@ -163,7 +163,7 @@ public class GoalAiService {
         }
     }
 
-    /** 화면에 보여줄 짧은 실패 이유. 우리가 만든 문구(응답 코드 등)만 그대로 보이고, 키나 요청 내용은 들어 있지 않다. */
+    /** 화면에 보여줄 짧은 실패 이유. 키나 요청 내용은 들어 있지 않다. */
     private static String reasonOf(Exception e) {
         String text =
             e instanceof IllegalStateException && e.getMessage() != null
@@ -172,15 +172,6 @@ public class GoalAiService {
         text = text.replaceAll("\\s+", " ").trim();
         if (text.length() > 140) {
             text = text.substring(0, 140) + "…";
-        }
-        if (e instanceof GoalAiClient.ApiStatusException api) {
-            String hint = switch (api.status()) {
-                case 503, 500, 502, 504 -> "AI 서버가 지금 몰려 있어요. 잠시 뒤에 다시 보내 보세요. ";
-                case 429 -> "사용 한도에 걸렸어요. 잠시 뒤에 다시 보내 보세요. ";
-                case 401, 403 -> "키를 확인해 주세요. ";
-                default -> "";
-            };
-            return hint + text;
         }
         return text;
     }

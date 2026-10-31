@@ -23,6 +23,16 @@ public class ScheduleDto {
     private boolean isPrivate;
     private boolean completed;
 
+    private String highlight;
+
+    public String getHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(String highlight) {
+        this.highlight = highlight;
+    }
+
     public ScheduleDto() {}
 
     public Long getId() {

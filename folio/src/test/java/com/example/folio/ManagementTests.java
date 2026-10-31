@@ -16,7 +16,6 @@ import org.springframework.web.server.ResponseStatusException;
     properties = {
         "spring.datasource.url=jdbc:h2:mem:management-test;DB_CLOSE_DELAY=-1",
         "spring.jpa.hibernate.ddl-auto=create-drop",
-        "gemini.api.key=",
         "openai.api.key=",
     }
 )

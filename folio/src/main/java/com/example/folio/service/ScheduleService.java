@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,7 @@ public class ScheduleService {
             dto.getCategory(),
             dto.isPrivate()
         );
+        schedule.setHighlight(cleanPen(dto.getHighlight()));
 
         return toDto(scheduleRepository.save(schedule));
     }
@@ -51,6 +53,11 @@ public class ScheduleService {
         Schedule schedule = scheduleRepository
             .findById(id)
             .orElseThrow(() -> new IllegalArgumentException("해당 일정을 찾을 수 없어요. id=" + id));
+
+        // 형광펜: 값을 보냈을 때만 바꾼다 ("" 이면 지우기)
+        if (dto.getHighlight() != null) {
+            schedule.setHighlight(cleanPen(dto.getHighlight()));
+        }
 
         if (dto.getTitle() != null) {
             schedule.setTitle(dto.getTitle());
@@ -132,7 +139,16 @@ public class ScheduleService {
 
         dto.setCompleted(schedule.isCompleted());
 
+        dto.setHighlight(schedule.getHighlight());
+
         return dto;
+    }
+
+    /* 형광펜 색: 정해진 다섯 가지만 저장하고, 나머지("" 포함)는 지운 것으로 본다 */
+    private static final Set<String> PENS = Set.of("red", "orange", "green", "blue", "purple");
+
+    private static String cleanPen(String pen) {
+        return pen != null && PENS.contains(pen) ? pen : null;
     }
 
     /* =========================================================

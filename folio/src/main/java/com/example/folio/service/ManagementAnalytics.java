@@ -676,7 +676,7 @@ public class ManagementAnalytics {
         }
         String id = com.example.folio.security.OwnerContext.id() + "-" + period + "-" + range.start();
         ManagementReport report = reports.findById(id).orElseGet(ManagementReport::new);
-        if (hash.equals(report.fingerprint) && (!retry || "AI".equals(report.source))) return report;
+        if (hash.equals(report.fingerprint) && "AI".equals(report.source)) return report;
         String narrative = summary.total() == 0 ? null : ai.narrate(facts);
         report.id = id;
         report.period = period;

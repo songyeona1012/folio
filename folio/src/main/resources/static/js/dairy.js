@@ -65,11 +65,26 @@
     }
 
     function confirmDiscard() {
-        return !state.dirty || confirm("저장하지 않은 내용이 있어요. 이동하면 지워져요. 계속할까요?");
+        return !isDirty() || confirm("저장하지 않은 내용이 있어요. 이동하면 지워져요. 계속할까요?");
     }
 
     function markDirty() {
         state.dirty = true;
+    }
+    // 불러온(저장된) 내용과 지금 화면의 내용을 비교해서, 실제로 바뀌었을 때만 "저장하지 않았다"고 본다
+    let savedSnapshot = "";
+
+    function snapshot() {
+        return JSON.stringify({
+            rating: getRating(),
+            type: state.current ? getType() : null, // 새 일기에서 탭만 바꾼 건 변경으로 치지 않음
+            content: $("freeformText").value.trim(),
+            hours: readHours(),
+        });
+    }
+
+    function isDirty() {
+        return snapshot() !== savedSnapshot;
     }
 
     /* ============================================================
@@ -258,6 +273,7 @@
         fillHours(diary ? diary.hours : null);
 
         state.dirty = false;
+        savedSnapshot = snapshot(); // 지금 불러온 내용을 "저장된 상태"로 기억
         renderHeader();
     }
 
@@ -339,7 +355,7 @@
 
     // 저장 안 하고 페이지를 떠나려 하면 경고
     window.addEventListener("beforeunload", (event) => {
-        if (state.dirty) {
+        if (isDirty()) {
             event.preventDefault();
             event.returnValue = "";
         }
@@ -697,6 +713,7 @@
 
     setRating(0);
     setType("TIMETABLE");
+    savedSnapshot = snapshot();
     loadSummary();
     loadDiary(startDate);
 })();

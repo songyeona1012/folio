@@ -57,7 +57,6 @@ public class AccountIsolationTests {
                 "--spring.jpa.hibernate.ddl-auto=create-drop",
                 "--spring.jpa.open-in-view=false",
                 "--openai.api.key=",
-                "--gemini.api.key=",
                 "--logging.level.root=ERROR"
             )
         ) {

@@ -19,8 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 목표 화면(goal.js)이 호출하는 AI API.
  *   POST /api/goals/ai-form   { prompt, history, current } → 만들어진 양식      (AI 자율 작성)
  *   POST /api/goals/ai-money  { text, current }            → 바꿀 입력값        (금전 양식 달성 현황)
- *
- * 키는 GEMINI_API_KEY, ANTHROPIC_API_KEY(Claude) 또는 팀 AiService와 같은 OPENAI_API_KEY를 쓴다 (GoalAiClient 참고).
+ * 키는 GPT 키만 사용
  * 팀의 /api/ai/* 와는 주소가 달라 서로 영향을 주지 않는다.
  */
 @RestController

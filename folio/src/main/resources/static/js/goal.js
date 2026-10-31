@@ -308,18 +308,26 @@
         markActiveCard();
         syncDeleteGoalsButton();
     }
+    // 카드 색: 목표 번호를 섞어서 노랑/분홍을 무작위처럼 고른다 (같은 목표는 항상 같은 색)
+    const CARD_COLORS = {
+        yellow: { bg: "#fffbe6", side: "#fff5d2" },
+        pink: { bg: "#fff8f6", side: "#fff0ee" },
+    };
 
-    // 카드 색은 목표를 만들 때 서버가 무작위로 정해서 저장한다. 그 기능 이전에 만든 목표는 번호로 정한다.
     function cardColor(goal) {
-        const saved = String(goal.cardColor || "").toLowerCase();
-        if (saved === "yellow" || saved === "pink") return saved;
-        return ((Number(goal.id) * 2654435761) >>> 0) % 2 ? "pink" : "yellow";
+        let h = Number(goal.id) | 0;
+        h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+        h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+        h ^= h >>> 16;
+        return h & 1 ? "pink" : "yellow";
     }
 
     function createGoalRow(goal) {
         const row = cloneFirst(goalCardTemplate);
         row.dataset.goalId = goal.id;
         row.dataset.color = cardColor(goal);
+        row.style.setProperty("--card-bg", CARD_COLORS[row.dataset.color].bg);
+        row.style.setProperty("--card-side", CARD_COLORS[row.dataset.color].side);
         $(".goal-select-checkbox", row).dataset.goalId = goal.id;
         fillGoalRow(row, goal);
 

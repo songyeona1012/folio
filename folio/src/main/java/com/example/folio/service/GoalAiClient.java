@@ -1,4 +1,4 @@
-// 설정된 AI 제공자와 통신하고 목표 작성 응답을 받습니다.
+// OpenAI(GPT)와 통신하고 목표 작성 응답을 받습니다.
 package com.example.folio.service;
 
 import com.example.folio.dto.GoalAiFormRequest;
@@ -12,16 +12,10 @@ import com.openai.models.Reasoning;
 import com.openai.models.ReasoningEffort;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,38 +24,18 @@ import tools.jackson.databind.json.JsonMapper;
 
 /**
  * 목표 화면의 AI 호출은 모두 이 클래스를 지난다.
- *
- * 쓸 수 있는 AI는 세 가지이고, 키가 있는 쪽을 쓴다 (순서: Claude → Gemini → OpenAI).
- *   1) Claude (Anthropic Messages API)
- *        키  : folio.ai.api-key  → 없으면 환경변수 ANTHROPIC_API_KEY
- *        모델: folio.ai.model    → 없으면 claude-sonnet-5-5
- *        추가 라이브러리 없이 자바 기본 HttpClient로 부른다.
- *   2) Gemini (Google generateContent API)
- *        키  : folio.ai.gemini-key → 없으면 application.properties의 gemini.api.key(= 환경변수 GEMINI_API_KEY) → 없으면 환경변수 GEMINI_API_KEY
- *        모델: folio.ai.gemini-model → 없으면 gemini-3.8-flash
- *        키 모양(AIza... 또는 AQ....)은 가리지 않는다. 헤더 x-goog-api-key 로 보낸다.
- *        모델이 몰려 있으면(503 high demand, 429 등) 키가 쓸 수 있는 다른 Flash 모델(Lite 포함)을 차례로 시도하고,
- *        성공한 모델을 10분 동안 먼저 쓴다.
- *   3) OpenAI (팀 AiService와 같은 키 openai.api.key ← OPENAI_API_KEY, 같은 Responses API)
- *        모델: folio.goal.ai.model → 없으면 gpt-5-nano
- * 키가 하나도 없으면 isConfigured()가 false이고, 호출하는 쪽(GoalAiService)이 기본 규칙으로 대신한다.
- *
- * 목표 화면에서 AI가 하는 일은 짧은 구조화 작업(양식 만들기, 문장 한 줄 읽기)이라
- * 답 길이와 기다리는 시간에 상한을 둔다.
+ * 키: openai.api.key (= 환경변수 OPENAI_API_KEY, 팀 AiService와 같은 키)
+ * 모델: folio.goal.ai.model → 없으면 gpt-5-nano
+ * 키가 없으면 isConfigured()가 false이고, GoalAiService가 기본 규칙으로 대신한다.
  */
 @Component
 public class GoalAiClient {
 
     private static final Logger log = LoggerFactory.getLogger(GoalAiClient.class);
 
-    /** 모델을 바꾸고 싶으면 application.properties에 folio.goal.ai.model=... 한 줄만 넣으면 된다. */
     private static final String DEFAULT_MODEL = "gpt-5-nano";
-    private static final String DEFAULT_CLAUDE_MODEL = "claude-sonnet-5-5";
-    private static final String CLAUDE_URL = "https://api.anthropic.com/v1/messages";
-    private static final String DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
-    private static final String GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
-    /** 이 시간 안에 답이 없으면 포기하고 기본 틀로 대신한다 (SDK 기본값은 10분이라 화면이 오래 멈춘다) */
+    /** 이 시간 안에 답이 없으면 포기하고 기본 틀로 대신한다 */
     private static final Duration TIMEOUT = Duration.ofSeconds(40);
 
     /** 답 길이 상한. 생각하는 데 쓰는 토큰도 포함이라 넉넉히 둔다. */
@@ -139,79 +113,32 @@ public class GoalAiClient {
     private final OpenAIClient client;
     private final JsonMapper jsonMapper;
     private final String model;
-    private final String claudeKey;
-    private final String claudeModel;
-    private final URI claudeUrl;
-    private final String geminiKey;
-    private volatile String geminiModel;
-    private final String geminiBase;
-    private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
-
-    /* Gemini가 "This model is currently experiencing high demand"(503)처럼 몰려 있을 때 쓰는 값들.
-       한 모델만 더 시도하면 그 모델도 몰려 있을 때가 많아서, 키가 쓸 수 있는 다른 모델을 몇 개 차례로 시도한다. */
-    private static final int GEMINI_FALLBACK_MAX = 4; // 첫 모델 말고 더 시도해 볼 모델 수
-    private static final long BUSY_FALLBACK_MILLIS = Duration.ofMinutes(10).toMillis(); // 대신 성공한 모델을 먼저 쓰는 시간
-    private static final long MODEL_LIST_MILLIS = Duration.ofMinutes(30).toMillis(); // 모델 목록을 기억해 두는 시간
-    private volatile String busyFallbackModel; // 몰림을 피해 마지막으로 성공한 모델 (없으면 null)
-    private volatile long busyFallbackUntil;
-    private volatile List<String> cachedGeminiModels; // 키가 쓸 수 있는 Flash 모델, 시도할 순서대로
-    private volatile long cachedGeminiModelsUntil;
 
     public GoalAiClient(
         @Value("${openai.api.key:}") String apiKey,
         @Value("${folio.goal.ai.model:" + DEFAULT_MODEL + "}") String model,
-        @Value("${folio.ai.api-key:${ANTHROPIC_API_KEY:}}") String claudeKey,
-        @Value("${folio.ai.model:" + DEFAULT_CLAUDE_MODEL + "}") String claudeModel,
-        @Value("${folio.ai.url:" + CLAUDE_URL + "}") String claudeUrl,
-        @Value("${folio.ai.gemini-key:${gemini.api.key:${GEMINI_API_KEY:}}}") String geminiKey,
-        @Value("${folio.ai.gemini-model:" + DEFAULT_GEMINI_MODEL + "}") String geminiModel,
-        @Value("${folio.ai.gemini-url:" + GEMINI_BASE + "}") String geminiBase,
         JsonMapper jsonMapper
     ) {
-        this.claudeUrl = URI.create(claudeUrl == null || claudeUrl.isBlank() ? CLAUDE_URL : claudeUrl.trim());
-        this.claudeModel =
-            claudeModel == null || claudeModel.isBlank() ? DEFAULT_CLAUDE_MODEL : claudeModel.trim();
-        this.geminiModel =
-            geminiModel == null || geminiModel.isBlank() ? DEFAULT_GEMINI_MODEL : geminiModel.trim();
-        this.geminiBase = (
-            geminiBase == null || geminiBase.isBlank() ? GEMINI_BASE : geminiBase.trim()
-        ).replaceAll("/+$", "");
-
-        this.claudeKey = clean(claudeKey);
-        this.geminiKey = clean(geminiKey);
-        String openai = clean(apiKey);
-
-        // 팀 AiService와 같은 방식: 키가 없으면 AI만 꺼지고 나머지 기능은 그대로 동작한다.
-        this.client = openai.isEmpty()
+        String key = clean(apiKey);
+        this.client = key.isEmpty()
             ? null
-            : OpenAIOkHttpClient.builder()
-                  .apiKey(openai)
-                  .timeout(TIMEOUT) // 기다리는 시간 상한
-                  .maxRetries(1) // 일시적인 오류는 한 번만 다시 시도
-                  .build();
+            : OpenAIOkHttpClient.builder().apiKey(key).timeout(TIMEOUT).maxRetries(1).build();
         this.model = model == null || model.isBlank() ? DEFAULT_MODEL : model.trim();
         this.jsonMapper = jsonMapper;
 
-        // 어떤 AI를 쓰는지 시작할 때 한 줄 남긴다 (키 값은 남기지 않는다). 기능이 안 켜질 때 이 줄부터 보면 된다.
         log.info(
             "목표 탭 AI: {}",
-            !this.claudeKey.isEmpty()
-                ? "Claude (" + this.claudeModel + ")"
-                : !this.geminiKey.isEmpty()
-                  ? "Gemini (" + this.geminiModel + ")"
-                  : client != null
-                    ? "OpenAI (" + this.model + ")"
-                    : "사용 안 함 - AI 키(GEMINI_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY)가 없어 기본 틀만 씁니다"
+            client != null ? "OpenAI (" + this.model + ")" : "사용 안 함 - OPENAI_API_KEY가 없어 기본 틀만 씁니다"
         );
     }
 
-    /** 앞뒤 공백과, 환경변수 칸에 키를 따옴표째 붙여 넣었을 때의 따옴표를 걷어낸다. */
+    /** 앞뒤 공백과 따옴표를 걷어낸다. */
     private static String clean(String key) {
         return key == null ? "" : key.trim().replaceAll("^[\"']+|[\"']+$", "").trim();
     }
 
     public boolean isConfigured() {
-        return !claudeKey.isEmpty() || !geminiKey.isEmpty() || client != null;
+        return client != null;
     }
 
     /** 말(그리고 지금 양식)을 보내 양식을 받는다. 실패하면 예외를 던지고, 호출하는 쪽이 기본 틀로 대신한다. */
@@ -240,7 +167,7 @@ public class GoalAiClient {
         );
     }
 
-    /** 달성 현황에 고쳐 쓴 문장 한 줄을 보내 바꿀 값을 받는다. 값 검증은 호출하는 쪽(GoalAiService)이 한다. */
+    /** 달성 현황에 고쳐 쓴 문장 한 줄을 보내 바꿀 값을 받는다. 값 검증은 GoalAiService가 한다. */
     public GoalAiMoneyResponse readMoneyEdit(GoalAiMoneyRequest request, LocalDate today) {
         String prompt = MONEY_RULES + "\n오늘 날짜: " + today + "\n\n" + buildMoneyMessage(request);
         MoneyDraft draft = jsonMapper.readValue(
@@ -257,390 +184,14 @@ public class GoalAiClient {
         );
     }
 
-    /* ---------- AI 부르기: 키가 있는 쪽으로 ---------- */
+    /* ---------- OpenAI 호출 (팀 AiService와 같은 Responses API) ---------- */
 
     String complete(String prompt, long maxOutputTokens) {
-        if (!claudeKey.isEmpty()) {
-            return completeClaude(prompt, maxOutputTokens);
-        }
-        if (!geminiKey.isEmpty()) {
-            return completeGemini(prompt, maxOutputTokens);
-        }
-        return completeOpenAi(prompt, maxOutputTokens);
-    }
-
-    /* ---------- Claude: POST /v1/messages ---------- */
-
-    private String completeClaude(String prompt, long maxOutputTokens) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("model", claudeModel);
-        body.put("max_tokens", Math.min(maxOutputTokens, 4000)); // 생각하는 토큰이 따로 없어서 이 정도면 충분하다
-        body.put("messages", List.of(Map.of("role", "user", "content", prompt)));
-
-        String responseBody = postJson(
-            "Claude",
-            claudeUrl,
-            Map.of("x-api-key", claudeKey, "anthropic-version", "2023-06-01"),
-            body,
-            3
-        );
-        ClaudeReply reply = jsonMapper.readValue(responseBody, ClaudeReply.class);
-
-        StringBuilder text = new StringBuilder();
-        if (reply.content() != null) {
-            for (ClaudeContent block : reply.content()) {
-                if (block != null && "text".equals(block.type()) && block.text() != null) {
-                    text.append(block.text());
-                }
-            }
-        }
-        if (text.isEmpty()) {
-            throw new IllegalStateException("Claude 응답이 비어 있습니다.");
-        }
-        return text.toString();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ClaudeReply(List<ClaudeContent> content) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ClaudeContent(String type, String text) {}
-
-    /* ---------- Gemini: POST /v1beta/models/{model}:generateContent ---------- */
-
-    private String completeGemini(String prompt, long maxOutputTokens) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("contents", List.of(Map.of("role", "user", "parts", List.of(Map.of("text", prompt)))));
-        body.put(
-            "generationConfig",
-            Map.of(
-                "responseMimeType",
-                "application/json", // JSON 한 덩어리로만 답하게
-                "maxOutputTokens",
-                maxOutputTokens
-            )
-        );
-
-        String responseBody;
-        Map<String, String> auth = Map.of("x-goog-api-key", geminiKey);
-        String first = preferredGeminiModel();
-        try {
-            responseBody = postJson("Gemini", geminiUrl(first), auth, body, 2);
-        } catch (ApiStatusException e) {
-            // 이 키로는 쓸 수 없는 모델 이름(404)이거나, 이 모델이 계속 몰려 있으면(503/429 등)
-            // 키가 쓸 수 있는 다른 모델들을 차례로 시도한다. 키 오류(400/401/403)는 모델을 바꿔도 같아서 그대로 알린다.
-            if (e.status() != 404 && !e.retryable()) {
-                throw e;
-            }
-            responseBody = tryOtherGeminiModels(first, e, auth, body);
-        }
-        GeminiReply reply = jsonMapper.readValue(responseBody, GeminiReply.class);
-
-        StringBuilder text = new StringBuilder();
-        String finish = null;
-        if (
-            reply.candidates() != null && !reply.candidates().isEmpty() && reply.candidates().get(0) != null
-        ) {
-            GeminiCandidate candidate = reply.candidates().get(0);
-            finish = candidate.finishReason();
-            if (candidate.content() != null && candidate.content().parts() != null) {
-                for (GeminiPart part : candidate.content().parts()) {
-                    if (part != null && !Boolean.TRUE.equals(part.thought()) && part.text() != null) {
-                        text.append(part.text());
-                    }
-                }
-            }
-        }
-        if (text.isEmpty()) {
-            String blocked = reply.promptFeedback() == null ? null : reply.promptFeedback().blockReason();
-            throw new IllegalStateException(
-                "Gemini 응답이 비어 있습니다." +
-                    (blocked != null
-                        ? " (차단: " + blocked + ")"
-                        : finish != null
-                          ? " (종료 사유: " + finish + ")"
-                          : "")
-            );
-        }
-        return text.toString();
-    }
-
-    private URI geminiUrl(String modelName) {
-        return URI.create(geminiBase + "/models/" + modelName + ":generateContent");
-    }
-
-    /** 몰림을 피해 최근에 성공한 모델이 있으면 그 모델부터, 아니면 설정한 모델부터 쓴다. */
-    private String preferredGeminiModel() {
-        String recent = busyFallbackModel;
-        return recent != null && System.currentTimeMillis() < busyFallbackUntil ? recent : geminiModel;
-    }
-
-    /**
-     * 첫 모델이 안 될 때: (첫 모델이 임시 모델이었다면) 설정한 모델 → 키가 쓸 수 있는 다른 Flash 모델 순서로
-     * 최대 GEMINI_FALLBACK_MAX개를 시도한다. 같은 모델의 별칭(-001, -latest)은 같이 몰려 있으므로 건너뛴다.
-     * 모두 안 되면 예외를 던지고, 호출하는 쪽(GoalAiService)이 기본 틀로 대신한다.
-     */
-    private String tryOtherGeminiModels(
-        String failedModel,
-        ApiStatusException firstError,
-        Map<String, String> auth,
-        Object body
-    ) {
-        List<String> candidates = new ArrayList<>();
-        if (!failedModel.equals(geminiModel)) {
-            candidates.add(geminiModel); // 임시 모델이 안 되면 원래 모델이 다시 괜찮아졌는지 본다
-        }
-        candidates.addAll(listGeminiModels());
-
-        java.util.Set<String> tried = new java.util.HashSet<>();
-        tried.add(family(failedModel));
-        ApiStatusException last = firstError;
-        int attempts = 0;
-        for (String candidate : candidates) {
-            if (attempts >= GEMINI_FALLBACK_MAX) {
-                break;
-            }
-            if (!tried.add(family(candidate))) {
-                continue;
-            }
-            attempts++;
-            log.info(
-                "Gemini 모델 {} 이(가) 응답하지 않아(코드 {}) {} 로 시도합니다.",
-                failedModel,
-                last.status(),
-                candidate
-            );
-            try {
-                String responseBody = postJson("Gemini", geminiUrl(candidate), auth, body, 2);
-                if (firstError.status() == 404 && failedModel.equals(geminiModel)) {
-                    geminiModel = candidate; // 설정한 이름을 쓸 수 없으면 계속 이 모델을 쓴다
-                }
-                if (candidate.equals(geminiModel)) {
-                    busyFallbackModel = null; // 원래 모델이 다시 된다
-                } else {
-                    busyFallbackModel = candidate; // 몰림은 잠깐이라 몇 분만 먼저 쓰고 다시 원래 모델로 돌아간다
-                    busyFallbackUntil = System.currentTimeMillis() + BUSY_FALLBACK_MILLIS;
-                }
-                return responseBody;
-            } catch (ApiStatusException e) {
-                if (e.status() != 404 && !e.retryable()) {
-                    throw e;
-                }
-                last = e;
-            }
-        }
-        if (failedModel.equals(busyFallbackModel)) {
-            busyFallbackModel = null;
-        }
-        // 다른 모델 이름이 없어서(404) 끝났다면, 사용자에게는 처음의 '몰림' 원인을 알려 주는 편이 정확하다
-        throw last.status() == 404 && firstError.retryable() ? firstError : last;
-    }
-
-    /**
-     * 키가 쓸 수 있는 generateContent용 Flash 모델 이름을 시도할 순서대로 돌려준다. 못 가져오면 빈 목록.
-     * 순서: 정식 > 미리보기, 그 안에서는 일반 모델과 Lite 모델을 번갈아 (Lite는 덜 몰린다), 버전 높은 것부터.
-     */
-    private List<String> listGeminiModels() {
-        List<String> cached = cachedGeminiModels;
-        if (cached != null && System.currentTimeMillis() < cachedGeminiModelsUntil) {
-            return cached;
-        }
-        try {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(geminiBase + "/models?pageSize=200"))
-                .timeout(TIMEOUT)
-                .header("x-goog-api-key", geminiKey)
-                .GET()
-                .build();
-            ModelList list = jsonMapper.readValue(execute("Gemini", request, 1), ModelList.class);
-            List<String> names = list.models() == null
-                ? List.of()
-                : list
-                    .models()
-                    .stream()
-                    .filter(
-                        m ->
-                            m != null &&
-                            m.name() != null &&
-                            m.supportedGenerationMethods() != null &&
-                            m.supportedGenerationMethods().contains("generateContent")
-                    )
-                    .map(m -> m.name().replaceFirst("^models/", ""))
-                    .filter(
-                        n ->
-                            n.startsWith("gemini-") &&
-                            n.contains("flash") &&
-                            !n.matches(".*(image|tts|live|audio|embed|exp|robot|computer|customtools).*")
-                    )
-                    .distinct()
-                    .toList();
-
-            java.util.Comparator<String> newerFirst = java.util.Comparator.comparing(
-                GoalAiClient::versionOf,
-                java.util.Comparator.reverseOrder()
-            ).thenComparingInt(String::length);
-            List<String> ordered = new ArrayList<>();
-            for (boolean preview : new boolean[] { false, true }) {
-                List<String> regular = names
-                    .stream()
-                    .filter(n -> n.contains("preview") == preview && !n.contains("lite"))
-                    .sorted(newerFirst)
-                    .toList();
-                List<String> lite = names
-                    .stream()
-                    .filter(n -> n.contains("preview") == preview && n.contains("lite"))
-                    .sorted(newerFirst)
-                    .toList();
-                for (int i = 0; i < Math.max(regular.size(), lite.size()); i++) {
-                    if (i < regular.size()) {
-                        ordered.add(regular.get(i));
-                    }
-                    if (i < lite.size()) {
-                        ordered.add(lite.get(i));
-                    }
-                }
-            }
-            cachedGeminiModels = List.copyOf(ordered);
-            cachedGeminiModelsUntil = System.currentTimeMillis() + MODEL_LIST_MILLIS;
-            return cachedGeminiModels;
-        } catch (RuntimeException e) {
-            log.warn("Gemini 모델 목록을 가져오지 못했어요: {}", e.toString());
-            return List.of();
-        }
-    }
-
-    /** gemini-3.8-flash-001, gemini-3.8-flash-latest → gemini-3.8-flash (같은 모델의 다른 이름) */
-    private static String family(String name) {
-        return name.replaceFirst("-(\\d{3}|latest)$", "");
-    }
-
-    /** gemini-3.8-flash → 3.8 */
-    private static double versionOf(String name) {
-        java.util.regex.Matcher m = java.util.regex.Pattern.compile("gemini-(\\d+(?:\\.\\d+)?)").matcher(
-            name
-        );
-        return m.find() ? Double.parseDouble(m.group(1)) : 0;
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ModelList(List<ModelInfo> models) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ModelInfo(String name, List<String> supportedGenerationMethods) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record GeminiReply(List<GeminiCandidate> candidates, GeminiFeedback promptFeedback) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record GeminiCandidate(GeminiContent content, String finishReason) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record GeminiContent(List<GeminiPart> parts) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record GeminiPart(String text, Boolean thought) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record GeminiFeedback(String blockReason) {}
-
-    /* ---------- Claude/Gemini 공통: JSON을 보내고 본문을 받는다. 200이 아니면 원인 문구와 함께 예외 ---------- */
-
-    private String postJson(String name, URI uri, Map<String, String> headers, Object body, int attempts) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder(uri)
-            .timeout(TIMEOUT)
-            .header("content-type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(jsonMapper.writeValueAsString(body)));
-        headers.forEach(builder::header);
-        return execute(name, builder.build(), attempts);
-    }
-
-    /** 서버가 200이 아닌 코드로 답했을 때. 코드를 들고 있어 호출하는 쪽이 다시 시도할지 판단한다. */
-    public static class ApiStatusException extends IllegalStateException {
-
-        private final int status;
-
-        ApiStatusException(String message, int status) {
-            super(message);
-            this.status = status;
-        }
-
-        public int status() {
-            return status;
-        }
-
-        /** 잠깐 뒤에 다시 보내면 될 수 있는 오류: 너무 많음(429), 서버 오류/혼잡(500, 502, 503, 504) */
-        boolean retryable() {
-            return status == 429 || status == 500 || status == 502 || status == 503 || status == 504;
-        }
-    }
-
-    private static final long RETRY_DELAY_MILLIS = 1200;
-
-    /** 한 번 보내고, 잠깐 몰린 오류(429/5xx)면 간격을 늘려가며 attempts 번까지 다시 보낸다. */
-    private String execute(String name, HttpRequest request, int attempts) {
-        for (int attempt = 1; ; attempt++) {
-            try {
-                return executeOnce(name, request);
-            } catch (ApiStatusException e) {
-                if (!e.retryable() || attempt >= attempts) {
-                    throw e;
-                }
-                log.info("{} 응답 코드 {} - {}번째 다시 시도합니다.", name, e.status(), attempt);
-                try {
-                    Thread.sleep(RETRY_DELAY_MILLIS * attempt);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    throw e;
-                }
-            }
-        }
-    }
-
-    private String executeOnce(String name, HttpRequest request) {
-        HttpResponse<String> response;
-        try {
-            response = http.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(name + " 호출이 중단되었습니다.", e);
-        } catch (java.io.IOException e) {
-            throw new IllegalStateException(name + "에 연결하지 못했습니다: " + e.getMessage(), e);
-        }
-
-        if (response.statusCode() != 200) {
-            // 키나 요청 내용은 남기지 않고, 원인을 알 수 있는 오류 문구만 남긴다 (두 서비스 모두 {"error":{"message":...}} 모양)
-            String message;
-            try {
-                ErrorEnvelope envelope = jsonMapper.readValue(response.body(), ErrorEnvelope.class);
-                message =
-                    envelope.error() == null || envelope.error().message() == null
-                        ? "(메시지 없음)"
-                        : envelope.error().message();
-            } catch (RuntimeException e) {
-                String raw = response.body() == null ? "" : response.body();
-                message = raw.length() > 200 ? raw.substring(0, 200) : raw;
-            }
-            throw new ApiStatusException(
-                name + " 응답 코드 " + response.statusCode() + ": " + message,
-                response.statusCode()
-            );
-        }
-        return response.body();
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ErrorEnvelope(ErrorBody error) {}
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record ErrorBody(String message) {}
-
-    /* ---------- OpenAI: 팀 AiService와 같은 방식 ---------- */
-
-    private String completeOpenAi(String prompt, long maxOutputTokens) {
         ResponseCreateParams params = ResponseCreateParams.builder()
             .model(model)
             .input(prompt)
             .maxOutputTokens(maxOutputTokens)
-            .reasoning(Reasoning.builder().effort(ReasoningEffort.LOW).build()) // 짧은 구조화 작업이라 오래 생각하지 않게
+            .reasoning(Reasoning.builder().effort(ReasoningEffort.LOW).build())
             .build();
 
         Response response = client.responses().create(params);
@@ -722,7 +273,7 @@ public class GoalAiClient {
         return value == null ? "" : value;
     }
 
-    /* ---------- 모델이 돌려주는 JSON을 받는 그릇. 빠진 값이나 모르는 값이 있어도 읽히게 느슨하게 둔다. ---------- */
+    /* ---------- 모델이 돌려주는 JSON을 받는 그릇 ---------- */
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record FormDraft(
@@ -733,7 +284,6 @@ public class GoalAiClient {
         List<BlockDraft> blocks
     ) {}
 
-    /** 블록 한 개. 빠진 값(null)은 GoalAiService가 다듬을 때 채운다. */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record BlockDraft(
         String type,
@@ -754,40 +304,40 @@ public class GoalAiClient {
                 rows == null
                     ? null
                     : rows
-                          .stream()
-                          .filter(row -> row != null)
-                          .map(row ->
-                              new GoalAiFormResponse.Field(nullToEmpty(row.label()), nullToEmpty(row.value()))
-                          )
-                          .toList();
+                    .stream()
+                    .filter(row -> row != null)
+                    .map(row ->
+                        new GoalAiFormResponse.Field(nullToEmpty(row.label()), nullToEmpty(row.value()))
+                    )
+                    .toList();
             List<GoalAiFormResponse.Item> itemList =
                 items == null
                     ? null
                     : items
-                          .stream()
-                          .filter(item -> item != null)
-                          .map(item ->
-                              new GoalAiFormResponse.Item(
-                                  nullToEmpty(item.text()),
-                                  Boolean.TRUE.equals(item.done())
-                              )
-                          )
-                          .toList();
+                    .stream()
+                    .filter(item -> item != null)
+                    .map(item ->
+                        new GoalAiFormResponse.Item(
+                            nullToEmpty(item.text()),
+                            Boolean.TRUE.equals(item.done())
+                        )
+                    )
+                    .toList();
             List<GoalAiFormResponse.Track> trackList =
                 tracks == null
                     ? null
                     : tracks
-                          .stream()
-                          .filter(track -> track != null)
-                          .map(track ->
-                              new GoalAiFormResponse.Track(
-                                  nullToEmpty(track.label()),
-                                  track.checks() == null
-                                      ? List.of()
-                                      : track.checks().stream().map(Boolean.TRUE::equals).toList()
-                              )
-                          )
-                          .toList();
+                    .stream()
+                    .filter(track -> track != null)
+                    .map(track ->
+                        new GoalAiFormResponse.Track(
+                            nullToEmpty(track.label()),
+                            track.checks() == null
+                                ? List.of()
+                                : track.checks().stream().map(Boolean.TRUE::equals).toList()
+                        )
+                    )
+                    .toList();
             return new GoalAiFormResponse.Block(
                 type,
                 title,

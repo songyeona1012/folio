@@ -118,4 +118,16 @@ public class Schedule extends OwnedRecord {
     public void setCompleted(boolean completed) {
         this.completed = completed;
     }
+
+    /** 형광펜 색: red / orange / green / blue / purple (없으면 null) */
+    @Column(length = 10)
+    private String highlight;
+
+    public String getHighlight() {
+        return highlight;
+    }
+
+    public void setHighlight(String highlight) {
+        this.highlight = highlight;
+    }
 }

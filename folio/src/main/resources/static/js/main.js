@@ -378,6 +378,7 @@
                 title: ev.title,
                 time: ev.time,
                 completed: ev.completed,
+                highlight: ev.pen || "",
             }),
         })
             .then(() => loadDashboardSummary())
@@ -448,6 +449,10 @@
 
                 events = {};
 
+                // 예전에 브라우저에만 저장했던 형광펜은 한 번 서버로 옮긴다
+                const legacy = getHighlights();
+                let legacyChanged = false;
+
                 results.flat().forEach((item) => {
                     if (!item || !item.date) return;
 
@@ -461,7 +466,7 @@
                         events[k] = [];
                     }
 
-                    events[k].push({
+                    const ev = {
                         id: item.id,
                         title: item.title || "",
                         time: item.time || "",
@@ -469,8 +474,22 @@
                         recurringId: item.recurringId,
                         priv: !!item.private,
                         completed: !!item.completed,
-                    });
+                        pen: item.highlight || null,
+                    };
+
+                    if (legacy[item.id]) {
+                        if (!ev.pen && penColors[legacy[item.id]]) {
+                            ev.pen = legacy[item.id];
+                            updateScheduleLocal(ev);
+                        }
+                        delete legacy[item.id];
+                        legacyChanged = true;
+                    }
+
+                    events[k].push(ev);
                 });
+
+                if (legacyChanged) saveHighlights(legacy);
 
                 refreshViews();
                 loadDashboardSummary();
@@ -581,7 +600,6 @@
 
         const isWeek = VIEW === "week";
         const cells = isWeek ? weekDays() : monthDays();
-        const highlights = getHighlights();
 
         cells.forEach((cell, idx) => {
             const el = document.createElement("div");
@@ -610,7 +628,12 @@
             num.className = "num";
 
             // 주간에서 달이 바뀌는 날은 "9/1"처럼 월도 함께 표시
-            num.textContent = isWeek && cell.d === 1 && idx !== 0 ? cell.m + "/" + cell.d : cell.d;
+            // 월간: 이전/다음 달 칸은 비워 두고 이번 달 날짜만 보여준다
+            num.textContent = cell.other
+                ? ""
+                : isWeek && cell.d === 1 && idx !== 0
+                  ? cell.m + "/" + cell.d
+                  : cell.d;
 
             el.appendChild(num);
 
@@ -626,7 +649,7 @@
                     tag.className = "tag " + ev.cat + (ev.completed ? " done" : "");
 
                     // 형광펜을 칠한 일정은 카테고리 색 대신 형광펜 색으로 표시
-                    const pen = highlights[ev.id];
+                    const pen = ev.pen;
                     if (pen && penColors[pen]) {
                         tag.classList.add("pen", "pen-" + pen);
                     }
@@ -876,8 +899,6 @@
 
         const list = sortEvents((events[k] || []).filter((event) => !isSideManagement(event)));
 
-        const highlights = getHighlights();
-
         for (let i = 0; i <= list.length; i++) {
             const ev = list[i] || null;
 
@@ -914,8 +935,8 @@
 
                 titleCell.appendChild(titleText);
 
-                if (highlights[ev.id]) {
-                    applyHighlightStyle(titleText, highlights[ev.id]);
+                if (ev.pen) {
+                    applyHighlightStyle(titleText, ev.pen);
                 }
 
                 row.addEventListener("click", (e) => {
@@ -1126,14 +1147,8 @@
             })
                 .then((res) => res.json())
                 .then((saved) => {
-                    const highlights = getHighlights();
-                    if (highlights[tempEv.id]) {
-                        highlights[saved.id] = highlights[tempEv.id];
-                        delete highlights[tempEv.id];
-                        saveHighlights(highlights);
-                    }
-
                     tempEv.id = saved.id;
+                    if (tempEv.pen) updateScheduleLocal(tempEv); // 저장 전에 칠한 형광펜 반영
                     loadDashboardSummary();
                 })
                 .catch(() => {});
@@ -1178,22 +1193,15 @@
 
         element.style.padding = "1px 4px";
     }
-
-    function setHighlight(ev, titleText) {
-        const highlights = getHighlights();
-
+    function setHighlight(ev) {
         // 같은 색으로 한 번 더 칠하면 형광펜을 지운다
-        const removing = highlights[ev.id] === selectedPen;
+        const removing = ev.pen === selectedPen;
 
-        if (removing) {
-            delete highlights[ev.id];
-        } else {
-            highlights[ev.id] = selectedPen;
-        }
+        ev.pen = removing ? null : selectedPen;
 
-        saveHighlights(highlights);
+        // 서버에 저장 (방금 만든 일정은 저장이 끝난 뒤 saveNewSchedule에서 반영)
+        updateScheduleLocal(ev);
 
-        // 메모장과 달력을 함께 다시 그려서 달력 칸 색도 바로 바뀌게 한다
         refreshViews();
 
         showToast(removing ? "형광펜을 지웠어요" : "달력에 형광펜 색으로 표시했어요");
