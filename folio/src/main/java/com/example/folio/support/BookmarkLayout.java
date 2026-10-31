@@ -31,18 +31,19 @@ public final class BookmarkLayout {
 
         List<Map<String, Object>> result = new ArrayList<>();
 
-        int leftIdx = 0;
-        int rightIdx = 0;
-
         for (int i = 0; i < HREFS.length; i++) {
             boolean isLeft = i < leftCount;
 
             String posClass;
 
             if (isLeft) {
-                posClass = "pos-l" + ++leftIdx;
+                // 왼쪽에서는 책등 쪽부터 페이지 순서가 이어지게 배치합니다.
+                // 메인(파랑)=l4, 일기(초록)=l3, 관리(주황)=l2, 목표(회색)=l1입니다.
+                posClass = "pos-l" + (HREFS.length - i);
             } else {
-                posClass = "pos-r" + ++rightIdx;
+                // 페이지가 바뀌어도 각 색 책갈피는 같은 오른쪽 슬롯을 유지합니다.
+                // 예: 관리(세 번째)는 항상 pos-r3, 목표(네 번째)는 항상 pos-r4입니다.
+                posClass = "pos-r" + (i + 1);
             }
 
             Map<String, Object> bookmark = new LinkedHashMap<>();

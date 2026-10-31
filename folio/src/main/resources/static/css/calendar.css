@@ -2419,12 +2419,14 @@ Toast
     }
 }
 
-/* 현재 페이지의 책갈피만 위로 돌출 */
+/* 현재 페이지는 책 속에 두고, 다른 페이지 책갈피만 위로 돌출합니다. */
 .bookmark {
-    top: 0.8%;
+    /* 올라간 책갈피의 아래 끝이 책 윗선에 붙도록 맞춥니다. */
+    top: -0.8%;
+    z-index: 4;
 }
 .bookmark.is-current {
-    top: -2%;
+    top: 0.8%;
     z-index: 5;
 }
 .bookmark:not(.is-current):hover {
