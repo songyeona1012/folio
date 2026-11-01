@@ -1,197 +1,322 @@
 <!DOCTYPE html>
-{{! 서비스에 처음 진입했을 때 표시하는 소개 화면입니다. }}
+{{! 서비스에 처음 들어왔을 때 보이는 소개 화면입니다. 스크롤하면 기능이 차례로 소개됩니다. }}
 <html lang="ko">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-        <title>폴리오</title>
+        <title>폴리오 - 당신의 하루를 특별한 한 권으로</title>
+        <meta name="description" content="일정, 일기, 목표, 관리를 한 권의 다이어리처럼. 말하듯 적으면 정리는 AI가 해 주는 AI 다이어리, 폴리오.">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="/css/sidebar.css">
         <link
-            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Noto+Serif+KR:wght@300;400;500;600&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Noto+Serif+KR:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
             rel="stylesheet">
-        <style>
-            :root {
-                box-sizing: border-box;
-                padding-top: env(safe-area-inset-top, 0px);
-                padding-bottom: env(safe-area-inset-bottom, 0px);
-
-                --bg: #faf9f6;
-                --ink: #1a1a1a;
-                --ink-soft: #8f8a82;
-                --line: #ddd7cc;
-                --orange: #e9692c;
-            }
-
-            html {
-                scroll-padding-top: env(safe-area-inset-top, 0px);
-            }
-
-            * {
-                box-sizing: border-box;
-            }
-
-            @media (prefers-color-scheme: dark) {
-                :root:not([data-theme="light"]) {
-                    --bg: #171613;
-                    --ink: #ECE7E0;
-                    --ink-soft: #948e84;
-                    --line: #38352c;
-                }
-            }
-
-            :root[data-theme="dark"] {
-                --bg: #171613;
-                --ink: #ECE7E0;
-                --ink-soft: #948e84;
-                --line: #38352c;
-            }
-
-            html,
-            body {
-                height: 100%;
-                margin: 0;
-                background: var(--bg);
-                color: var(--ink);
-                font-family: 'Noto Serif KR', serif;
-                -webkit-font-smoothing: antialiased;
-            }
-
-            .page {
-                min-height: 100%;
-                display: flex;
-                flex-direction: column;
-                max-width: 1440px;
-                margin: 0 auto;
-                padding: 48px 64px 40px;
-            }
-
-            header.top {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-            }
-
-            .wordmark {
-                font-family: 'Cormorant Garamond', serif;
-                font-style: italic;
-                font-weight: 400;
-                font-size: clamp(44px, 7vw, 88px);
-                line-height: 1;
-                margin: 0;
-            }
-
-            .signup-link {
-                background: none;
-                border: none;
-                font-family: 'Cormorant Garamond', serif;
-                font-style: italic;
-                font-size: 18px;
-                color: var(--ink);
-                cursor: pointer;
-                padding: 4px 0;
-            }
-
-            main.hero {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-                gap: 28px;
-                padding: 40px 0;
-            }
-
-            .slogan {
-                font-family: 'Cormorant Garamond', serif;
-                font-style: italic;
-                font-weight: 400;
-                font-size: clamp(30px, 6vw, 70px);
-                line-height: 1.35;
-                margin: 0;
-            }
-
-            .slogan .l2 {
-                display: block;
-                margin-left: clamp(0px, 6vw, 90px);
-                margin-top: 6px;
-            }
-
-            .tagline {
-                font-family: 'Cormorant Garamond', serif;
-                font-style: italic;
-                font-size: clamp(16px, 2vw, 26px);
-                color: var(--ink);
-                margin: 0;
-            }
-
-            .login-pill {
-                margin-top: 10px;
-                background: transparent;
-                border: 1.5px solid var(--line);
-                border-radius: 30px;
-                padding: 15px 64px;
-                font-family: 'Noto Serif KR', serif;
-                font-size: 14px;
-                letter-spacing: 0.06em;
-                color: var(--ink);
-                cursor: pointer;
-                transition: border-color 0.2s, color 0.2s;
-            }
-
-            .login-pill:hover {
-                border-color: var(--orange);
-                color: var(--orange);
-            }
-
-            footer.scroll-note {
-                text-align: center;
-                font-family: 'Cormorant Garamond', serif;
-                font-style: italic;
-                font-size: clamp(13px, 1.6vw, 20px);
-                color: var(--ink-soft);
-                padding-top: 10px;
-            }
-
-            @media (max-width: 640px) {
-                .page {
-                    padding: 28px 24px 30px;
-                }
-
-                .slogan .l2 {
-                    margin-left: 20px;
-                }
-            }
-
-        </style>
+        <link rel="stylesheet" href="/css/intro.css?v=1">
+        <script src="/js/intro.js?v=1" defer></script>
     </head>
 
-    <body>
-        <div class="page">
-            <header class="top">
-                <h1 class="wordmark">폴리오</h1>
-                <button class="signup-link" id="signupLink">회원가입</button>
-            </header>
+    <body class="intro">
 
-            <main class="hero">
-                <h2 class="slogan">당신의 하루를<span class="l2">특별한 한권으로. </span>
-                </h2>
-                <p class="tagline">캘린더. 일기. 주기. 친구 ~</p>
-                <button class="login-pill" id="loginBtn">로그인</button>
-            </main>
+        <!-- ============ 상단 메뉴 ============ -->
+        <header class="nav" id="nav">
+            <a class="nav-brand" href="#top" aria-label="폴리오 처음으로">
+                <span class="nav-word">Folio</span>
+                <span class="nav-ko">폴리오</span>
+            </a>
+            <nav class="nav-links" aria-label="소개 메뉴">
+                <a href="#features">기능</a>
+                <a href="#ai">AI</a>
+                <a href="#anywhere">어디서나</a>
+            </nav>
+            <div class="nav-actions">
+                <button type="button" class="nav-login" data-go="login">로그인</button>
+                <button type="button" class="btn btn-primary btn-sm" data-go="signup">시작하기</button>
+            </div>
+        </header>
 
-            <footer class="scroll-note">하단 스크롤 시에 노션 웹 처럼 내부 페이지 별 기능 설명 보여주기</footer>
-        </div>
+        <main id="top">
 
-        <script>
-            document.getElementById('loginBtn').addEventListener('click', function() {
-                window.location.href = "/login";
-            });
+            <!-- ============ 1. 첫 화면 ============ -->
+            <section class="hero">
+                <div class="hero-copy">
+                    <p class="eyebrow reveal">AI 다이어리 · Folio</p>
+                    <h1 class="hero-title reveal">
+                        당신의 하루를<br>
+                        <span class="nowrap"><span class="hero-em">특별한 한 권</span>으로.</span>
+                    </h1>
+                    <p class="hero-sub reveal">
+                        흩어진 일정, 일기, 목표, 관리를 한 권의 다이어리에 모았어요.<br>
+                        말하듯 적으면, 정리는 AI가 해 드려요.
+                    </p>
+                    <div class="hero-cta reveal">
+                        <button type="button" class="btn btn-primary" data-go="signup">무료로 시작하기</button>
+                        <button type="button" class="btn btn-ghost" data-go="login">로그인</button>
+                    </div>
+                    <p class="hero-note reveal">회원가입 30초 · PC와 휴대폰 모두 사용 가능</p>
+                </div>
 
-        </script>
+                <!-- 펼친 다이어리 그림 (모두 CSS로 그림) -->
+                <div class="hero-visual reveal" aria-hidden="true">
+                    <div class="book">
+                        <div class="book-page book-left">
+                            <div class="mini-cal-head"><b>11월</b><span>2026</span></div>
+                            <div class="mini-cal" id="heroCal"></div>
+                        </div>
+                        <div class="book-spine"></div>
+                        <div class="book-page book-right">
+                            <p class="memo-date">2026.11.06 (금)</p>
+                            <div class="ask">
+                                <span class="ask-text" id="heroTyping"></span><span class="caret"></span>
+                                <span class="ask-plus">+</span>
+                            </div>
+                            <ul class="memo-lines">
+                                <li><i>09:00</i><span>팀 회의</span></li>
+                                <li class="memo-move" id="heroMove"><i id="heroMoveTime">18:00</i><span>헬스장 운동</span></li>
+                                <li><i>21:00</i><span class="hl">일기 쓰기</span></li>
+                            </ul>
+                            <p class="toast-mini" id="heroToast">✓ 운동 일정을 20시로 옮겼어요</p>
+                        </div>
+                    </div>
+                    <div class="sticker s1" data-depth="18"><b>★ 4.5</b><small>이번 달 기분</small></div>
+                    <div class="sticker s2" data-depth="28"><b>D-24</b><small>토익 900점</small></div>
+                    <div class="sticker s3" data-depth="12"><b>✓ 칫솔 교체</b><small>관리 완료</small></div>
+                </div>
+
+                <a class="scroll-cue" href="#problem" aria-label="아래로 스크롤">
+                    <span>scroll</span><i></i>
+                </a>
+            </section>
+
+            <!-- ============ 키워드 띠 ============ -->
+            <div class="marquee" aria-hidden="true">
+                <div class="marquee-track">
+                    <span>달력</span><em>✦</em><span>일기</span><em>✦</em><span>관리</span><em>✦</em><span>목표</span><em>✦</em>
+                    <span>AI 일정 비서</span><em>✦</em><span>주간 리포트</span><em>✦</em><span>형광펜</span><em>✦</em><span>기분 그래프</span><em>✦</em>
+                    <span>달력</span><em>✦</em><span>일기</span><em>✦</em><span>관리</span><em>✦</em><span>목표</span><em>✦</em>
+                    <span>AI 일정 비서</span><em>✦</em><span>주간 리포트</span><em>✦</em><span>형광펜</span><em>✦</em><span>기분 그래프</span><em>✦</em>
+                </div>
+            </div>
+
+            <!-- ============ 2. 문제 제기 (스크롤하면 글자가 차례로 진해짐) ============ -->
+            <section class="problem" id="problem">
+                <p class="problem-text" id="problemText">일정은 달력 앱에, 일기는 메모장에, 목표는 머릿속에. 흩어진 기록은 다시 펼쳐 보지 않게 돼요. 그래서 한 권으로 모았어요.</p>
+            </section>
+
+            <!-- ============ 3. 기능 4가지 ============ -->
+            <section class="features" id="features">
+                <header class="section-head reveal">
+                    <p class="eyebrow">Four pages, one book</p>
+                    <h2>네 개의 페이지로 된 한 권</h2>
+                </header>
+
+                <!-- 01 달력 -->
+                <article class="feature reveal" data-feature="calendar">
+                    <div class="feature-copy">
+                        <span class="feature-no">01</span>
+                        <p class="feature-tag">달력</p>
+                        <h3>말하듯 적으면,<br>달력에 쏙.</h3>
+                        <p>“금요일 운동 8시로 미뤄줘”라고 적기만 하세요. AI가 일정을 찾아 옮기고, 같은 시간에 다른 일정이 있으면 미리 알려 줘요.</p>
+                        <ul class="chips">
+                            <li>자연어 일정 등록</li>
+                            <li>일정 충돌 알림</li>
+                            <li>형광펜 표시</li>
+                        </ul>
+                    </div>
+                    <div class="feature-visual card">
+                        <div class="ask ask-lg">
+                            <span class="ask-text" id="calTyping"></span><span class="caret"></span>
+                            <span class="ask-plus">+</span>
+                        </div>
+                        <div class="cal-demo" id="calDemo"></div>
+                        <p class="clash" id="calClash">⚠️ 같은 시간에 다른 일정이 있습니다</p>
+                    </div>
+                </article>
+
+                <!-- 02 일기 -->
+                <article class="feature reverse reveal" data-feature="diary">
+                    <div class="feature-copy">
+                        <span class="feature-no">02</span>
+                        <p class="feature-tag">일기</p>
+                        <h3>하루의 기분이<br>한 해의 흐름이 돼요.</h3>
+                        <p>자유롭게, 혹은 시간대별로 하루를 적고 별점으로 기분을 남겨요. 별점은 월별 기분 그래프로 모여 한 해를 돌아보게 해 줘요.</p>
+                        <ul class="chips">
+                            <li>자유형 · 시간 기록형</li>
+                            <li>기분 별점</li>
+                            <li>월별 기분 그래프</li>
+                        </ul>
+                    </div>
+                    <div class="feature-visual card">
+                        <div class="diary-top">
+                            <span class="diary-label">오늘의 기분</span>
+                            <span class="stars"><i>★</i><i>★</i><i>★</i><i>★</i><i class="off">★</i></span>
+                        </div>
+                        <div class="mood">
+                            <div class="mood-bar" style="--h:58%"><span>5월</span></div>
+                            <div class="mood-bar" style="--h:72%"><span>6월</span></div>
+                            <div class="mood-bar" style="--h:46%"><span>7월</span></div>
+                            <div class="mood-bar" style="--h:80%"><span>8월</span></div>
+                            <div class="mood-bar" style="--h:64%"><span>9월</span></div>
+                            <div class="mood-bar now" style="--h:90%"><span>10월</span></div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- 03 관리 -->
+                <article class="feature reveal" data-feature="manage">
+                    <div class="feature-copy">
+                        <span class="feature-no">03</span>
+                        <p class="feature-tag">관리</p>
+                        <h3>놓치기 쉬운<br>반복 관리까지.</h3>
+                        <p>병원 검진, 구독 결제, 칫솔 교체처럼 주기적으로 챙길 일을 등록하면 달력에 알아서 채워져요. 기록이 쌓이면 AI가 리포트를 편지처럼 써 줘요.</p>
+                        <ul class="chips">
+                            <li>건강 · 구독 · 교체 · 일상</li>
+                            <li>완료율 그래프</li>
+                            <li>AI 관리 리포트</li>
+                        </ul>
+                    </div>
+                    <div class="feature-visual card">
+                        <ul class="checks">
+                            <li class="done"><span>🦷 칫솔 교체</span><em>3개월마다</em><b></b></li>
+                            <li class="done"><span>🏥 건강 검진</span><em>1년마다</em><b></b></li>
+                            <li class="done"><span>🎬 영화 구독 결제</span><em>매달 4일</em><b></b></li>
+                            <li><span>🪴 화분 물 주기</span><em>3일마다</em><b></b></li>
+                        </ul>
+                        <div class="stamp">참 잘했어요</div>
+                    </div>
+                </article>
+
+                <!-- 04 목표 -->
+                <article class="feature reverse reveal" data-feature="goal">
+                    <div class="feature-copy">
+                        <span class="feature-no">04</span>
+                        <p class="feature-tag">목표</p>
+                        <h3>목표만 말하면,<br>양식은 AI가.</h3>
+                        <p>계획이 막막할 땐 목표만 적으세요. AI가 진행 막대, 체크리스트, 습관표까지 목표에 딱 맞는 기록 양식을 만들어 줘요.</p>
+                        <ul class="chips">
+                            <li>AI 자율 양식</li>
+                            <li>D-day · 진행도</li>
+                            <li>저축 목표</li>
+                        </ul>
+                    </div>
+                    <div class="feature-visual card">
+                        <p class="bubble me">3개월 안에 5kg 감량하고 싶어!</p>
+                        <p class="bubble bot">목표에 맞게 양식을 만들었어요 ✍️</p>
+                        <div class="blocks">
+                            <div class="blk">
+                                <b>진행도</b>
+                                <div class="bar"><i style="--w:42%"></i></div>
+                                <small>2.1 / 5 kg</small>
+                            </div>
+                            <div class="blk">
+                                <b>습관표</b>
+                                <div class="dots"><i class="on"></i><i class="on"></i><i></i><i class="on"></i><i class="on"></i><i></i><i class="on"></i></div>
+                            </div>
+                            <div class="blk">
+                                <b>체크리스트</b>
+                                <p class="li on">식단 기록하기</p>
+                                <p class="li">주 3회 유산소</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <!-- ============ 4. AI 리포트 (손이 기록지를 건네는 장면) ============ -->
+            <section class="ai" id="ai">
+                <div class="ai-inner">
+                    <header class="section-head light reveal">
+                        <p class="eyebrow">Written by AI, for you</p>
+                        <h2>기록이 쌓이면,<br>AI가 정리해서 건네줘요.</h2>
+                        <p class="section-sub">바쁜 날과 여유 시간, 놓친 관리와 다음에 할 일까지. 버튼 하나면 이번 주가 한 장에 담겨요.</p>
+                    </header>
+
+                    <div class="handoff-stage" id="handoffStage">
+                    <div class="handoff" id="handoff" aria-label="AI 일정 분석 예시">
+                        <img class="handoff-hand" src="/img/hand.png" alt="" data-fallback>
+                        <div class="handoff-paper">
+                            <img class="handoff-bg" src="/img/report_background.png" alt="" data-fallback>
+                            <div class="handoff-content">
+                                <p class="rep-title">📅 이번 주 일정 분석 <small>11.01 ~ 11.07</small></p>
+                                <div class="rep-grid">
+                                    <ul>
+                                        <li>총 일정: <b>12개</b></li>
+                                        <li>가장 바쁜 날: <b>목요일</b></li>
+                                        <li>약속 4개 · 운동 3개 · 공부 5개</li>
+                                    </ul>
+                                    <div>
+                                        <p>⚠️ 목요일에 일정이 집중되어 있어요.</p>
+                                        <p>💡 토요일 오후에 약 3시간의 여유가 있어요.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                    <div class="ai-cards">
+                        <div class="ai-card reveal">
+                            <i>🗓️</i>
+                            <h4>주간 일정 분석</h4>
+                            <p>가장 바쁜 요일, 일정 종류, 여유 시간을 한눈에.</p>
+                        </div>
+                        <div class="ai-card reveal">
+                            <i>💌</i>
+                            <h4>관리 리포트</h4>
+                            <p>놓친 관리는 짚어 주고, 잘한 관리는 칭찬해 줘요.</p>
+                        </div>
+                        <div class="ai-card reveal">
+                            <i>⏰</i>
+                            <h4>일정 충돌 감지</h4>
+                            <p>같은 시간에 일정이 겹치면 바로 알려 줘요.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ 5. 어디서나 ============ -->
+            <section class="anywhere" id="anywhere">
+                <header class="section-head reveal">
+                    <p class="eyebrow">Anywhere, the same book</p>
+                    <h2>PC에서는 펼친 책,<br>휴대폰에서는 한 장씩.</h2>
+                </header>
+
+                <div class="devices reveal" aria-hidden="true">
+                    <div class="laptop">
+                        <div class="laptop-screen">
+                            <div class="ls-page"><i></i><i></i><i></i><i class="w60"></i><div class="ls-grid"></div></div>
+                            <div class="ls-page"><i></i><i class="w80"></i><i></i><i class="w60"></i><i></i></div>
+                        </div>
+                        <div class="laptop-base"></div>
+                    </div>
+                    <div class="phone">
+                        <div class="phone-tabs"><b></b><b></b><b></b><b></b></div>
+                        <div class="phone-page"><i></i><i class="w80"></i><div class="ls-grid"></div><i></i><i class="w60"></i></div>
+                    </div>
+                </div>
+
+                <ul class="trust">
+                    <li class="reveal"><b>실제 서버에서 동작</b><span>AWS에 배포해 언제든 접속할 수 있어요.</span></li>
+                    <li class="reveal"><b>내 기록은 나만</b><span>회원마다 기록이 따로 보관돼요.</span></li>
+                    <li class="reveal"><b>안전하게</b><span>비밀번호는 암호화, AI 키는 서버에만.</span></li>
+                </ul>
+            </section>
+
+            <!-- ============ 6. 마지막 시작 버튼 ============ -->
+            <section class="final">
+                <h2 class="reveal">오늘의 첫 장을<br>펼쳐 보세요.</h2>
+                <p class="reveal">기록은 손으로 쓰듯 편하게, 정리는 AI가.</p>
+                <div class="hero-cta reveal">
+                    <button type="button" class="btn btn-primary" data-go="signup">무료로 시작하기</button>
+                    <button type="button" class="btn btn-ghost" data-go="login">로그인</button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="foot">
+            <span class="nav-word">Folio</span>
+            <span>© 2026 TEAM HIKING · 등산동호회</span>
+        </footer>
     </body>
 
 </html>
