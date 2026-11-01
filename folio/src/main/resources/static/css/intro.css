@@ -33,6 +33,7 @@
 }
 
 html {
+    overflow-x: clip; /* 애니메이션 전 커진 도장 등이 가로 스크롤을 만들지 않게 */
     scroll-behavior: smooth;
     scroll-padding-top: 84px;
 }

@@ -400,7 +400,7 @@
         $("rangeLabel").textContent = s.start + " ~ " + s.end;
         $("methodText").textContent = s.method;
         $("chartSummary").textContent =
-            `누적 관리 일정 ${s.scheduleCount}건 · 완료율 ${s.completionRate == null ? "자료 없음" : s.completionRate + "%"}`;
+            `이 기간 관리 일정 ${s.scheduleCount}건 · 완료율 ${s.completionRate == null ? "자료 없음" : s.completionRate + "%"}`;
         $("reportNotice").textContent =
             `${Number(date.slice(5, 7))}월 월간 기록지가 도착했습니다. 확인하시겠습니까?`;
         const chart = $("pressureChart");

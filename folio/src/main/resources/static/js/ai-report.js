@@ -230,6 +230,18 @@
         content.scrollTop = 0;
     }
 
+    /* ---------- 종이 밖으로 넘치면 글자 크기를 줄여서 맞추기 ---------- */
+    function fitContent() {
+        content.style.fontSize = "";
+        if (overlay.hidden || window.matchMedia("(max-width: 900px)").matches) return;
+        let size = parseFloat(getComputedStyle(content).fontSize);
+        while (content.scrollHeight > content.clientHeight + 1 && size > 7) {
+            size -= 0.25;
+            content.style.fontSize = size + "px";
+        }
+    }
+    window.addEventListener("resize", fitContent);
+
     /* ---------- 열기 / 닫기 ---------- */
     let busy = false;
     let closing = null;
@@ -240,6 +252,7 @@
         overlay.classList.remove("is-out");
         void overlay.offsetWidth; // 애니메이션을 처음부터 다시 재생
         overlay.classList.add("is-in");
+        fitContent();
         close.focus({ preventScroll: true });
     }
 

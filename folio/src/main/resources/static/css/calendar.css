@@ -2594,3 +2594,35 @@ Toast
     font-size: 26px;
     font-style: normal;
 }
+/* =========================================================
+   관리에서 등록한 일정: 관리 종류별 색 (형광펜보다 연하고 탁하게)
+   - 형광펜을 칠한 일정은 형광펜 색이 우선
+========================================================= */
+.day .tag.mg-health:not(.pen) {
+    background: rgba(132, 160, 118, 0.26);
+    color: #55704a;
+}
+.day .tag.mg-subscription:not(.pen) {
+    background: rgba(118, 145, 178, 0.26);
+    color: #4d6584;
+}
+.day .tag.mg-relationship:not(.pen) {
+    background: rgba(150, 126, 170, 0.26);
+    color: #6b5683;
+}
+.day .tag.mg-daily:not(.pen) {
+    background: rgba(201, 178, 106, 0.3);
+    color: #7a6630;
+}
+
+/* 메모장·금일 일정: 관리 이름(건강/구독/교체/일상)은 색 없이 시간 글자처럼 */
+.memoManageTag {
+    display: inline;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    white-space: nowrap;
+}

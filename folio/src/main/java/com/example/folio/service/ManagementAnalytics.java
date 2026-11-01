@@ -105,6 +105,10 @@ public class ManagementAnalytics {
             done = new HashMap<>();
         List<CompletionPoint> points = new ArrayList<>();
         int cursor = 0;
+        // 조회 기간 이전 기록은 세지 않는다.
+        // (예전 기록까지 다 더하면 오늘 하나 완료해도 완료율이 거의 안 움직여서 그래프에 안 보였음)
+        LocalDate rangeStart = range.start();
+        while (cursor < history.size() && history.get(cursor).getDate().isBefore(rangeStart)) cursor++;
         for (
             LocalDate date = range.start();
             !date.isAfter(range.end());
@@ -119,6 +123,11 @@ public class ManagementAnalytics {
             if (cutoff.isAfter(today)) cutoff = today;
             boolean forecast = date.isAfter(today);
             Map<String, Integer> rates = new LinkedHashMap<>();
+            // 월간·연간: 점 하나 = 그 달(그 해)의 완료율 / 주간: 이번 주 첫날부터 그날까지 누적
+            if (!"week".equals(period)) {
+                totals.clear();
+                done.clear();
+            }
             if (!forecast) {
                 while (cursor < history.size() && !history.get(cursor).getDate().isAfter(cutoff)) {
                     Schedule item = history.get(cursor++);
@@ -137,8 +146,14 @@ public class ManagementAnalytics {
             }
             points.add(new CompletionPoint(date.toString(), rates, forecast));
         }
-        int total = history.size();
-        int completed = (int) history.stream().filter(Schedule::isCompleted).count();
+        LocalDate summaryStart = range.start();
+        LocalDate summaryEnd = through;
+        var inRange = history
+            .stream()
+            .filter(s -> !s.getDate().isBefore(summaryStart) && !s.getDate().isAfter(summaryEnd))
+            .toList();
+        int total = inRange.size();
+        int completed = (int) inRange.stream().filter(Schedule::isCompleted).count();
         return new CompletionChart(
             range.start().toString(),
             range.end().toString(),
@@ -146,8 +161,9 @@ public class ManagementAnalytics {
             total,
             completed,
             total == 0 ? null : (int) Math.round((100.0 * completed) / total),
-            "카테고리별 누적 완료율(%) = 해당 날짜까지 완료한 관리 일정 ÷ 해당 날짜까지 예정된 관리 일정 × 100. " +
-                "조회 기간 이전의 기록도 포함하며, 취소·미래 일정과 일반 일정은 제외합니다. 기록이 없으면 선을 표시하지 않습니다."
+            "카테고리별 완료율(%) = 완료한 관리 일정 ÷ 예정된 관리 일정 × 100. " +
+                "주간은 그 주 첫날부터 해당 날짜까지 누적, 월간은 달마다, 연간은 해마다 따로 계산합니다. " +
+                "조회 기간 이전 기록과 취소·미래 일정, 일반 일정은 제외합니다. 기록이 없으면 선을 표시하지 않습니다."
         );
     }
 

@@ -85,8 +85,8 @@
 
 .aiReportScene {
     /* 이미지에 맞춰 조절하는 값 (report_background.png 1160x605, hand.png 1122x657 기준) */
-    --paper-width: min(960px, 66vw);
-    --content-inset: 10% 8.5% 14% 14%; /* 기록지 안 글자 영역 (위 오른쪽 아래 왼쪽) */
+    --paper-width: min(1000px, 72vw, (100vh - 40px) * 1.9);
+    --content-inset: 6.5% 12% 21% 16.5%; /* 종이 모양 안쪽 글자 영역 (위 오른쪽 아래 왼쪽) */
     --hand-width: 115%;
     --hand-left: -82%;
     --hand-top: -8%;
@@ -160,8 +160,8 @@
 
 .aiReportClose {
     position: absolute;
-    top: 6%;
-    right: 5%;
+    top: 4.5%;
+    right: 8%;
     z-index: 3;
     display: grid;
     place-items: center;
@@ -227,11 +227,11 @@
     container-type: inline-size;
     display: flex;
     flex-direction: column;
-    gap: 1.5cqw;
+    gap: 1em;
     overflow-y: auto;
     color: var(--rp-ink);
     font-family: "Noto Sans KR", sans-serif;
-    font-size: clamp(10px, 1.6cqw, 13px);
+    font-size: clamp(9px, 1.6cqw, 13px); /* 넘치면 JS가 더 줄임 */
     line-height: 1.45;
     scrollbar-width: none;
 }
@@ -263,7 +263,7 @@
     align-items: flex-end;
     justify-content: space-between;
     gap: 12px;
-    padding-bottom: 1.1cqw;
+    padding-bottom: 0.7em;
     border-bottom: 1.5px dashed var(--rp-line);
 }
 
@@ -288,7 +288,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding-right: 4cqw; /* 닫기(×) 자리 */
+    padding-right: 1.5em; /* 닫기(×) 자리 */
 }
 
 .rp-range {
@@ -315,13 +315,13 @@
 .rp-tiles {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1.6cqw;
+    gap: 1em;
 }
 
 .rp-tile {
     display: grid;
     gap: 0;
-    padding: 1.1cqw 1.8cqw;
+    padding: 0.7em 1.1em;
     border: 1px solid var(--rp-line);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.72);
@@ -385,14 +385,14 @@
 .rp-middle {
     display: grid;
     grid-template-columns: 1.25fr 1fr;
-    gap: 1.6cqw;
+    gap: 1em;
 }
 
 .rp-box {
     display: flex;
     flex-direction: column;
-    gap: 0.9cqw;
-    padding: 1.1cqw 1.8cqw;
+    gap: 0.6em;
+    padding: 0.7em 1.1em;
     border: 1px solid var(--rp-line);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.72);
@@ -409,9 +409,8 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     align-items: end;
-    gap: 1cqw;
-    height: 7cqw;
-    min-height: 54px;
+    gap: 0.6em;
+    height: 4.4em;
     margin-top: 1.4em; /* 막대 위 숫자 자리 */
 }
 
@@ -559,7 +558,7 @@
 .rp-notes {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    gap: 1.6cqw;
+    gap: 1em;
 }
 
 .rp-note {
@@ -568,7 +567,7 @@
     grid-template-columns: auto 1fr;
     align-items: start;
     gap: 8px;
-    padding: 1.1cqw 1.8cqw;
+    padding: 0.7em 1.1em;
     border-radius: 4px 12px 12px 12px;
     word-break: keep-all;
     box-shadow: 0 3px 8px rgba(80, 60, 40, 0.08);
@@ -649,7 +648,7 @@
     }
 }
 
-/* 휴대폰: 종이를 세로로 늘려서 내용이 다 들어가게 */
+/* 휴대폰 */
 @media (max-width: 900px) {
     .aiReportTab {
         position: absolute;
@@ -669,22 +668,39 @@
         --hand-top: auto;
     }
 
+    /* 좁은 화면에서는 기울어진 종이 이미지 대신 반듯한 종이 카드 */
+    .aiReportPaper {
+        border-radius: 10px;
+        background: #fdfaf0;
+        box-shadow: 0 14px 24px rgba(40, 32, 28, 0.2);
+    }
+
+    .aiReportPaper.noImage {
+        aspect-ratio: auto;
+    }
+
     .aiReportPaperImg {
-        position: absolute;
-        inset: 0;
-        height: 100%;
+        display: none;
+    }
+
+    .aiReportClose {
+        top: 10px;
+        right: 10px;
     }
 
     .aiReportContent {
         position: relative;
         inset: auto;
         max-height: 82vh;
-        padding: 8% 8% 18% 11%;
+        padding: 24px 18px 20px;
         gap: 12px;
-        font-size: 12.5px;
+        font-size: 12.5px !important;
     }
 
     .rp-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
         padding-bottom: 8px;
     }
 
@@ -707,7 +723,7 @@
     }
 
     .rp-meta {
-        padding-right: 30px;
+        padding-right: 0;
     }
 
     .rp-tile small {

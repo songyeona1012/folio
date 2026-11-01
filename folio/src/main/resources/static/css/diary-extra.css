@@ -731,3 +731,40 @@ button.diaryDateHint {
 :is(.timetableGrid, .plainNoteText, .folderGrid, .monthTableWrap)::-webkit-scrollbar-corner {
     background: transparent;
 }
+
+/* ============================================================
+   PC: 창 높이가 낮아도 삭제/저장 버튼이 노트 밖으로 나가지 않게
+   - 오른쪽 페이지를 세로 칸으로 나누고, 일기 쓰는 칸이 남은 높이만큼만 차지
+   ============================================================ */
+@media (min-width: 901px) {
+    .rightPage:has(#diarySaveBtn) {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    .rightPage:has(#diarySaveBtn) > * {
+        flex-shrink: 0;
+    }
+    .rightPage:has(#diarySaveBtn) > .freeformArea.show,
+    .rightPage:has(#diarySaveBtn) > .timetableArea.show {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+    .rightPage:has(#diarySaveBtn) .plainNoteText {
+        flex: 1 1 auto;
+        height: auto;
+        min-height: 0 !important;
+        max-height: none;
+    }
+    .rightPage:has(#diarySaveBtn) .timetableGrid {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
+    }
+    .rightPage:has(#diarySaveBtn) > .diarySaveRow {
+        margin-top: auto;
+        padding-top: 10px;
+    }
+}

@@ -648,6 +648,12 @@
 
                     tag.className = "tag " + ev.cat + (ev.completed ? " done" : "");
 
+                    // 관리에서 등록한 일정은 관리 종류 색 (건강 초록 / 구독 파랑 / 교체 보라 / 일상 노랑)
+                    const manageCat = managementCategory(ev);
+                    if (manageCat && managementNames[manageCat]) {
+                        tag.classList.add("mg-" + manageCat);
+                    }
+
                     // 형광펜을 칠한 일정은 카테고리 색 대신 형광펜 색으로 표시
                     const pen = ev.pen;
                     if (pen && penColors[pen]) {
@@ -732,7 +738,19 @@
 
             timeSpan.className = "time hover-edit";
 
-            timeSpan.textContent = ev.time ? formatTime(ev.time) : "시간없음";
+            // 관리 일정은 "시간없음" 대신 건강/구독/교체/일상 같은 관리 이름을 보여준다
+            const manageName = managementLabel(ev);
+
+            if (manageName) {
+                const tag = document.createElement("span");
+                tag.className = "memoManageTag";
+                tag.textContent = manageName;
+                timeSpan.appendChild(tag);
+                if (ev.time) timeSpan.appendChild(document.createTextNode(" " + formatTime(ev.time)));
+                timeSpan.title = "관리 일정 (" + manageName + ")";
+            } else {
+                timeSpan.textContent = ev.time ? formatTime(ev.time) : "시간없음";
+            }
 
             const titleSpan = document.createElement("span");
 
@@ -918,7 +936,16 @@
 
                 const timeLabel = document.createElement("span");
 
-                timeLabel.textContent = ev.time || "시간 선택";
+                // 관리 일정은 "시간 선택" 대신 건강/구독/교체/일상 같은 관리 이름을 보여준다
+                const manageName = managementLabel(ev);
+
+                if (manageName) {
+                    timeLabel.className = "memoManageTag";
+                    timeLabel.textContent = manageName + (ev.time ? " " + ev.time : "");
+                    timeLabel.title = "관리 일정 (" + manageName + ")";
+                } else {
+                    timeLabel.textContent = ev.time || "시간 선택";
+                }
 
                 timeText.appendChild(timeLabel);
 
@@ -1587,6 +1614,20 @@
     if (!dashboardCategories[dashboardCategory]) dashboardCategory = "daily";
     let dashboardRules = [];
     const dashboardOccurrences = new Map();
+    const managementNames = { health: "건강", subscription: "구독", relationship: "교체", daily: "일상" };
+    // 관리 기능에서 만든 일정이면 그 관리 이름(건강/구독/교체/일상), 아니면 null
+    function managementCategory(event) {
+        if (!event || !event.recurringId) return null;
+        return (
+            dashboardRules.find((rule) => String(rule.id) === String(event.recurringId))?.category ||
+            event.cat
+        );
+    }
+    function managementLabel(event) {
+        const category = managementCategory(event);
+        if (!category) return null;
+        return managementNames[category] || "관리";
+    }
     function isSideManagement(event) {
         if (!event.recurringId) return false;
         const category =

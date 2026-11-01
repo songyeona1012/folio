@@ -500,6 +500,134 @@
         height: auto;
         margin: 0 auto;
     }
+    /* 책 아래가 휑하지 않게: 장면 높이를 책 크기에 맞추고 화면 가운데쯤에 */
+    .loginScene {
+        width: min(calc(100% - 24px), calc((100dvh - 120px) * 754 / 954));
+        height: auto;
+        aspect-ratio: 754 / 954;
+        margin: max(16px, calc((100dvh - 60px - min(100vw - 24px, (100dvh - 120px) * 754 / 954) * 954 / 754) / 2)) auto 24px;
+    }
+    .loginScene .closedBook {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* =========================================================
+       8. 나의 정보 (setting)
+       ========================================================= */
+    .myInfoBook {
+        min-height: 0;
+    }
+    .notebook > .myInfoIntro,
+    .notebook > .myInfoEditor {
+        width: auto !important;
+        margin: 0;
+        overflow: visible;
+    }
+    .myInfoIntro h1 {
+        font-size: 22px;
+    }
+    .myInfoIntro header p {
+        font-size: 12px;
+    }
+    .verifyForm {
+        max-width: none;
+        margin-top: 18px;
+        padding: 0;
+    }
+    .verifyInput input {
+        flex: 1;
+        width: auto;
+        height: 38px;
+        font-size: 16px; /* 아이폰에서 입력할 때 화면이 확대되지 않게 */
+    }
+    #verifyButton {
+        height: 38px;
+        padding: 0 14px;
+        font-size: 13px;
+    }
+    .myInfoPhoto {
+        margin: 6px 0 24px;
+    }
+    .photoActions {
+        max-width: none;
+        font-size: 12px;
+    }
+    .myInfoCard {
+        transform: rotate(-2deg);
+        padding: 28px 22px 24px;
+    }
+    .myInfoName {
+        font-size: 22px !important;
+    }
+    .myInfoRow {
+        grid-template-columns: 88px minmax(0, 1fr) 25px;
+        font-size: 12px;
+    }
+    .myInfoRow input {
+        height: 32px;
+        font-size: 16px;
+    }
+    .myInfoCard p {
+        white-space: normal;
+        margin: 16px 0 0;
+        font-size: 10px;
+    }
+    .myInfoEditor .withdrawButton {
+        margin: 24px 0 0 auto;
+    }
+    .rememberButton {
+        width: 100%;
+    }
+
+    /* =========================================================
+       9. 페이지별 작은 보정
+       ========================================================= */
+    /* 달력: 오른쪽 금일 일정의 시간이 두 줄로 깨지지 않게 */
+    .today-list .time {
+        width: auto;
+        min-width: 66px;
+        white-space: nowrap;
+    }
+    .memoManageTag {
+        font-size: 11px;
+    }
+
+    /* 일기: 소개 문장과 연도 이동 줄 사이 간격 */
+    .yearNav {
+        margin-top: 10px;
+    }
+
+    /* 관리: PC용으로 살짝 어긋나게 둔 메모지를 한 줄로 반듯하게 */
+    .managementApp[data-view="overview"] .categoryColumn:first-child,
+    .managementApp[data-view="overview"] .categoryColumn:last-child,
+    .managementApp[data-view="overview"] .categoryColumn > .categoryCard:first-child {
+        transform: none;
+    }
+    .managementApp[data-view="overview"] .categoryGrid,
+    .managementApp[data-view="overview"][data-fluid="true"] .categoryGrid {
+        margin-top: 30px;
+        gap: 22px;
+    }
+    .managementApp[data-view="overview"] .categoryColumn,
+    .managementApp[data-view="overview"][data-fluid="true"] .categoryColumn {
+        gap: 22px;
+    }
+    .managementApp .managementHelp {
+        position: static !important;
+        display: block;
+        margin: 8px 0 0 auto !important;
+        width: fit-content;
+    }
+
+    /* 목표: 작성 방식 바를 화면 폭에 맞게 */
+    .goal-mode-bar {
+        gap: 6px 14px;
+        padding: 8px 8px 8px 16px;
+    }
+    .mode-option {
+        font-size: 12px;
+    }
 }
 
 /* =========================================================
